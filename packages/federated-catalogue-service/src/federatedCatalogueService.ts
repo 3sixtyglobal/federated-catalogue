@@ -1,6 +1,5 @@
 // Copyright 2024 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-
 import {
 	ArrayHelper,
 	ComponentFactory,
@@ -40,7 +39,7 @@ import {
 	type IServiceOfferingList
 } from "@twin.org/federated-catalogue-models";
 import { VerificationHelper, type IIdentityResolverComponent } from "@twin.org/identity-models";
-import { LoggingConnectorFactory, type ILoggingConnector } from "@twin.org/logging-models";
+import type { ILoggingComponent } from "@twin.org/logging-models";
 import { nameof } from "@twin.org/nameof";
 import { GaiaXTypes, type ILegalPerson } from "@twin.org/standards-gaia-x";
 import { SchemaOrgDataTypes, SchemaOrgTypes } from "@twin.org/standards-schema-org";
@@ -77,7 +76,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * Logging service.
 	 * @internal
 	 */
-	private readonly _loggingService?: ILoggingConnector;
+	private readonly _logging?: ILoggingComponent;
 
 	/**
 	 * Storage service for participants.
@@ -114,9 +113,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * @param options The options for the connector.
 	 */
 	constructor(options: IFederatedCatalogueServiceConstructorOptions) {
-		this._loggingService = LoggingConnectorFactory.getIfExists(
-			options?.loggingConnectorType ?? "logging"
-		);
+		this._logging = ComponentFactory.getIfExists(options?.loggingComponentType ?? "logging");
 
 		this._entityStorageParticipants = EntityStorageConnectorFactory.get<
 			IEntityStorageConnector<ParticipantEntry>
@@ -148,7 +145,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			options.config.clearingHouseApproverList,
 			this._resolver,
 			options.config.subResourceCacheTtlMs,
-			this._loggingService
+			this._logging
 		);
 
 		SchemaOrgDataTypes.registerRedirects();
@@ -168,7 +165,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		const result = await this._complianceCredentialVerifier.verify(complianceCredential);
 
 		if (!result.verified) {
-			this._loggingService?.log({
+			this._logging?.log({
 				level: "error",
 				source: this.CLASS_NAME,
 				ts: Date.now(),
@@ -195,7 +192,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		);
 		await this._entityStorageParticipants.set(theEntry as IParticipantEntry);
 
-		await this._loggingService?.log({
+		await this._logging?.log({
 			level: "info",
 			source: this.CLASS_NAME,
 			ts: Date.now(),
@@ -340,7 +337,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		const result = await this._complianceCredentialVerifier.verify(complianceCredential);
 
 		if (!result.verified) {
-			this._loggingService?.log({
+			this._logging?.log({
 				level: "error",
 				source: this.CLASS_NAME,
 				ts: Date.now(),
@@ -396,7 +393,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			await this._entityStorageDataResources.set(drEntry as IDataResourceEntry);
 		}
 
-		await this._loggingService?.log({
+		await this._logging?.log({
 			level: "info",
 			source: this.CLASS_NAME,
 			ts: Date.now(),
@@ -423,7 +420,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		const result = await this._complianceCredentialVerifier.verify(complianceCredential);
 
 		if (!result.verified) {
-			this._loggingService?.log({
+			this._logging?.log({
 				level: "error",
 				source: this.CLASS_NAME,
 				ts: Date.now(),
@@ -462,7 +459,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			dataResourceIds.push(dataResourceEntry.id);
 		}
 
-		await this._loggingService?.log({
+		await this._logging?.log({
 			level: "info",
 			source: this.CLASS_NAME,
 			ts: Date.now(),
@@ -553,7 +550,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		const result = await this._complianceCredentialVerifier.verify(sdComplianceCredential);
 
 		if (!result.verified) {
-			this._loggingService?.log({
+			this._logging?.log({
 				level: "error",
 				source: this.CLASS_NAME,
 				ts: Date.now(),
@@ -607,7 +604,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			await this._entityStorageDataResources.set(dataResourceEntry);
 		}
 
-		await this._loggingService?.log({
+		await this._logging?.log({
 			level: "info",
 			source: this.CLASS_NAME,
 			ts: Date.now(),
@@ -913,7 +910,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	private async checkParticipantExists(participantId: string): Promise<void> {
 		const participantData = await this._entityStorageParticipants.get(participantId);
 		if (!participantData) {
-			this._loggingService?.log({
+			this._logging?.log({
 				level: "error",
 				source: this.CLASS_NAME,
 				ts: Date.now(),

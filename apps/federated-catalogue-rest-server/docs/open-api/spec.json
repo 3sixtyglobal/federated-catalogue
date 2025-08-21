@@ -2909,7 +2909,7 @@
 						"type": "string",
 						"description": "The stack trace for the error."
 					},
-					"inner": {
+					"cause": {
 						"$ref": "#/components/schemas/Error"
 					}
 				},

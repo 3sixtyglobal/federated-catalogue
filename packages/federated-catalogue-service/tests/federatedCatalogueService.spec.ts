@@ -1,9 +1,7 @@
 // Copyright 2024 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-
 import fs from "node:fs";
 import path from "node:path";
-
 import { ComponentFactory, StringHelper, Urn } from "@twin.org/core";
 import { MemoryEntityStorageConnector } from "@twin.org/entity-storage-connector-memory";
 import { EntityStorageConnectorFactory } from "@twin.org/entity-storage-models";
@@ -20,30 +18,24 @@ import { ModuleHelper } from "@twin.org/modules";
 import { nameof } from "@twin.org/nameof";
 import { GaiaXTypes } from "@twin.org/standards-gaia-x";
 import { addAllContextsToDocumentCache } from "@twin.org/standards-ld-contexts";
-
 import type { IDidDocument } from "@twin.org/standards-w3c-did";
+import type { DataResourceEntry } from "../src/entities/dataResourceEntry";
+import type { DataSpaceConnectorEntry } from "../src/entities/dataSpaceConnectorEntry";
+import type { ParticipantEntry } from "../src/entities/participantEntry";
+import type { ServiceOfferingEntry } from "../src/entities/serviceOfferingEntry";
 import { FederatedCatalogueService } from "../src/federatedCatalogueService";
 import type { IFederatedCatalogueServiceConstructorOptions } from "../src/models/IFederatedCatalogueServiceConstructorOptions";
 import { initSchema } from "../src/schema";
-
 import dataResourceCredential from "./dataset/credentials/compliance/data-resource-credential.json" assert { type: "json" };
 import dataSpaceConnectorCredential from "./dataset/credentials/compliance/data-space-connector-credential.json" assert { type: "json" };
 import participantCredential from "./dataset/credentials/compliance/participant-credential.json" assert { type: "json" };
 import serviceOfferingCedential from "./dataset/credentials/compliance/service-offering-credential.json" assert { type: "json" };
+import { cleanupTestEnv, setupTestEnv } from "./setupTestEnv";
 
 let participantStore: MemoryEntityStorageConnector<ParticipantEntry>;
 let dataResourceStore: MemoryEntityStorageConnector<DataResourceEntry>;
 let serviceOfferingStore: MemoryEntityStorageConnector<ServiceOfferingEntry>;
 let dataSpaceConnectorStore: MemoryEntityStorageConnector<DataSpaceConnectorEntry>;
-
-import { cleanupTestEnv, setupTestEnv } from "./setupTestEnv";
-import type { ParticipantEntry } from "../src/entities/participantEntry";
-// eslint-disable-next-line import/order
-import type { DataResourceEntry } from "../src/entities/dataResourceEntry";
-// eslint-disable-next-line import/order
-import type { ServiceOfferingEntry } from "../src/entities/serviceOfferingEntry";
-// eslint-disable-next-line import/order
-import type { DataSpaceConnectorEntry } from "../src/entities/dataSpaceConnectorEntry";
 
 let options: IFederatedCatalogueServiceConstructorOptions;
 /**
@@ -121,7 +113,6 @@ describe("federated-catalogue-service", () => {
 		);
 
 		options = {
-			loggingConnectorType: "console",
 			// Check for support of multiple values from env vars
 			config: { clearingHouseApproverList }
 		};

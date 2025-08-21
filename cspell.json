@@ -16,7 +16,7 @@
 		"typedoc.json",
 		".eslintrc.cjs",
 		"**/wordlists/**",
-		"**/*.json"
+		"changelog.md"
 	],
 	"words": [
 		"bech",
@@ -32,6 +32,7 @@
 		"EORI",
 		"VATID",
 		"GLEIF",
+		"odrl",
 		"twinfoundation",
 		"buildx",
 		"dcmi",

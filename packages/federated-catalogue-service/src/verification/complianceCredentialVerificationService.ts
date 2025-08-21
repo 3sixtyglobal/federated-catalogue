@@ -1,28 +1,27 @@
 // Copyright 2024 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-
 import {
-	Guards,
-	UnprocessableError,
-	Is,
-	type IError,
 	Coerce,
-	ObjectHelper,
+	Converter,
+	Guards,
+	Is,
 	JsonHelper,
-	Converter
+	ObjectHelper,
+	UnprocessableError,
+	type IError
 } from "@twin.org/core";
 import { Sha256, Sha512 } from "@twin.org/crypto";
 import {
 	FederatedCatalogueTypes,
-	type ICredential,
+	VerificationFailureReasons,
 	type IComplianceCredential,
 	type IComplianceEvidence,
 	type IComplianceVerificationResult,
-	type IVerificationResult,
-	VerificationFailureReasons
+	type ICredential,
+	type IVerificationResult
 } from "@twin.org/federated-catalogue-models";
 import { DocumentHelper, type IIdentityResolverComponent } from "@twin.org/identity-models";
-import type { ILoggingConnector } from "@twin.org/logging-models";
+import type { ILoggingComponent } from "@twin.org/logging-models";
 import { nameof } from "@twin.org/nameof";
 import { ProofHelper, type IDidVerifiableCredential } from "@twin.org/standards-w3c-did";
 import { FetchHelper } from "@twin.org/web";
@@ -52,7 +51,7 @@ export class ComplianceCredentialVerificationService {
 	 * Logging Component.
 	 * @internal
 	 */
-	private readonly _logger?: ILoggingConnector;
+	private readonly _logger?: ILoggingComponent;
 
 	/**
 	 * List of clearing houses tha are approvers.
@@ -71,7 +70,7 @@ export class ComplianceCredentialVerificationService {
 		clearingHouseApproverList: string[],
 		resolver: IIdentityResolverComponent,
 		subResourceCacheTtlMs?: number,
-		logger?: ILoggingConnector
+		logger?: ILoggingComponent
 	) {
 		this._clearingHouseApproverList = clearingHouseApproverList;
 		this._resolver = resolver;
