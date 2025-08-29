@@ -23,7 +23,6 @@ if (!jsonStrData || !verificationMethod || !privateKeyData) {
 	console.error(
 		'Three parameters are needed: <credential as JSON> <verification method> <private key as JSON>'
 	);
-	// eslint-disable-next-line unicorn/no-process-exit
 	exit(-1);
 }
 let jsonObject = JSON.parse(jsonStrData);

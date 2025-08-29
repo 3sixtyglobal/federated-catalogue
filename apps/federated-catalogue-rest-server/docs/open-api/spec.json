@@ -25,6 +25,132 @@
 		}
 	],
 	"paths": {
+		"/": {
+			"get": {
+				"operationId": "serverRoot",
+				"summary": "Get the root text page",
+				"tags": [
+					"Info"
+				],
+				"responses": {
+					"200": {
+						"description": "The root text for the server.",
+						"content": {
+							"text/plain": {
+								"schema": {
+									"$ref": "#/components/schemas/ServerRootResponse"
+								},
+								"examples": {
+									"serverRootResponse": {
+										"summary": "The response for the root request.",
+										"value": "API Server - 1.0.0"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "The server cannot process the request, see the content for more details.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"examples": {
+									"exampleResponse": {
+										"value": {
+											"name": "GeneralError",
+											"message": "component.error",
+											"properties": {
+												"foo": "bar"
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "The server has encountered a situation it does not know how to handle, see the content for more details.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"examples": {
+									"exampleResponse": {
+										"value": {
+											"name": "InternalServerError",
+											"message": "component.error"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/favicon.ico": {
+			"get": {
+				"operationId": "serverFavIcon",
+				"summary": "Get the favicon for the server",
+				"tags": [
+					"Info"
+				],
+				"responses": {
+					"200": {
+						"description": "The favicon for the server.",
+						"content": {
+							"image/x-icon": {
+								"schema": {
+									"$ref": "#/components/schemas/Uint8Array"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "The server cannot process the request, see the content for more details.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"examples": {
+									"exampleResponse": {
+										"value": {
+											"name": "GeneralError",
+											"message": "component.error",
+											"properties": {
+												"foo": "bar"
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "The server has encountered a situation it does not know how to handle, see the content for more details.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"examples": {
+									"exampleResponse": {
+										"value": {
+											"name": "InternalServerError",
+											"message": "component.error"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/info": {
 			"get": {
 				"operationId": "serverInformation",
@@ -3711,6 +3837,10 @@
 				],
 				"additionalProperties": false,
 				"description": "The information about the server."
+			},
+			"ServerRootResponse": {
+				"type": "string",
+				"description": "The root text for the server."
 			},
 			"ServerSpecResponse": {
 				"description": "The spec for the server."

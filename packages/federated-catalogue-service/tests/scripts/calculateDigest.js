@@ -34,7 +34,6 @@ const hash = sha256(canonical);
 
 console.log(`sha256-${hash}`);
 
-// eslint-disable-next-line jsdoc/require-jsdoc
 function sha256(input) {
 	if (!input) {
 		return null;

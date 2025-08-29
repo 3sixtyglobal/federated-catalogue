@@ -63,8 +63,6 @@ describe("federated-catalogue-service", () => {
 				ModuleHelper.execModuleMethod(module, method, args)
 			);
 
-		addAllContextsToDocumentCache();
-
 		FederatedCatalogueDataTypes.registerTypes();
 
 		const originalFetch = globalThis.fetch;
@@ -123,6 +121,8 @@ describe("federated-catalogue-service", () => {
 	});
 
 	beforeEach(async () => {
+		addAllContextsToDocumentCache();
+
 		participantStore = new MemoryEntityStorageConnector<ParticipantEntry>({
 			entitySchema: nameof<ParticipantEntry>()
 		});

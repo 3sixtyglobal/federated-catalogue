@@ -8,7 +8,6 @@ import type { FederatedCatalogueContextType } from "./federatedCatalogueContextT
 /**
  * The LD context instances concerning the Federated Catalogue.
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export abstract class FederatedCatalogueContextInstances {
 	/**
 	 * The LD Context of a list of Catalogue entries.
