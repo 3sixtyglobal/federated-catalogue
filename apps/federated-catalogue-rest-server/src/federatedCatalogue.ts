@@ -20,12 +20,12 @@ import { nameof } from "@twin.org/nameof";
  * @param overrideInstanceType The instance type to override the default.
  * @returns The name of the instance created.
  */
-export function federatedCatalogueTypeInitialiser(
+export async function federatedCatalogueTypeInitialiser(
 	core: IEngineCore,
 	context: IEngineCoreContext,
 	instanceConfig: { options: IFederatedCatalogueServiceConstructorOptions },
 	overrideInstanceType: string
-): string {
+): Promise<string> {
 	const componentName = StringHelper.kebabCase(nameof<IFederatedCatalogueComponent>(), true);
 	ComponentFactory.register(
 		componentName,
