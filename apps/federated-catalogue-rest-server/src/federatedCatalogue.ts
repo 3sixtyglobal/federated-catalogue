@@ -29,7 +29,11 @@ export async function federatedCatalogueTypeInitialiser(
 	const componentName = StringHelper.kebabCase(nameof<IFederatedCatalogueComponent>(), true);
 	ComponentFactory.register(
 		componentName,
-		() => new FederatedCatalogueService(instanceConfig.options)
+		() =>
+			new FederatedCatalogueService({
+				...instanceConfig.options,
+				identityResolverComponentType: core.getRegisteredInstanceType("identityResolverComponent")
+			})
 	);
 	return overrideInstanceType ?? componentName;
 }
