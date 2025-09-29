@@ -41,7 +41,6 @@
 		"@twin.org/federated-catalogue-service": "0.0.2-next.4"
 	},
 	"devDependencies": {
-		"@twin.org/entity-storage-connector-memory": "next",
 		"@twin.org/merge-locales": "next",
 		"@twin.org/nameof-transformer": "next",
 		"@twin.org/nameof-vitest-plugin": "next",

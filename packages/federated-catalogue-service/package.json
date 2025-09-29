@@ -50,10 +50,11 @@
 		"@twin.org/data-json-ld": "next"
 	},
 	"devDependencies": {
-		"@twin.org/standards-ld-contexts": "next",
+		"@twin.org/entity-storage-connector-memory": "next",
 		"@twin.org/modules": "next",
 		"@twin.org/nameof-transformer": "next",
 		"@twin.org/nameof-vitest-plugin": "next",
+		"@twin.org/standards-ld-contexts": "next",
 		"@twin.org/ts-to-openapi": "next",
 		"@types/node": "24.5.2",
 		"@vitest/coverage-v8": "3.2.4",
