@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0.
 import fs from "node:fs";
 import path from "node:path";
-import { ComponentFactory, StringHelper, Urn } from "@twin.org/core";
+import { ComponentFactory, Urn } from "@twin.org/core";
 import { MemoryEntityStorageConnector } from "@twin.org/entity-storage-connector-memory";
 import { EntityStorageConnectorFactory } from "@twin.org/entity-storage-models";
 import {
@@ -15,7 +15,7 @@ import {
 } from "@twin.org/identity-models";
 import { IdentityResolverService } from "@twin.org/identity-service";
 import { ModuleHelper } from "@twin.org/modules";
-import { nameof } from "@twin.org/nameof";
+import { nameof, nameofKebabCase } from "@twin.org/nameof";
 import { GaiaXTypes } from "@twin.org/standards-gaia-x";
 import { addAllContextsToDocumentCache } from "@twin.org/standards-ld-contexts";
 import type { IDidDocument } from "@twin.org/standards-w3c-did";
@@ -140,19 +140,19 @@ describe("federated-catalogue-service", () => {
 		});
 
 		EntityStorageConnectorFactory.register(
-			StringHelper.kebabCase(nameof<ParticipantEntry>()),
+			nameofKebabCase<ParticipantEntry>(),
 			() => participantStore
 		);
 		EntityStorageConnectorFactory.register(
-			StringHelper.kebabCase(nameof<DataResourceEntry>()),
+			nameofKebabCase<DataResourceEntry>(),
 			() => dataResourceStore
 		);
 		EntityStorageConnectorFactory.register(
-			StringHelper.kebabCase(nameof<ServiceOfferingEntry>()),
+			nameofKebabCase<ServiceOfferingEntry>(),
 			() => serviceOfferingStore
 		);
 		EntityStorageConnectorFactory.register(
-			StringHelper.kebabCase(nameof<DataSpaceConnectorEntry>()),
+			nameofKebabCase<DataSpaceConnectorEntry>(),
 			() => dataSpaceConnectorStore
 		);
 	});

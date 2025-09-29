@@ -42,8 +42,8 @@ export class ServiceOfferingEntry {
 	/**
 	 * The REST endpoint
 	 */
-	@property({ type: "object" })
-	public endpoint!: IEndpoint;
+	@property({ type: "object", optional: true })
+	public endpoint?: IEndpoint;
 
 	/**
 	 * The policy

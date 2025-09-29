@@ -1,7 +1,7 @@
 // Copyright 2024 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 import type { IRestRoute } from "@twin.org/api-models";
-import { ComponentFactory, StringHelper } from "@twin.org/core";
+import { ComponentFactory } from "@twin.org/core";
 import type { IEngineCore, IEngineCoreContext } from "@twin.org/engine-models";
 import type { IFederatedCatalogueComponent } from "@twin.org/federated-catalogue-models";
 import {
@@ -9,7 +9,7 @@ import {
 	generateRestRoutesFederatedCatalogue,
 	type IFederatedCatalogueServiceConstructorOptions
 } from "@twin.org/federated-catalogue-service";
-import { nameof } from "@twin.org/nameof";
+import { nameofKebabCase } from "@twin.org/nameof";
 
 /**
  * Federated Catalogue initialiser.
@@ -26,7 +26,7 @@ export async function federatedCatalogueTypeInitialiser(
 	instanceConfig: { options: IFederatedCatalogueServiceConstructorOptions },
 	overrideInstanceType: string
 ): Promise<string> {
-	const componentName = StringHelper.kebabCase(nameof<IFederatedCatalogueComponent>(), true);
+	const componentName = nameofKebabCase<IFederatedCatalogueComponent>();
 	ComponentFactory.register(
 		componentName,
 		() =>

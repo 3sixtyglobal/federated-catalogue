@@ -1,11 +1,11 @@
 // Copyright 2024 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { IDidVerifiableCredential } from "@twin.org/standards-w3c-did";
+import type { IDidVerifiableCredentialV2 } from "@twin.org/standards-w3c-did";
 
 /**
  * A credential with subject.
  */
-export interface ICredential extends IDidVerifiableCredential {
+export interface ICredential extends IDidVerifiableCredentialV2 {
 	/**
 	 * The Id of the credential, it is mandatory.
 	 */
@@ -19,7 +19,7 @@ export interface ICredential extends IDidVerifiableCredential {
 	/**
 	 * Credential subject must always include id and type
 	 */
-	credentialSubject: IDidVerifiableCredential["credentialSubject"] & {
+	credentialSubject: IDidVerifiableCredentialV2["credentialSubject"] & {
 		id: string;
 		type: string | string[];
 	};

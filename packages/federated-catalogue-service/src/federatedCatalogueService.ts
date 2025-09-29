@@ -8,7 +8,6 @@ import {
 	Is,
 	NotFoundError,
 	ObjectHelper,
-	StringHelper,
 	UnprocessableError
 } from "@twin.org/core";
 import type { IJsonLdNodeObject } from "@twin.org/data-json-ld";
@@ -40,7 +39,7 @@ import {
 } from "@twin.org/federated-catalogue-models";
 import { VerificationHelper, type IIdentityResolverComponent } from "@twin.org/identity-models";
 import type { ILoggingComponent } from "@twin.org/logging-models";
-import { nameof } from "@twin.org/nameof";
+import { nameof, nameofKebabCase } from "@twin.org/nameof";
 import { GaiaXTypes, type ILegalPerson } from "@twin.org/standards-gaia-x";
 import { SchemaOrgDataTypes, SchemaOrgTypes } from "@twin.org/standards-schema-org";
 import type { IOdrlPolicy } from "@twin.org/standards-w3c-odrl";
@@ -117,25 +116,19 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 
 		this._entityStorageParticipants = EntityStorageConnectorFactory.get<
 			IEntityStorageConnector<ParticipantEntry>
-		>(options.participantEntityStorageType ?? StringHelper.kebabCase(nameof<ParticipantEntry>()));
+		>(options.participantEntityStorageType ?? nameofKebabCase<ParticipantEntry>());
 
 		this._entityStorageServiceOfferings = EntityStorageConnectorFactory.get<
 			IEntityStorageConnector<ServiceOfferingEntry>
-		>(
-			options.serviceOfferingEntityStorageType ??
-				StringHelper.kebabCase(nameof<ServiceOfferingEntry>())
-		);
+		>(options.serviceOfferingEntityStorageType ?? nameofKebabCase<ServiceOfferingEntry>());
 
 		this._entityStorageDataResources = EntityStorageConnectorFactory.get<
 			IEntityStorageConnector<DataResourceEntry>
-		>(options.dataResourceEntityStorageType ?? StringHelper.kebabCase(nameof<DataResourceEntry>()));
+		>(options.dataResourceEntityStorageType ?? nameofKebabCase<DataResourceEntry>());
 
 		this._entityStorageDataSpaceConnectors = EntityStorageConnectorFactory.get<
 			IEntityStorageConnector<DataSpaceConnectorEntry>
-		>(
-			options.dataSpaceConnectorStorageType ??
-				StringHelper.kebabCase(nameof<DataSpaceConnectorEntry>())
-		);
+		>(options.dataSpaceConnectorStorageType ?? nameofKebabCase<DataSpaceConnectorEntry>());
 
 		this._resolver = ComponentFactory.get<IIdentityResolverComponent>(
 			options.identityResolverComponentType ?? "identity-resolver"

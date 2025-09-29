@@ -54,9 +54,9 @@ The provider Id
 
 ***
 
-### endpoint
+### endpoint?
 
-> **endpoint**: `IEndpoint`
+> `optional` **endpoint**: `IEndpoint`
 
 The REST endpoint
 
