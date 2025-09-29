@@ -1,5 +1,19 @@
 # @twin.org/federated-catalogue-rest-client - Changelog
 
+## [0.0.2-next.4](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-rest-client-v0.0.2-next.3...federated-catalogue-rest-client-v0.0.2-next.4) (2025-09-29)
+
+
+### Features
+
+* update to latest framework components ([aa30543](https://github.com/twinfoundation/federated-catalogue/commit/aa30543cef1309769d359d64fba0a85db490d69b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.0.2-next.3 to 0.0.2-next.4
+
 ## [0.0.2-next.3](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-rest-client-v0.0.2-next.2...federated-catalogue-rest-client-v0.0.2-next.3) (2025-08-29)
 
 

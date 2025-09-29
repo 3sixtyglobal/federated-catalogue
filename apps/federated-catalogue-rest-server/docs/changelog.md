@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.0.2-next.4](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-rest-server-v0.0.2-next.3...federated-catalogue-rest-server-v0.0.2-next.4) (2025-09-29)
+
+
+### Features
+
+* update node ([1429efa](https://github.com/twinfoundation/federated-catalogue/commit/1429efaf46e8b2b46a989847e3768ff5a5a8acc8))
+* update to latest framework components ([aa30543](https://github.com/twinfoundation/federated-catalogue/commit/aa30543cef1309769d359d64fba0a85db490d69b))
+
+
+### Bug Fixes
+
+* identity resolver service name ([#20](https://github.com/twinfoundation/federated-catalogue/issues/20)) ([14f56c7](https://github.com/twinfoundation/federated-catalogue/commit/14f56c7bf15b14ed92545fa287f121a410ef635a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.0.2-next.3 to 0.0.2-next.4
+    * @twin.org/federated-catalogue-service bumped from 0.0.2-next.3 to 0.0.2-next.4
+
 ## [0.0.2-next.3](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-rest-server-v0.0.2-next.2...federated-catalogue-rest-server-v0.0.2-next.3) (2025-08-29)
 
 
