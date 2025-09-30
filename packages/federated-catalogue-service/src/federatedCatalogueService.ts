@@ -10,9 +10,14 @@ import {
 	ObjectHelper,
 	UnprocessableError
 } from "@twin.org/core";
-import type { IJsonLdNodeObject } from "@twin.org/data-json-ld";
+import type { IJsonLdContextDefinitionRoot, IJsonLdNodeObject } from "@twin.org/data-json-ld";
 import { JsonLdProcessor } from "@twin.org/data-json-ld";
-import { ComparisonOperator, type EntityCondition } from "@twin.org/entity";
+import {
+	ComparisonOperator,
+	EntitySchemaFactory,
+	type IEntitySchema,
+	type EntityCondition
+} from "@twin.org/entity";
 import {
 	EntityStorageConnectorFactory,
 	type IEntityStorageConnector
@@ -20,12 +25,14 @@ import {
 import {
 	FederatedCatalogueContextInstances,
 	FederatedCatalogueTypes,
+	type FederatedCatalogueContextType,
 	type FederatedCatalogueEntryType,
 	type ICatalogueEntry,
 	type IComplianceCredential,
 	type IDataResourceCredential,
 	type IDataResourceEntry,
 	type IDataResourceList,
+	type IDataSpaceConnector,
 	type IDataSpaceConnectorCredential,
 	type IDataSpaceConnectorEntry,
 	type IDataSpaceConnectorList,
@@ -40,7 +47,12 @@ import {
 import { VerificationHelper, type IIdentityResolverComponent } from "@twin.org/identity-models";
 import type { ILoggingComponent } from "@twin.org/logging-models";
 import { nameof, nameofKebabCase } from "@twin.org/nameof";
-import { GaiaXTypes, type ILegalPerson } from "@twin.org/standards-gaia-x";
+import {
+	GaiaXTypes,
+	type IDataResource,
+	type ILegalPerson,
+	type IServiceOffering
+} from "@twin.org/standards-gaia-x";
 import { SchemaOrgDataTypes, SchemaOrgTypes } from "@twin.org/standards-schema-org";
 import type { IOdrlPolicy } from "@twin.org/standards-w3c-odrl";
 import type { DataResourceEntry } from "./entities/dataResourceEntry";
@@ -178,12 +190,17 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		if (Is.undefined(targetCredential)) {
 			throw new UnprocessableError(this.CLASS_NAME, "noEvidence");
 		}
-		const participantEntry = this.extractParticipantEntry(complianceCredential, targetCredential);
+		const { participantEntry, extraData } = this.extractParticipantEntry(
+			complianceCredential,
+			targetCredential
+		);
 		const theEntry = ObjectHelper.omit<IParticipantEntry>(
 			participantEntry,
 			FederatedCatalogueService._FIELDS_TO_SKIP
 		);
-		await this._entityStorageParticipants.set(theEntry as IParticipantEntry);
+		const extended = theEntry as ParticipantEntry;
+		extended.extraData = extraData;
+		await this._entityStorageParticipants.set(extended);
 
 		await this._logging?.log({
 			level: "info",
@@ -261,10 +278,15 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			(entry as IParticipantEntry).type = GaiaXTypes.LegalPerson;
 			return entry;
 		});
+		const { finalItemList, extraDataLdContext } = this.normalizeExtraData(itemList);
+
 		const result = {
-			"@context": FederatedCatalogueContextInstances.DEFAULT_LD_CONTEXT_ENTRY_LIST,
+			"@context": JsonLdProcessor.combineContexts(
+				FederatedCatalogueContextInstances.DEFAULT_LD_CONTEXT_ENTRY_LIST,
+				extraDataLdContext
+			) as FederatedCatalogueContextType,
 			type: SchemaOrgTypes.ItemList,
-			itemListElement: itemList,
+			itemListElement: finalItemList,
 			nextItem: entries.cursor
 		};
 
@@ -306,7 +328,10 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		if (Is.arrayValue(itemsAndCursor?.itemListElement)) {
 			const entry = {
 				...itemsAndCursor.itemListElement[0],
-				"@context": FederatedCatalogueContextInstances.DEFAULT_LD_CONTEXT_ENTRY
+				"@context": JsonLdProcessor.combineContexts(
+					FederatedCatalogueContextInstances.DEFAULT_LD_CONTEXT_ENTRY,
+					itemsAndCursor["@context"]
+				)
 			};
 
 			const result = await JsonLdProcessor.compact(entry, entry["@context"]);
@@ -362,7 +387,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 
 		await this.checkParticipantExists(targetCredential.issuer);
 
-		const dataSpaceConnectorEntry = this.extractDataSpaceConnectorEntry(
+		const { dataSpaceConnectorEntry, extraData } = this.extractDataSpaceConnectorEntry(
 			complianceCredential,
 			result.credentials[0] as IDataSpaceConnectorCredential
 		);
@@ -370,20 +395,25 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			dataSpaceConnectorEntry,
 			FederatedCatalogueService._FIELDS_TO_SKIP
 		);
-		await this._entityStorageDataSpaceConnectors.set(theEntry as IDataSpaceConnectorEntry);
+
+		const extended = theEntry as DataSpaceConnectorEntry;
+		extended.extraData = extraData;
+		await this._entityStorageDataSpaceConnectors.set(extended);
 
 		for (const dataResourceCredential of dataResourceCredentials) {
 			await this.checkParticipantExists(dataResourceCredential.issuer);
 
-			const dataResourceEntry = this.extractDataResourceEntry(
+			const { dataResourceEntry, extraData: extraDataResourceData } = this.extractDataResourceEntry(
 				complianceCredential,
 				dataResourceCredential
 			);
-			const drEntry = ObjectHelper.omit<IDataResourceEntry>(
+			const finalDataResourceEntry = ObjectHelper.omit<IDataResourceEntry>(
 				dataResourceEntry,
 				FederatedCatalogueService._FIELDS_TO_SKIP
 			);
-			await this._entityStorageDataResources.set(drEntry as IDataResourceEntry);
+			const extendedDataResourceEntry = finalDataResourceEntry as DataResourceEntry;
+			extendedDataResourceEntry.extraData = extraDataResourceData;
+			await this._entityStorageDataResources.set(extendedDataResourceEntry);
 		}
 
 		await this._logging?.log({
@@ -438,7 +468,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		for (const dataResourceCredential of dataResourceCredentials) {
 			await this.checkParticipantExists(dataResourceCredential.issuer);
 
-			const dataResourceEntry = this.extractDataResourceEntry(
+			const { dataResourceEntry, extraData } = this.extractDataResourceEntry(
 				complianceCredential,
 				dataResourceCredential
 			);
@@ -447,7 +477,9 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 				FederatedCatalogueService._FIELDS_TO_SKIP
 			);
 
-			await this._entityStorageDataResources.set(theEntry as IDataResourceEntry);
+			const extended = theEntry as DataResourceEntry;
+			extended.extraData = extraData;
+			await this._entityStorageDataResources.set(extended);
 
 			dataResourceIds.push(dataResourceEntry.id);
 		}
@@ -519,10 +551,15 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			];
 			return entry;
 		});
+		const { finalItemList, extraDataLdContext } = this.normalizeExtraData(itemList);
+
 		const result = {
-			"@context": FederatedCatalogueContextInstances.DEFAULT_LD_CONTEXT_ENTRY_LIST,
+			"@context": JsonLdProcessor.combineContexts(
+				FederatedCatalogueContextInstances.DEFAULT_LD_CONTEXT_ENTRY_LIST,
+				extraDataLdContext
+			) as FederatedCatalogueContextType,
 			type: SchemaOrgTypes.ItemList,
-			itemListElement: itemList,
+			itemListElement: finalItemList,
 			nextItem: entries.cursor
 		};
 
@@ -574,7 +611,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			const serviceIssuer = serviceOfferingCredential.issuer;
 			await this.checkParticipantExists(serviceIssuer);
 
-			const serviceOfferingEntry = this.extractServiceOfferingEntry(
+			const { serviceOfferingEntry, extraData } = this.extractServiceOfferingEntry(
 				sdComplianceCredential,
 				serviceOfferingCredential
 			);
@@ -582,7 +619,9 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 				serviceOfferingEntry,
 				FederatedCatalogueService._FIELDS_TO_SKIP
 			);
-			await this._entityStorageServiceOfferings.set(theEntry as IServiceOfferingEntry);
+			const extended = theEntry as ServiceOfferingEntry;
+			extended.extraData = extraData;
+			await this._entityStorageServiceOfferings.set(extended);
 
 			serviceOfferingIds.push(serviceOfferingEntry.id);
 		}
@@ -590,11 +629,19 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		for (const dataResourceCredential of dataResourceCredentials) {
 			await this.checkParticipantExists(dataResourceCredential.issuer);
 
-			const dataResourceEntry = this.extractDataResourceEntry(
+			const { dataResourceEntry, extraData } = this.extractDataResourceEntry(
 				sdComplianceCredential,
 				dataResourceCredential
 			);
-			await this._entityStorageDataResources.set(dataResourceEntry);
+
+			const extended = ObjectHelper.omit<IDataResourceEntry>(
+				dataResourceEntry,
+				FederatedCatalogueService._FIELDS_TO_SKIP
+			);
+
+			extended.extraData = extraData;
+
+			await this._entityStorageDataResources.set(extended as DataResourceEntry);
 		}
 
 		await this._logging?.log({
@@ -661,10 +708,15 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			(entry as IServiceOfferingEntry).type = GaiaXTypes.ServiceOffering;
 			return entry;
 		});
+		const { finalItemList, extraDataLdContext } = this.normalizeExtraData(itemList);
+
 		const result = {
-			"@context": FederatedCatalogueContextInstances.DEFAULT_LD_CONTEXT_ENTRY_LIST,
+			"@context": JsonLdProcessor.combineContexts(
+				FederatedCatalogueContextInstances.DEFAULT_LD_CONTEXT_ENTRY_LIST,
+				extraDataLdContext
+			) as FederatedCatalogueContextType,
 			type: SchemaOrgTypes.ItemList,
-			itemListElement: itemList as IServiceOfferingEntry[],
+			itemListElement: finalItemList as IServiceOfferingEntry[],
 			nextItem: entries.cursor
 		};
 
@@ -721,10 +773,15 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			(entry as IDataResourceEntry).type = GaiaXTypes.DataResource;
 			return entry;
 		});
+		const { finalItemList, extraDataLdContext } = this.normalizeExtraData(itemList);
+
 		const result = {
-			"@context": FederatedCatalogueContextInstances.DEFAULT_LD_CONTEXT_ENTRY_LIST,
+			"@context": JsonLdProcessor.combineContexts(
+				FederatedCatalogueContextInstances.DEFAULT_LD_CONTEXT_ENTRY_LIST,
+				extraDataLdContext
+			) as FederatedCatalogueContextType,
 			type: SchemaOrgTypes.ItemList,
-			itemListElement: itemList as IDataResourceEntry[],
+			itemListElement: finalItemList as IDataResourceEntry[],
 			nextItem: entries.cursor
 		};
 
@@ -732,9 +789,35 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	}
 
 	/**
+	 * Normalizes the extra data adding it to each entry.
+	 * @param itemList The item list.
+	 * @returns the final item list plus the additional LD Context
+	 * @internal
+	 */
+	private normalizeExtraData<T>(itemList: T[]): {
+		finalItemList: T[];
+		extraDataLdContext: IJsonLdContextDefinitionRoot | undefined;
+	} {
+		let extraDataLdContext: IJsonLdContextDefinitionRoot | undefined;
+
+		const finalItemList = itemList.map(entry => {
+			const extraData = ObjectHelper.extractProperty<IJsonLdNodeObject>(entry, "extraData", true);
+			if (!Is.undefined(extraData?.["@context"])) {
+				const ldContext = extraData["@context"];
+				extraDataLdContext = JsonLdProcessor.combineContexts(extraDataLdContext, ldContext);
+				return ObjectHelper.merge(entry, extraData);
+			}
+			return entry;
+		});
+
+		return { finalItemList, extraDataLdContext };
+	}
+
+	/**
 	 * Decodes the JWT.
 	 * @param jwt JWT.
 	 * @returns Decoded.
+	 * @internal
 	 */
 	private async decodeJwt(jwt: string): Promise<IComplianceCredential> {
 		const { payload } = await VerificationHelper.verifyJwt(this._resolver, jwt);
@@ -745,6 +828,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * Returns the trusted Issuer id.
 	 * @param complianceCredential The compliance credential.
 	 * @returns The trusted issuer.
+	 * @internal
 	 */
 	private getTrustedIssuerId(complianceCredential: IComplianceCredential): string {
 		const trustedIssuerId = Is.object<{ id: string }>(complianceCredential.issuer)
@@ -759,11 +843,12 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * @param complianceCredential Compliance credential
 	 * @param participantCredential The Participant credential extracted.
 	 * @returns Participant Entry to be saved on the Database.
+	 * @internal
 	 */
 	private extractParticipantEntry(
 		complianceCredential: IComplianceCredential,
 		participantCredential: IParticipantCredential
-	): IParticipantEntry {
+	): { participantEntry: IParticipantEntry; extraData?: IJsonLdNodeObject } {
 		const participantData = participantCredential.credentialSubject;
 
 		Guards.objectValue(this.CLASS_NAME, nameof(participantData), participantData);
@@ -773,8 +858,13 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			evidences.push(evidence.id);
 		}
 
+		const { data, extraData } = this.extractExtraData<ILegalPerson>(
+			participantData,
+			EntitySchemaFactory.get(nameof<ParticipantEntry>())
+		);
+
 		const result: IParticipantEntry = {
-			...participantData,
+			...data,
 			"@context": FederatedCatalogueContextInstances.DEFAULT_LD_CONTEXT_ENTRY,
 			issuer: this.getTrustedIssuerId(complianceCredential),
 			validFrom: complianceCredential.validFrom,
@@ -783,7 +873,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			evidence: evidences
 		};
 
-		return result;
+		return { participantEntry: result, extraData };
 	}
 
 	/**
@@ -791,16 +881,22 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * @param complianceCredential Compliance Credential.
 	 * @param dataSpaceConnectorCredential Evidence Credential.
 	 * @returns Service Description Entry to be saved on the Database.
+	 * @internal
 	 */
 	private extractDataSpaceConnectorEntry(
 		complianceCredential: IComplianceCredential,
 		dataSpaceConnectorCredential: IDataSpaceConnectorCredential
-	): IDataSpaceConnectorEntry {
+	): { dataSpaceConnectorEntry: IDataSpaceConnectorEntry; extraData?: IJsonLdNodeObject } {
 		const credentialData = dataSpaceConnectorCredential.credentialSubject;
 
 		Guards.objectValue(this.CLASS_NAME, nameof(credentialData), credentialData);
 
-		const { offeredResource, ...deStructuredData } = credentialData;
+		const { extraData, data } = this.extractExtraData<IDataSpaceConnector>(
+			credentialData,
+			EntitySchemaFactory.get(nameof<DataSpaceConnectorEntry>())
+		);
+
+		const { offeredResource, ...deStructuredData } = data;
 
 		const result: IDataSpaceConnectorEntry = {
 			...deStructuredData,
@@ -813,7 +909,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			evidence: [dataSpaceConnectorCredential.id]
 		};
 
-		return result;
+		return { dataSpaceConnectorEntry: result, extraData };
 	}
 
 	/**
@@ -821,17 +917,22 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * @param complianceCredential The Compliance Credential.
 	 * @param serviceOfferingCredential Service Offering credential (evidence).
 	 * @returns Service Offering Entry to be saved on the Database.
+	 * @internal
 	 */
 	private extractServiceOfferingEntry(
 		complianceCredential: IComplianceCredential,
 		serviceOfferingCredential: IServiceOfferingCredential
-	): IServiceOfferingEntry {
+	): { serviceOfferingEntry: IServiceOfferingEntry; extraData?: IJsonLdNodeObject } {
 		const credentialData = serviceOfferingCredential.credentialSubject;
 
 		Guards.objectValue(this.CLASS_NAME, nameof(credentialData), credentialData);
 
-		const { providedBy, aggregationOfResources, servicePolicy, ...deStructuredData } =
-			credentialData;
+		const { data, extraData } = this.extractExtraData<IServiceOffering>(
+			credentialData,
+			EntitySchemaFactory.get(nameof<ServiceOfferingEntry>())
+		);
+
+		const { providedBy, aggregationOfResources, servicePolicy, ...deStructuredData } = data;
 
 		const result: IServiceOfferingEntry = {
 			...deStructuredData,
@@ -848,7 +949,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			) as IOdrlPolicy[]
 		};
 
-		return result;
+		return { serviceOfferingEntry: result, extraData };
 	}
 
 	/**
@@ -856,16 +957,22 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * @param complianceCredential The Compliance Credential.
 	 * @param dataResourceCredential Data Resource credential.
 	 * @returns DataResource Entry to be saved on the Database.
+	 * @internal
 	 */
 	private extractDataResourceEntry(
 		complianceCredential: IComplianceCredential,
 		dataResourceCredential: IDataResourceCredential
-	): IDataResourceEntry {
+	): { dataResourceEntry: IDataResourceEntry; extraData?: IJsonLdNodeObject } {
 		const credentialData = dataResourceCredential.credentialSubject;
 		Guards.objectValue(this.CLASS_NAME, nameof(credentialData), credentialData);
 
+		const { data, extraData } = this.extractExtraData<IDataResource>(
+			credentialData,
+			EntitySchemaFactory.get(nameof<DataResourceEntry>())
+		);
+
 		const { producedBy, copyrightOwnedBy, exposedThrough, resourcePolicy, ...deStructuredData } =
-			credentialData;
+			data;
 
 		let producedByValue = producedBy;
 		if (Is.object<ILegalPerson>(producedByValue)) {
@@ -893,12 +1000,13 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			) as IOdrlPolicy[]
 		};
 
-		return result;
+		return { dataResourceEntry: result, extraData };
 	}
 
 	/**
 	 * Checks whether the Participant exists.
 	 * @param participantId The Participant identifier
+	 * @internal
 	 */
 	private async checkParticipantExists(participantId: string): Promise<void> {
 		const participantData = await this._entityStorageParticipants.get(participantId);
@@ -915,5 +1023,36 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 				providedBy: participantId
 			});
 		}
+	}
+
+	/**
+	 * Extracts extra data from an object.
+	 * @param originalData The original data to extract from
+	 * @param schema The entity storage that is used to store
+	 * @returns The extraData and the data.
+	 * @internal
+	 */
+	private extractExtraData<T>(
+		originalData: IJsonLdNodeObject,
+		schema: IEntitySchema
+	): { data: T; extraData?: IJsonLdNodeObject } {
+		const entityProperties = schema.properties ?? [];
+
+		// Type and @context is also an extra known property
+		const knownProperties = (
+			entityProperties.map(property => property.property) as string[]
+		).concat(["type", "@context"]);
+
+		const splitObjects = ObjectHelper.split<IJsonLdNodeObject>(originalData, knownProperties);
+
+		return {
+			data: splitObjects.picked as T,
+			extraData: Is.objectValue(splitObjects.omitted)
+				? {
+						"@context": originalData["@context"],
+						...splitObjects.omitted
+					}
+				: undefined
+		};
 	}
 }

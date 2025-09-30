@@ -1,5 +1,6 @@
 // Copyright 2024 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
+import type { IJsonLdNodeObject } from "@twin.org/data-json-ld";
 import { entity, property, SortDirection } from "@twin.org/entity";
 import type { IOdrlPolicy } from "@twin.org/standards-w3c-odrl";
 
@@ -86,4 +87,10 @@ export class DataResourceEntry {
 	 */
 	@property({ type: "array" })
 	public evidence!: string[];
+
+	/**
+	 * Extended data of a Data Resource entry.
+	 */
+	@property({ type: "object", optional: true })
+	public extraData?: IJsonLdNodeObject;
 }

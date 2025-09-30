@@ -54,13 +54,18 @@ export async function start(
 	}
 
 	// Build the engine configuration from the environment variables.
-	const engineConfig = buildEngineConfiguration(envVars);
+	const engineConfig = await buildEngineConfiguration(envVars);
 	// Extend the engine configuration with a custom type.
 	// Build the server configuration from the environment variables.
 	extendEngineConfig(engineConfig);
 
 	const specFile = path.resolve(path.join(rootPackageFolder, "docs", "open-api", "spec.json"));
-	const serverConfig = buildEngineServerConfiguration(envVars, engineConfig, serverInfo, specFile);
+	const serverConfig = await buildEngineServerConfiguration(
+		envVars,
+		engineConfig,
+		serverInfo,
+		specFile
+	);
 
 	// Create the engine instance using file state storage
 	const engine = new Engine<IEngineServerConfig>({

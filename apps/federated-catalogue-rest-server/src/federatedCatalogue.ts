@@ -13,7 +13,7 @@ import { nameofKebabCase } from "@twin.org/nameof";
 
 /**
  * Federated Catalogue initialiser.
- * @param core The engine core.
+ * @param engineCore The engine core.
  * @param context The context for the engine.
  * @param instanceConfig The instance config.
  * @param instanceConfig.options The instance config options.
@@ -21,7 +21,7 @@ import { nameofKebabCase } from "@twin.org/nameof";
  * @returns The name of the instance created.
  */
 export async function federatedCatalogueTypeInitialiser(
-	core: IEngineCore,
+	engineCore: IEngineCore,
 	context: IEngineCoreContext,
 	instanceConfig: { options: IFederatedCatalogueServiceConstructorOptions },
 	overrideInstanceType: string
@@ -32,7 +32,10 @@ export async function federatedCatalogueTypeInitialiser(
 		() =>
 			new FederatedCatalogueService({
 				...instanceConfig.options,
-				identityResolverComponentType: core.getRegisteredInstanceType("identityResolverComponent")
+				loggingComponentType: engineCore.getRegisteredInstanceType("loggingComponent"),
+				identityResolverComponentType: engineCore.getRegisteredInstanceType(
+					"identityResolverComponent"
+				)
 			})
 	);
 	return overrideInstanceType ?? componentName;

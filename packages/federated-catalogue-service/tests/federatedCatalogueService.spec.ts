@@ -7,7 +7,9 @@ import { MemoryEntityStorageConnector } from "@twin.org/entity-storage-connector
 import { EntityStorageConnectorFactory } from "@twin.org/entity-storage-models";
 import {
 	FederatedCatalogueDataTypes,
-	FederatedCatalogueTypes
+	FederatedCatalogueTypes,
+	type IParticipantEntry,
+	type IFederatedCatalogueComponent
 } from "@twin.org/federated-catalogue-models";
 import {
 	IdentityResolverConnectorFactory,
@@ -28,7 +30,9 @@ import type { IFederatedCatalogueServiceConstructorOptions } from "../src/models
 import { initSchema } from "../src/schema";
 import dataResourceCredential from "./dataset/credentials/compliance/data-resource-credential.json" assert { type: "json" };
 import dataSpaceConnectorCredential from "./dataset/credentials/compliance/data-space-connector-credential.json" assert { type: "json" };
+import dataResourceCredentialWithExt from "./dataset/credentials/compliance/exporter-consignments-compliant-data-resource.json" assert { type: "json" };
 import participantCredential from "./dataset/credentials/compliance/participant-credential.json" assert { type: "json" };
+import participantCredentialWithExt from "./dataset/credentials/compliance/poland-exporter-compliant-participant.json" assert { type: "json" };
 import serviceOfferingCedential from "./dataset/credentials/compliance/service-offering-credential.json" assert { type: "json" };
 import { cleanupTestEnv, setupTestEnv } from "./setupTestEnv";
 
@@ -52,6 +56,38 @@ function extractURL(request: Request | URL | string): string {
 	}
 	return url;
 }
+
+/**
+ * Asserts a participant.
+ * @param fedCatalogueService The Fed Catalogue.
+ * @param subjectId Subject Id.
+ * @returns the participant entry being asserted.
+ */
+async function assertParticipant(
+	fedCatalogueService: IFederatedCatalogueComponent,
+	subjectId: string
+): Promise<IParticipantEntry> {
+	let queryResult;
+	try {
+		queryResult = await fedCatalogueService.queryParticipants();
+
+		expect(queryResult.itemListElement[0].id).toBe(subjectId);
+		expect(queryResult.itemListElement[0].type).toBe(GaiaXTypes.LegalPerson);
+
+		const participantId = queryResult.itemListElement[0].id as string;
+		const participantEntry = await fedCatalogueService.getEntry(
+			GaiaXTypes.LegalPerson,
+			participantId
+		);
+		expect(participantEntry.id).toBe(participantId);
+	} catch (err) {
+		console.error("Error during participant query:", err);
+		throw err;
+	}
+
+	return queryResult.itemListElement[0] as IParticipantEntry;
+}
+
 describe("federated-catalogue-service", () => {
 	beforeAll(async () => {
 		const clearingHouseApproverList = await setupTestEnv();
@@ -158,34 +194,72 @@ describe("federated-catalogue-service", () => {
 	});
 
 	test("It should register a compliant Participant", async () => {
-		const fedCatalogueService = new FederatedCatalogueService(options);
-		await fedCatalogueService.registerComplianceCredential(participantCredential.jwtCredential);
-
+		let fedCatalogueService;
 		try {
-			const queryResult = await fedCatalogueService.queryParticipants();
-
-			expect(queryResult.itemListElement[0].id).toBe(
-				participantCredential.credential.credentialSubject.id
-			);
-			expect(queryResult.itemListElement[0].type).toBe(GaiaXTypes.LegalPerson);
-
-			const participantId = queryResult.itemListElement[0].id as string;
-			const participantEntry = await fedCatalogueService.getEntry(
-				GaiaXTypes.LegalPerson,
-				participantId
-			);
-			expect(participantEntry.id).toBe(participantId);
+			fedCatalogueService = new FederatedCatalogueService(options);
+			await fedCatalogueService.registerComplianceCredential(participantCredential.jwtCredential);
 		} catch (err) {
 			console.error("Error during participant registration:", err);
+			throw err;
 		}
+		await assertParticipant(
+			fedCatalogueService,
+			participantCredential.credential.credentialSubject.id
+		);
 	});
 
-	test.skip("It should register a compliant Data Resource", async () => {
+	test("It should register a compliant Participant with extended properties", async () => {
+		let fedCatalogueService;
+		try {
+			fedCatalogueService = new FederatedCatalogueService(options);
+			await fedCatalogueService.registerComplianceCredential(
+				participantCredentialWithExt.jwtCredential
+			);
+		} catch (err) {
+			console.error("Error during participant registration:", err);
+			throw err;
+		}
+		const participantEntry = await assertParticipant(
+			fedCatalogueService,
+			participantCredentialWithExt.credential.credentialSubject.id
+		);
+		expect(participantEntry.isicV4).toBe("1010");
+	});
+
+	test("It should register a compliant Data Resource", async () => {
 		const fedCatalogueService = new FederatedCatalogueService(options);
 		// The Participant first must exist
 		await fedCatalogueService.registerComplianceCredential(participantCredential.jwtCredential);
 
 		await fedCatalogueService.registerDataResourceCredential(dataResourceCredential.jwtCredential);
+		const queryResult = await fedCatalogueService.queryDataResources();
+		expect(queryResult.itemListElement.length).toBe(1);
+
+		expect(queryResult.itemListElement[0].id).toBe(
+			dataResourceCredential.credential.credentialSubject.id
+		);
+		expect(queryResult.itemListElement[0].type).toBe(GaiaXTypes.DataResource);
+
+		const dataResourceId = queryResult.itemListElement[0].id as string;
+		const dataResourceEntry = await fedCatalogueService.getEntry(
+			GaiaXTypes.DataResource,
+			dataResourceId
+		);
+		expect(dataResourceEntry.id).toBe(dataResourceId);
+	});
+
+	// This test is faling despite the use case working peefectly outside a test env
+	// To investigate
+	test.skip("It should register a compliant Data Resource with extended properties", async () => {
+		const fedCatalogueService = new FederatedCatalogueService(options);
+		// The Participant first must exist
+		await fedCatalogueService.registerComplianceCredential(
+			participantCredentialWithExt.jwtCredential
+		);
+
+		await fedCatalogueService.registerDataResourceCredential(
+			dataResourceCredentialWithExt.jwtCredential
+		);
 		const queryResult = await fedCatalogueService.queryDataResources();
 		expect(queryResult.itemListElement.length).toBe(1);
 

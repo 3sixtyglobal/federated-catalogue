@@ -25,6 +25,7 @@ try {
 	});
 
 	const envVars = EnvHelper.envToJson<IFederatedCatalogVariables>(
+		// eslint-disable-next-line no-restricted-syntax
 		process.env,
 		"FEDERATED_CATALOGUE"
 	);

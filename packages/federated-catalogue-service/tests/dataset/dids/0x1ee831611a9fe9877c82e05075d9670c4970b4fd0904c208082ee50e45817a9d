@@ -1,0 +1,24 @@
+{
+    "id": "did:iota:testnet:0x1ee831611a9fe9877c82e05075d9670c4970b4fd0904c208082ee50e45817a9d",
+    "verificationMethod": [
+        {
+            "id": "did:iota:testnet:0x1ee831611a9fe9877c82e05075d9670c4970b4fd0904c208082ee50e45817a9d#bcQWcv9Jw-tXoQSspSsPx_Hpl-oDQuTqmhq5QwfwXPs",
+            "controller": "did:iota:testnet:0x1ee831611a9fe9877c82e05075d9670c4970b4fd0904c208082ee50e45817a9d",
+            "type": "JsonWebKey2020",
+            "publicKeyJwk": {
+                "kty": "OKP",
+                "use": "sig",
+                "alg": "EdDSA",
+                "crv": "Ed25519",
+                "x": "ds0HlRwM4fbmzBHl-KEmzeZKELuIFkimG4Vn1u7zjuE"
+            }
+        }
+    ],
+    "service": [
+        {
+            "id": "did:iota:testnet:0x1ee831611a9fe9877c82e05075d9670c4970b4fd0904c208082ee50e45817a9d#revocation",
+            "type": "RevocationBitmap2022",
+            "serviceEndpoint": "data:application/octet-stream;base64,eJyzMmAAAwADKABr"
+        }
+    ]
+}

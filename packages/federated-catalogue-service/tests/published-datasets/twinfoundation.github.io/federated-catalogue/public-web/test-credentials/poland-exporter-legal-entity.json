@@ -1,0 +1,42 @@
+{
+	"@context": [
+		"https://www.w3.org/ns/credentials/v2",
+		"https://w3id.org/security/suites/jws-2020/v1"
+	],
+	"id": "https://twinfoundation.github.io/federated-catalogue/public-web/test-credentials/poland-exporter-legal-entity.json",
+	"type": ["VerifiableCredential"],
+	"issuer": "did:iota:testnet:0xb0d60698c3ad801241881650176245556f90ca0c9ed7584ca250f312e9ec95c8",
+	"validFrom": "2025-09-29T08:17:03Z",
+	"validUntil": "2028-01-10T16:17:03Z",
+	"credentialSubject": {
+		"@context": [
+			"https://w3id.org/gaia-x/development",
+			{
+				"isicV4": "http://schema.org/isicV4"
+			}
+		],
+		"id": "did:iota:testnet:0x1ee831611a9fe9877c82e05075d9670c4970b4fd0904c208082ee50e45817a9d",
+		"isicV4": "1010",
+		"legalAddress": {
+			"countryCode": "PL",
+			"type": "Address"
+		},
+		"legalName": "Kurczak Food",
+		"registrationNumber": {
+			"eori": "PL527288386100000",
+			"type": "EORI"
+		},
+		"type": "LegalPerson"
+	},
+	"proof": {
+		"type": "JsonWebSignature2020",
+		"verificationMethod": "did:iota:testnet:0xb0d60698c3ad801241881650176245556f90ca0c9ed7584ca250f312e9ec95c8#4LQ8esc5syDl5oLckS8_QJ8vZ99DEsm-uBxXN4OehXU",
+		"proofPurpose": "assertionMethod",
+		"created": "2025-03-11T15:48:28.943+01:00",
+		"@context": [
+			"https://www.w3.org/ns/credentials/v2",
+			"https://w3id.org/security/suites/jws-2020/v1"
+		],
+		"jws": "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..HAOQIPOOXiSPSgGCpNSiHkgXVSjnsmTGekS8sRL0ILya7fyZSHSoFtDjvdTxCxbjByTIzSBtiapcEi1Qg3DlCg"
+	}
+}
