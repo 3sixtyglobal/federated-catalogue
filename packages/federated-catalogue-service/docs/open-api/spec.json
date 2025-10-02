@@ -546,7 +546,7 @@
 										"value": {
 											"@context": [
 												"https://schema.org",
-												"https://w3id.org/gaia-x/development",
+												"https://schema.twindev.org/gaia-x-loire/",
 												"https://schema.twindev.org/federated-catalogue/"
 											],
 											"type": "ItemList",
@@ -554,7 +554,7 @@
 												{
 													"@context": [
 														"https://schema.org",
-														"https://w3id.org/gaia-x/development",
+														"https://schema.twindev.org/gaia-x-loire/",
 														"https://schema.twindev.org/federated-catalogue/"
 													],
 													"id": "did:iota:xxx",
@@ -690,7 +690,7 @@
 										"value": {
 											"@context": [
 												"https://schema.org",
-												"https://w3id.org/gaia-x/development",
+												"https://schema.twindev.org/gaia-x-loire/",
 												"https://schema.twindev.org/federated-catalogue/"
 											],
 											"id": "did:iota:xxx",
@@ -853,7 +853,7 @@
 										"value": {
 											"@context": [
 												"https://schema.org",
-												"https://w3id.org/gaia-x/development",
+												"https://schema.twindev.org/gaia-x-loire/",
 												"https://schema.twindev.org/federated-catalogue/"
 											],
 											"type": "ItemList",
@@ -861,7 +861,7 @@
 												{
 													"@context": [
 														"https://schema.org",
-														"https://w3id.org/gaia-x/development",
+														"https://schema.twindev.org/gaia-x-loire/",
 														"https://schema.twindev.org/federated-catalogue/"
 													],
 													"id": "http://example.org/is123456",
@@ -1016,7 +1016,7 @@
 										"value": {
 											"@context": [
 												"https://schema.org",
-												"https://w3id.org/gaia-x/development",
+												"https://schema.twindev.org/gaia-x-loire/",
 												"https://schema.twindev.org/federated-catalogue/"
 											],
 											"id": "http://example.org/is123456",
@@ -1207,7 +1207,7 @@
 										"value": {
 											"@context": [
 												"https://schema.org",
-												"https://w3id.org/gaia-x/development",
+												"https://schema.twindev.org/gaia-x-loire/",
 												"https://schema.twindev.org/federated-catalogue/"
 											],
 											"type": "ItemList",
@@ -1215,7 +1215,7 @@
 												{
 													"@context": [
 														"https://schema.org",
-														"https://w3id.org/gaia-x/development",
+														"https://schema.twindev.org/gaia-x-loire/",
 														"https://schema.twindev.org/federated-catalogue/"
 													],
 													"id": "http://example.org/is123456",
@@ -1354,7 +1354,7 @@
 										"value": {
 											"@context": [
 												"https://schema.org",
-												"https://w3id.org/gaia-x/development",
+												"https://schema.twindev.org/gaia-x-loire/",
 												"https://schema.twindev.org/federated-catalogue/"
 											],
 											"id": "http://example.org/is123456",
@@ -1529,7 +1529,7 @@
 										"value": {
 											"@context": [
 												"https://schema.org",
-												"https://w3id.org/gaia-x/development",
+												"https://schema.twindev.org/gaia-x-loire/",
 												"https://schema.twindev.org/federated-catalogue/"
 											],
 											"type": "ItemList",
@@ -1537,7 +1537,7 @@
 												{
 													"@context": [
 														"https://schema.org",
-														"https://w3id.org/gaia-x/development",
+														"https://schema.twindev.org/gaia-x-loire/",
 														"https://schema.twindev.org/federated-catalogue/"
 													],
 													"id": "https://my-ds-connectors.example.org/ds-connector-ABCD",
@@ -1679,7 +1679,7 @@
 										"value": {
 											"@context": [
 												"https://schema.org",
-												"https://w3id.org/gaia-x/development",
+												"https://schema.twindev.org/gaia-x-loire/",
 												"https://schema.twindev.org/federated-catalogue/"
 											],
 											"id": "https://my-ds-connectors.example.org/ds-connector-ABCD",
@@ -2311,7 +2311,7 @@
 					},
 					{
 						"type": "string",
-						"const": "https://w3id.org/gaia-x/development"
+						"const": "https://schema.twindev.org/gaia-x-loire/"
 					},
 					{
 						"type": "string",

@@ -1,46 +1,12 @@
 // Copyright 2024 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-/* eslint-disable no-console */
 import path from "node:path";
-import type { IServerInfo } from "@twin.org/api-models";
-import { BaseError, EnvHelper, Is } from "@twin.org/core";
-import * as dotenv from "dotenv";
-import type { IFederatedCatalogVariables } from "./models/IFederatedCatalogVariables.js";
-import { start } from "./server.js";
-import { findRootPackageFolder, initialiseLocales } from "./utils.js";
+import { run } from "@twin.org/node-core";
 
-try {
-	const serverInfo: IServerInfo = {
-		name: "Federated Catalogue Server",
-		version: "0.0.2-next.4-next.11" // x-release-please-version
-	};
-
-	console.log(`\u001B[4m🌩️  ${serverInfo.name} v${serverInfo.version}\u001B[24m\n`);
-
-	const rootPackageFolder = findRootPackageFolder();
-	await initialiseLocales(rootPackageFolder);
-
-	dotenv.config({
-		path: [path.join(rootPackageFolder, ".env"), path.join(rootPackageFolder, ".env.local")]
-	});
-
-	const envVars = EnvHelper.envToJson<IFederatedCatalogVariables>(
-		// eslint-disable-next-line no-restricted-syntax
-		process.env,
-		"FEDERATED_CATALOGUE"
-	);
-
-	const startResult = await start(serverInfo, envVars, rootPackageFolder);
-
-	if (!Is.empty(startResult)) {
-		for (const signal of ["SIGHUP", "SIGINT", "SIGTERM"]) {
-			process.on(signal, async () => {
-				await startResult.server.stop();
-			});
-		}
-	}
-} catch (err) {
-	console.error(BaseError.fromError(err));
-	// eslint-disable-next-line unicorn/no-process-exit
-	process.exit(1);
-}
+await run({
+	serverName: "Federated Catalogue Server",
+	serverVersion: "0.0.2-next.4-next.11", // x-release-please-version
+	envPrefix: "FEDERATED_CATALOGUE_",
+	localesDirectory: path.resolve("dist/locales"),
+	openApiSpecFile: path.resolve("docs/open-api/spec.json")
+});
