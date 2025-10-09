@@ -30,13 +30,9 @@ The options for the connector.
 
 ### CLASS\_NAME
 
-> `readonly` **CLASS\_NAME**: `string`
+> `readonly` `static` **CLASS\_NAME**: `string`
 
 Runtime name for the class.
-
-#### Implementation of
-
-`IFederatedCatalogueComponent.CLASS_NAME`
 
 ## Methods
 
@@ -68,7 +64,7 @@ The Id of the Participant (DID usually).
 
 ### queryParticipants()
 
-> **queryParticipants**(`id?`, `legalRegistrationNumber?`, `lrnType?`, `cursor?`, `pageSize?`): `Promise`\<`IParticipantList`\>
+> **queryParticipants**(`id?`, `legalRegistrationNumber?`, `lrnType?`, `cursor?`, `limit?`): `Promise`\<`IParticipantList`\>
 
 Query the federated catalogue.
 
@@ -96,13 +92,13 @@ The legal registration number type (EORI, VATID, GLEIF, KENYA_PIN, etc.)
 
 `string`
 
-The cursor to request the next page of entities.
+The cursor to request the next chunk of entities.
 
-##### pageSize?
+##### limit?
 
 `number`
 
-The maximum number of entities in a page.
+Limit the number of entities to return.
 
 #### Returns
 
@@ -211,7 +207,7 @@ The list of Data Resources created.
 
 ### queryDataSpaceConnectors()
 
-> **queryDataSpaceConnectors**(`id?`, `maintainer?`, `cursor?`, `pageSize?`): `Promise`\<`IDataSpaceConnectorList`\>
+> **queryDataSpaceConnectors**(`id?`, `maintainer?`, `cursor?`, `limit?`): `Promise`\<`IDataSpaceConnectorList`\>
 
 Query the federated catalogue.
 
@@ -233,13 +229,13 @@ The DS Connector maintainer.
 
 `string`
 
-The cursor to request the next page of entities.
+The cursor to request the next chunk of entities.
 
-##### pageSize?
+##### limit?
 
 `number`
 
-The maximum number of entities in a page.
+Limit the number of entities to return.
 
 #### Returns
 
@@ -286,7 +282,7 @@ Nothing.
 
 ### queryServiceOfferings()
 
-> **queryServiceOfferings**(`id?`, `providedBy?`, `cursor?`, `pageSize?`): `Promise`\<`IServiceOfferingList`\>
+> **queryServiceOfferings**(`id?`, `providedBy?`, `cursor?`, `limit?`): `Promise`\<`IServiceOfferingList`\>
 
 Query the federated catalogue.
 
@@ -308,13 +304,13 @@ The identity of the participant.
 
 `string`
 
-The cursor to request the next page of entities.
+The cursor to request the next chunk of entities.
 
-##### pageSize?
+##### limit?
 
 `number`
 
-The maximum number of entities in a page.
+Limit the number of entities to return.
 
 #### Returns
 
@@ -335,7 +331,7 @@ NotImplementedError if the implementation does not support retrieval.
 
 ### queryDataResources()
 
-> **queryDataResources**(`id?`, `producedBy?`, `cursor?`, `pageSize?`): `Promise`\<`IDataResourceList`\>
+> **queryDataResources**(`id?`, `producedBy?`, `cursor?`, `limit?`): `Promise`\<`IDataResourceList`\>
 
 Query the federated catalogue.
 
@@ -357,13 +353,13 @@ The identity of the participant.
 
 `string`
 
-The cursor to request the next page of entities.
+The cursor to request the next chunk of entities.
 
-##### pageSize?
+##### limit?
 
 `number`
 
-The maximum number of entities in a page.
+Limit the number of entities to return.
 
 #### Returns
 

@@ -732,7 +732,7 @@ export async function participantList(
 		request?.query?.registrationNumber,
 		request?.query?.lrnType,
 		request?.query?.cursor,
-		Coerce.integer(request?.query?.pageSize)
+		Coerce.integer(request?.query?.limit)
 	);
 	return {
 		body: itemsAndCursor
@@ -812,7 +812,7 @@ export async function serviceOfferingList(
 		request?.query?.id,
 		request?.query?.providedBy,
 		request?.query?.cursor,
-		Coerce.integer(request?.query?.pageSize)
+		Coerce.integer(request?.query?.limit)
 	);
 	return {
 		body: itemsAndCursor
@@ -892,7 +892,7 @@ export async function dataResourceList(
 		request?.query?.id,
 		request?.query?.producedBy,
 		request?.query?.cursor,
-		Coerce.integer(request?.query?.pageSize)
+		Coerce.integer(request?.query?.limit)
 	);
 	return {
 		body: itemsAndCursor
@@ -969,7 +969,7 @@ export async function dataSpaceConnectorList(
 		request?.query?.id,
 		request?.query?.maintainedBy,
 		request?.query?.cursor,
-		Coerce.integer(request?.query?.pageSize)
+		Coerce.integer(request?.query?.limit)
 	);
 	return {
 		body: itemsAndCursor

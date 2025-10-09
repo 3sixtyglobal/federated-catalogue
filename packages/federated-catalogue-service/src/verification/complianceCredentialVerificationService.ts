@@ -31,9 +31,9 @@ import { FetchHelper } from "@twin.org/web";
  */
 export class ComplianceCredentialVerificationService {
 	/**
-	 * Class name
+	 * Runtime name for the class.
 	 */
-	public CLASS_NAME: string = nameof<ComplianceCredentialVerificationService>();
+	public static readonly CLASS_NAME: string = nameof<ComplianceCredentialVerificationService>();
 
 	/**
 	 * Resolver component.
@@ -190,11 +190,15 @@ export class ComplianceCredentialVerificationService {
 		evidence: IComplianceEvidence
 	): Promise<IVerificationResult & { credential?: IDidVerifiableCredential }> {
 		// The credential associated to the evidence has to be retrieved, then verified
-		Guards.object<IComplianceEvidence>(this.CLASS_NAME, nameof<IComplianceEvidence>(), evidence);
+		Guards.object<IComplianceEvidence>(
+			ComplianceCredentialVerificationService.CLASS_NAME,
+			nameof<IComplianceEvidence>(),
+			evidence
+		);
 
 		const credentialUrl = evidence.id;
 		this._logger?.log({
-			source: this.CLASS_NAME,
+			source: ComplianceCredentialVerificationService.CLASS_NAME,
 			level: "info",
 			message: "verifyingEvidenceCredential",
 			ts: Date.now(),
@@ -204,7 +208,7 @@ export class ComplianceCredentialVerificationService {
 		});
 
 		const credentialResponse = await FetchHelper.fetch(
-			this.CLASS_NAME,
+			ComplianceCredentialVerificationService.CLASS_NAME,
 			credentialUrl,
 			"GET",
 			undefined,
@@ -212,7 +216,7 @@ export class ComplianceCredentialVerificationService {
 		);
 		if (!credentialResponse.ok) {
 			this._logger?.log({
-				source: this.CLASS_NAME,
+				source: ComplianceCredentialVerificationService.CLASS_NAME,
 				level: "error",
 				message: "credentialCannotBeRetrieved",
 				ts: Date.now(),
@@ -243,7 +247,11 @@ export class ComplianceCredentialVerificationService {
 		} else if (hashingAlg === "sha512") {
 			hashToCheck = Converter.bytesToBase64(Sha512.sum512(Converter.utf8ToBytes(canonicalized)));
 		} else {
-			throw new UnprocessableError(this.CLASS_NAME, "unknownHashingAlgorithm", { hashingAlg });
+			throw new UnprocessableError(
+				ComplianceCredentialVerificationService.CLASS_NAME,
+				"unknownHashingAlgorithm",
+				{ hashingAlg }
+			);
 		}
 		if (hashToCheck !== hash) {
 			return {
@@ -254,7 +262,11 @@ export class ComplianceCredentialVerificationService {
 
 		const { id } = DocumentHelper.parseId(proof.verificationMethod);
 		const documentId = theCredential.issuer ?? id;
-		Guards.stringValue(this.CLASS_NAME, nameof(documentId), documentId);
+		Guards.stringValue(
+			ComplianceCredentialVerificationService.CLASS_NAME,
+			nameof(documentId),
+			documentId
+		);
 
 		let verified: boolean = false;
 		try {
@@ -264,7 +276,7 @@ export class ComplianceCredentialVerificationService {
 			verified = await ProofHelper.verifyProof(theCredential, proof, jwk);
 		} catch (error) {
 			this._logger?.log({
-				source: this.CLASS_NAME,
+				source: ComplianceCredentialVerificationService.CLASS_NAME,
 				level: "error",
 				message: "credentialVerificationError",
 				ts: Date.now(),
@@ -280,7 +292,7 @@ export class ComplianceCredentialVerificationService {
 		}
 
 		this._logger?.log({
-			source: this.CLASS_NAME,
+			source: ComplianceCredentialVerificationService.CLASS_NAME,
 			level: "info",
 			message: "credentialEvidenceVerified",
 			ts: Date.now(),

@@ -24,8 +24,8 @@ export interface IFederatedCatalogueComponent extends IComponent {
 	 * @param participant The identity of the participant.
 	 * @param legalRegistrationNumber The legal registration number.
 	 * @param lrnType The legal registration number type (EORI, VATID, GLEIF, Kenya's PIN, etc.)
-	 * @param cursor The cursor to request the next page of entities.
-	 * @param pageSize The maximum number of entities in a page.
+	 * @param cursor The cursor to request the next chunk of entities.
+	 * @param limit Limit the number of entities to return.
 	 * @returns All the entities for the storage matching the conditions,
 	 * and a cursor which can be used to request more entities.
 	 * @throws NotImplementedError if the implementation does not support retrieval.
@@ -35,7 +35,7 @@ export interface IFederatedCatalogueComponent extends IComponent {
 		legalRegistrationNumber?: string,
 		lrnType?: string,
 		cursor?: string,
-		pageSize?: number
+		limit?: number
 	): Promise<IParticipantList>;
 
 	/**
@@ -49,8 +49,8 @@ export interface IFederatedCatalogueComponent extends IComponent {
 	 * Query the federated catalogue.
 	 * @param id Data Space Connector Id.
 	 * @param maintainer The identity of the participant maintaining the Data Space Connector.
-	 * @param cursor The cursor to request the next page of entities.
-	 * @param pageSize The maximum number of entities in a page.
+	 * @param cursor The cursor to request the next chunk of entities.
+	 * @param limit Limit the number of entities to return.
 	 * @returns All the entities for the storage matching the conditions,
 	 * and a cursor which can be used to request more entities.
 	 * @throws NotImplementedError if the implementation does not support retrieval.
@@ -59,7 +59,7 @@ export interface IFederatedCatalogueComponent extends IComponent {
 		id?: string,
 		maintainer?: string,
 		cursor?: string,
-		pageSize?: number
+		limit?: number
 	): Promise<IDataSpaceConnectorList>;
 
 	/**
@@ -80,8 +80,8 @@ export interface IFederatedCatalogueComponent extends IComponent {
 	 * Query the federated catalogue.
 	 * @param id Service Offering id.
 	 * @param providedBy The identity of the participant providing the Offering.
-	 * @param cursor The cursor to request the next page of entities.
-	 * @param pageSize The maximum number of entities in a page.
+	 * @param cursor The cursor to request the next chunk of entities.
+	 * @param limit Limit the number of entities to return.
 	 * @returns All the entities for the storage matching the conditions,
 	 * and a cursor which can be used to request more entities.
 	 * @throws NotImplementedError if the implementation does not support retrieval.
@@ -90,15 +90,15 @@ export interface IFederatedCatalogueComponent extends IComponent {
 		id?: string,
 		providedBy?: string,
 		cursor?: string,
-		pageSize?: number
+		limit?: number
 	): Promise<IServiceOfferingList>;
 
 	/**
 	 * Query the federated catalogue.
 	 * @param id The id of the Data Resource.
 	 * @param producedBy The identity of the participant producing the data behind the data resource.
-	 * @param cursor The cursor to request the next page of entities.
-	 * @param pageSize The maximum number of entities in a page.
+	 * @param cursor The cursor to request the next chunk of entities.
+	 * @param limit Limit the number of entities to return.
 	 * @returns All the entities for the storage matching the conditions,
 	 * and a cursor which can be used to request more entities.
 	 * @throws NotImplementedError if the implementation does not support retrieval.
@@ -107,7 +107,7 @@ export interface IFederatedCatalogueComponent extends IComponent {
 		id?: string,
 		producedBy?: string,
 		cursor?: string,
-		pageSize?: number
+		limit?: number
 	): Promise<IDataResourceList>;
 
 	/**

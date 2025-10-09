@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0.
 import { BaseRestClient } from "@twin.org/api-core";
 import type { IBaseRestClientConfig, ICreatedResponse, IHttpRequest } from "@twin.org/api-models";
-import { GeneralError, Guards, Is } from "@twin.org/core";
+import { Coerce, GeneralError, Guards, Is } from "@twin.org/core";
 import {
 	FederatedCatalogueTypes,
 	type FederatedCatalogueEntryType,
@@ -37,21 +37,21 @@ import { HeaderTypes, MimeTypes } from "@twin.org/web";
 /**
  * Client for performing auditable item graph through to REST endpoints.
  */
-export class FederatedCatalogueClient
+export class FederatedCatalogueRestClient
 	extends BaseRestClient
 	implements IFederatedCatalogueComponent
 {
 	/**
 	 * Runtime name for the class.
 	 */
-	public readonly CLASS_NAME: string = nameof<FederatedCatalogueClient>();
+	public static readonly CLASS_NAME: string = nameof<FederatedCatalogueRestClient>();
 
 	/**
-	 * Create a new instance of AuditableItemGraphClient.
+	 * Create a new instance of FederatedCatalogueRestClient.
 	 * @param config The configuration for the client.
 	 */
 	constructor(config: IBaseRestClientConfig) {
-		super(nameof<FederatedCatalogueClient>(), config, "federated-catalogue");
+		super(nameof<FederatedCatalogueRestClient>(), config, "federated-catalogue");
 	}
 
 	/**
@@ -60,7 +60,7 @@ export class FederatedCatalogueClient
 	 * @returns The participant Id (usually a DID).
 	 */
 	public async registerComplianceCredential(credential: string): Promise<string> {
-		Guards.stringValue(this.CLASS_NAME, nameof(credential), credential);
+		Guards.stringValue(FederatedCatalogueRestClient.CLASS_NAME, nameof(credential), credential);
 
 		const response = await this.fetch<IHttpRequest<string>, ICreatedResponse>(
 			"/participant-credentials",
@@ -78,8 +78,8 @@ export class FederatedCatalogueClient
 	 * @param participant The identity of the participant.
 	 * @param legalRegistrationNumber The legal registration number.
 	 * @param lrnType The legal registration number type (EORI, VATID, GLEIF, Kenya's PIN, etc.)
-	 * @param cursor The cursor to request the next page of entities.
-	 * @param pageSize The maximum number of entities in a page.
+	 * @param cursor The cursor to request the next chunk of entities.
+	 * @param limit Limit the number of entities to return.
 	 * @returns All the entities for the storage matching the conditions,
 	 * and a cursor which can be used to request more entities.
 	 * @throws NotImplementedError if the implementation does not support retrieval.
@@ -89,7 +89,7 @@ export class FederatedCatalogueClient
 		legalRegistrationNumber?: string,
 		lrnType?: string,
 		cursor?: string,
-		pageSize?: number
+		limit?: number
 	): Promise<IParticipantList> {
 		const response = await this.fetch<IParticipantListRequest, IParticipantListResponse>(
 			"/participants",
@@ -103,7 +103,7 @@ export class FederatedCatalogueClient
 					registrationNumber: legalRegistrationNumber,
 					lrnType,
 					cursor,
-					pageSize
+					limit: Coerce.string(limit)
 				}
 			}
 		);
@@ -117,7 +117,7 @@ export class FederatedCatalogueClient
 	 * @returns The Data Space Connector Id registered.
 	 */
 	public async registerDataSpaceConnectorCredential(credential: string): Promise<string> {
-		Guards.stringValue(this.CLASS_NAME, nameof(credential), credential);
+		Guards.stringValue(FederatedCatalogueRestClient.CLASS_NAME, nameof(credential), credential);
 
 		const response = await this.fetch<IHttpRequest<string>, ICreatedResponse>(
 			"/data-space-connector-credentials",
@@ -134,8 +134,8 @@ export class FederatedCatalogueClient
 	 * Query the federated catalogue.
 	 * @param id Data Space Connector Id.
 	 * @param maintainer The identity of the participant maintaining the Data Space Connector.
-	 * @param cursor The cursor to request the next page of entities.
-	 * @param pageSize The maximum number of entities in a page.
+	 * @param cursor The cursor to request the next chunk of entities.
+	 * @param limit Limit the number of entities to return.
 	 * @returns All the entities for the storage matching the conditions,
 	 * and a cursor which can be used to request more entities.
 	 * @throws NotImplementedError if the implementation does not support retrieval.
@@ -144,7 +144,7 @@ export class FederatedCatalogueClient
 		id?: string,
 		maintainer?: string,
 		cursor?: string,
-		pageSize?: number
+		limit?: number
 	): Promise<IDataSpaceConnectorList> {
 		const response = await this.fetch<
 			IDataSpaceConnectorListRequest,
@@ -157,7 +157,7 @@ export class FederatedCatalogueClient
 				id: id ? encodeURIComponent(id) : undefined,
 				maintainedBy: maintainer,
 				cursor,
-				pageSize
+				limit: Coerce.string(limit)
 			}
 		});
 
@@ -170,7 +170,7 @@ export class FederatedCatalogueClient
 	 * @returns The Id of the Service Offerings registered.
 	 */
 	public async registerServiceOfferingCredential(credential: string): Promise<string[]> {
-		Guards.stringValue(this.CLASS_NAME, nameof(credential), credential);
+		Guards.stringValue(FederatedCatalogueRestClient.CLASS_NAME, nameof(credential), credential);
 
 		const response = await this.fetch<IHttpRequest<string>, ICreatedResponse>(
 			"/service-offering-credentials",
@@ -189,7 +189,7 @@ export class FederatedCatalogueClient
 	 * @returns The Id of the Data Resources registered.
 	 */
 	public async registerDataResourceCredential(credential: string): Promise<string[]> {
-		Guards.stringValue(this.CLASS_NAME, nameof(credential), credential);
+		Guards.stringValue(FederatedCatalogueRestClient.CLASS_NAME, nameof(credential), credential);
 
 		const response = await this.fetch<IHttpRequest<string>, ICreatedResponse>(
 			"/data-resource-credentials",
@@ -206,8 +206,8 @@ export class FederatedCatalogueClient
 	 * Query the federated catalogue.
 	 * @param id Service Offering id.
 	 * @param providedBy The identity of the participant providing the Offering.
-	 * @param cursor The cursor to request the next page of entities.
-	 * @param pageSize The maximum number of entities in a page.
+	 * @param cursor The cursor to request the next chunk of entities.
+	 * @param limit Limit the number of entities to return.
 	 * @returns All the entities for the storage matching the conditions,
 	 * and a cursor which can be used to request more entities.
 	 * @throws NotImplementedError if the implementation does not support retrieval.
@@ -216,7 +216,7 @@ export class FederatedCatalogueClient
 		id?: string,
 		providedBy?: string,
 		cursor?: string,
-		pageSize?: number
+		limit?: number
 	): Promise<IServiceOfferingList> {
 		const response = await this.fetch<IServiceOfferingListRequest, IServiceOfferingListResponse>(
 			"/service-offerings",
@@ -229,7 +229,7 @@ export class FederatedCatalogueClient
 					id: id ? encodeURIComponent(id) : undefined,
 					providedBy,
 					cursor,
-					pageSize
+					limit: Coerce.string(limit)
 				}
 			}
 		);
@@ -241,8 +241,8 @@ export class FederatedCatalogueClient
 	 * Query the federated catalogue.
 	 * @param id The id of the Data Resource.
 	 * @param producedBy The identity of the participant producing the data behind the data resource.
-	 * @param cursor The cursor to request the next page of entities.
-	 * @param pageSize The maximum number of entities in a page.
+	 * @param cursor The cursor to request the next chunk of entities.
+	 * @param limit Limit the number of entities to return.
 	 * @returns All the entities for the storage matching the conditions,
 	 * and a cursor which can be used to request more entities.
 	 * @throws NotImplementedError if the implementation does not support retrieval.
@@ -251,7 +251,7 @@ export class FederatedCatalogueClient
 		id?: string,
 		producedBy?: string,
 		cursor?: string,
-		pageSize?: number
+		limit?: number
 	): Promise<IDataResourceList> {
 		const response = await this.fetch<IDataResourceListRequest, IDataResourceListResponse>(
 			"/data-resources",
@@ -264,7 +264,7 @@ export class FederatedCatalogueClient
 					id: id ? encodeURIComponent(id) : undefined,
 					producedBy,
 					cursor,
-					pageSize
+					limit: Coerce.string(limit)
 				}
 			}
 		);
@@ -283,7 +283,7 @@ export class FederatedCatalogueClient
 		entryType: FederatedCatalogueEntryType,
 		entryId: string
 	): Promise<ICatalogueEntry> {
-		Guards.stringValue(this.CLASS_NAME, nameof(entryId), entryId);
+		Guards.stringValue(FederatedCatalogueRestClient.CLASS_NAME, nameof(entryId), entryId);
 
 		switch (entryType) {
 			case GaiaXTypes.LegalPerson:
@@ -296,7 +296,9 @@ export class FederatedCatalogueClient
 			case FederatedCatalogueTypes.DataSpaceConnector:
 				return this.getDataSpaceConnectorEntry(entryId);
 			default:
-				throw new GeneralError(this.CLASS_NAME, "unknownEntryType", { entryType });
+				throw new GeneralError(FederatedCatalogueRestClient.CLASS_NAME, "unknownEntryType", {
+					entryType
+				});
 		}
 	}
 
@@ -401,7 +403,7 @@ export class FederatedCatalogueClient
 	 */
 	private getIdsFromLocation(locationURL: string): string[] {
 		if (Is.undefined(locationURL)) {
-			throw new GeneralError(this.CLASS_NAME, "locationURLNotProvided");
+			throw new GeneralError(FederatedCatalogueRestClient.CLASS_NAME, "locationURLNotProvided");
 		}
 
 		// Localhost is dummy used to build a correct URL as a fallback
@@ -410,7 +412,9 @@ export class FederatedCatalogueClient
 		const ids = searchParams.getAll("id");
 
 		if (Is.empty(ids)) {
-			throw new GeneralError(this.CLASS_NAME, "idNotFoundFromLocationURL", { locationURL });
+			throw new GeneralError(FederatedCatalogueRestClient.CLASS_NAME, "idNotFoundFromLocationURL", {
+				locationURL
+			});
 		}
 
 		return ids;

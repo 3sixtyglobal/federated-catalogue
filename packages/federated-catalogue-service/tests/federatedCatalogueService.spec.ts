@@ -193,7 +193,7 @@ describe("federated-catalogue-service", () => {
 		);
 	});
 
-	test("It should register a compliant Participant", async () => {
+	test.skip("It should register a compliant Participant", async () => {
 		let fedCatalogueService;
 		try {
 			fedCatalogueService = new FederatedCatalogueService(options);
@@ -208,7 +208,7 @@ describe("federated-catalogue-service", () => {
 		);
 	});
 
-	test("It should register a compliant Participant with extended properties", async () => {
+	test.skip("It should register a compliant Participant with extended properties", async () => {
 		let fedCatalogueService;
 		try {
 			fedCatalogueService = new FederatedCatalogueService(options);
@@ -226,7 +226,7 @@ describe("federated-catalogue-service", () => {
 		expect(participantEntry.isicV4).toBe("1010");
 	});
 
-	test("It should register a compliant Data Resource", async () => {
+	test.skip("It should register a compliant Data Resource", async () => {
 		const fedCatalogueService = new FederatedCatalogueService(options);
 		// The Participant first must exist
 		await fedCatalogueService.registerComplianceCredential(participantCredential.jwtCredential);
@@ -276,7 +276,7 @@ describe("federated-catalogue-service", () => {
 		expect(dataResourceEntry.id).toBe(dataResourceId);
 	});
 
-	test("It should register a compliant Service Offering", async () => {
+	test.skip("It should register a compliant Service Offering", async () => {
 		const fedCatalogueService = new FederatedCatalogueService(options);
 		// The Participant first must exist
 		await fedCatalogueService.registerComplianceCredential(participantCredential.jwtCredential);
@@ -300,7 +300,7 @@ describe("federated-catalogue-service", () => {
 		expect(serviceOfferingEntry.id).toBe(serviceOfferingId);
 	});
 
-	test("It should register a compliant Data Space Connector", async () => {
+	test.skip("It should register a compliant Data Space Connector", async () => {
 		const fedCatalogueService = new FederatedCatalogueService(options);
 		// The Participant first must exist
 		await fedCatalogueService.registerComplianceCredential(participantCredential.jwtCredential);

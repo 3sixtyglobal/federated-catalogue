@@ -60,7 +60,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "GeneralError",
-											"message": "component.error",
+											"message": "errorMessage",
 											"properties": {
 												"foo": "bar"
 											}
@@ -81,7 +81,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "InternalServerError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -120,7 +120,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "GeneralError",
-											"message": "component.error",
+											"message": "errorMessage",
 											"properties": {
 												"foo": "bar"
 											}
@@ -141,7 +141,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "InternalServerError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -189,7 +189,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "GeneralError",
-											"message": "component.error",
+											"message": "errorMessage",
 											"properties": {
 												"foo": "bar"
 											}
@@ -210,7 +210,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "InternalServerError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -301,7 +301,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "GeneralError",
-											"message": "component.error",
+											"message": "errorMessage",
 											"properties": {
 												"foo": "bar"
 											}
@@ -322,7 +322,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "InternalServerError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -371,7 +371,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "GeneralError",
-											"message": "component.error",
+											"message": "errorMessage",
 											"properties": {
 												"foo": "bar"
 											}
@@ -392,7 +392,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "InternalServerError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -445,7 +445,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "GeneralError",
-											"message": "component.error",
+											"message": "errorMessage",
 											"properties": {
 												"foo": "bar"
 											}
@@ -466,7 +466,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "UnauthorizedError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -484,7 +484,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "UnprocessableError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -502,7 +502,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "InternalServerError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -555,7 +555,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "GeneralError",
-											"message": "component.error",
+											"message": "errorMessage",
 											"properties": {
 												"foo": "bar"
 											}
@@ -576,7 +576,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "UnauthorizedError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -594,7 +594,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "UnprocessableError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -612,7 +612,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "InternalServerError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -665,7 +665,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "GeneralError",
-											"message": "component.error",
+											"message": "errorMessage",
 											"properties": {
 												"foo": "bar"
 											}
@@ -686,7 +686,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "UnauthorizedError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -704,7 +704,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "UnprocessableError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -722,7 +722,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "InternalServerError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -775,7 +775,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "GeneralError",
-											"message": "component.error",
+											"message": "errorMessage",
 											"properties": {
 												"foo": "bar"
 											}
@@ -796,7 +796,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "UnauthorizedError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -814,7 +814,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "UnprocessableError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -832,7 +832,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "InternalServerError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -888,15 +888,12 @@
 						}
 					},
 					{
-						"name": "pageSize",
-						"description": "The maximum number of entities in a page.",
+						"name": "limit",
+						"description": "Limit the number of entities to return.",
 						"in": "query",
 						"required": false,
 						"schema": {
-							"type": [
-								"number",
-								"string"
-							]
+							"type": "string"
 						}
 					},
 					{
@@ -927,7 +924,7 @@
 										"value": {
 											"@context": [
 												"https://schema.org",
-												"https://w3id.org/gaia-x/development",
+												"https://schema.twindev.org/gaia-x-loire/",
 												"https://schema.twindev.org/federated-catalogue/"
 											],
 											"type": "ItemList",
@@ -935,7 +932,7 @@
 												{
 													"@context": [
 														"https://schema.org",
-														"https://w3id.org/gaia-x/development",
+														"https://schema.twindev.org/gaia-x-loire/",
 														"https://schema.twindev.org/federated-catalogue/"
 													],
 													"id": "did:iota:xxx",
@@ -975,7 +972,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "GeneralError",
-											"message": "component.error",
+											"message": "errorMessage",
 											"properties": {
 												"foo": "bar"
 											}
@@ -996,7 +993,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "UnauthorizedError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -1014,7 +1011,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "InternalServerError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -1071,7 +1068,7 @@
 										"value": {
 											"@context": [
 												"https://schema.org",
-												"https://w3id.org/gaia-x/development",
+												"https://schema.twindev.org/gaia-x-loire/",
 												"https://schema.twindev.org/federated-catalogue/"
 											],
 											"id": "did:iota:xxx",
@@ -1109,7 +1106,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "GeneralError",
-											"message": "component.error",
+											"message": "errorMessage",
 											"properties": {
 												"foo": "bar"
 											}
@@ -1130,7 +1127,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "UnauthorizedError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -1148,7 +1145,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "InternalServerError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -1195,15 +1192,12 @@
 						}
 					},
 					{
-						"name": "pageSize",
-						"description": "The maximum number of entities in a page.",
+						"name": "limit",
+						"description": "Limit the number of entities to return.",
 						"in": "query",
 						"required": false,
 						"schema": {
-							"type": [
-								"number",
-								"string"
-							]
+							"type": "string"
 						}
 					},
 					{
@@ -1234,7 +1228,7 @@
 										"value": {
 											"@context": [
 												"https://schema.org",
-												"https://w3id.org/gaia-x/development",
+												"https://schema.twindev.org/gaia-x-loire/",
 												"https://schema.twindev.org/federated-catalogue/"
 											],
 											"type": "ItemList",
@@ -1242,7 +1236,7 @@
 												{
 													"@context": [
 														"https://schema.org",
-														"https://w3id.org/gaia-x/development",
+														"https://schema.twindev.org/gaia-x-loire/",
 														"https://schema.twindev.org/federated-catalogue/"
 													],
 													"id": "http://example.org/is123456",
@@ -1310,7 +1304,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "GeneralError",
-											"message": "component.error",
+											"message": "errorMessage",
 											"properties": {
 												"foo": "bar"
 											}
@@ -1331,7 +1325,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "UnauthorizedError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -1349,7 +1343,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "InternalServerError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -1397,7 +1391,7 @@
 										"value": {
 											"@context": [
 												"https://schema.org",
-												"https://w3id.org/gaia-x/development",
+												"https://schema.twindev.org/gaia-x-loire/",
 												"https://schema.twindev.org/federated-catalogue/"
 											],
 											"id": "http://example.org/is123456",
@@ -1463,7 +1457,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "GeneralError",
-											"message": "component.error",
+											"message": "errorMessage",
 											"properties": {
 												"foo": "bar"
 											}
@@ -1484,7 +1478,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "UnauthorizedError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -1502,7 +1496,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "InternalServerError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -1549,15 +1543,12 @@
 						}
 					},
 					{
-						"name": "pageSize",
-						"description": "The maximum number of entities in a page.",
+						"name": "limit",
+						"description": "Limit the number of entities to return.",
 						"in": "query",
 						"required": false,
 						"schema": {
-							"type": [
-								"number",
-								"string"
-							]
+							"type": "string"
 						}
 					},
 					{
@@ -1588,7 +1579,7 @@
 										"value": {
 											"@context": [
 												"https://schema.org",
-												"https://w3id.org/gaia-x/development",
+												"https://schema.twindev.org/gaia-x-loire/",
 												"https://schema.twindev.org/federated-catalogue/"
 											],
 											"type": "ItemList",
@@ -1596,7 +1587,7 @@
 												{
 													"@context": [
 														"https://schema.org",
-														"https://w3id.org/gaia-x/development",
+														"https://schema.twindev.org/gaia-x-loire/",
 														"https://schema.twindev.org/federated-catalogue/"
 													],
 													"id": "http://example.org/is123456",
@@ -1648,7 +1639,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "GeneralError",
-											"message": "component.error",
+											"message": "errorMessage",
 											"properties": {
 												"foo": "bar"
 											}
@@ -1669,7 +1660,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "UnauthorizedError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -1687,7 +1678,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "InternalServerError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -1735,7 +1726,7 @@
 										"value": {
 											"@context": [
 												"https://schema.org",
-												"https://w3id.org/gaia-x/development",
+												"https://schema.twindev.org/gaia-x-loire/",
 												"https://schema.twindev.org/federated-catalogue/"
 											],
 											"id": "http://example.org/is123456",
@@ -1785,7 +1776,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "GeneralError",
-											"message": "component.error",
+											"message": "errorMessage",
 											"properties": {
 												"foo": "bar"
 											}
@@ -1806,7 +1797,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "UnauthorizedError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -1824,7 +1815,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "InternalServerError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -1871,15 +1862,12 @@
 						}
 					},
 					{
-						"name": "pageSize",
-						"description": "The maximum number of entities in a page.",
+						"name": "limit",
+						"description": "Limit the number of entities to return.",
 						"in": "query",
 						"required": false,
 						"schema": {
-							"type": [
-								"number",
-								"string"
-							]
+							"type": "string"
 						}
 					},
 					{
@@ -1910,7 +1898,7 @@
 										"value": {
 											"@context": [
 												"https://schema.org",
-												"https://w3id.org/gaia-x/development",
+												"https://schema.twindev.org/gaia-x-loire/",
 												"https://schema.twindev.org/federated-catalogue/"
 											],
 											"type": "ItemList",
@@ -1918,7 +1906,7 @@
 												{
 													"@context": [
 														"https://schema.org",
-														"https://w3id.org/gaia-x/development",
+														"https://schema.twindev.org/gaia-x-loire/",
 														"https://schema.twindev.org/federated-catalogue/"
 													],
 													"id": "https://my-ds-connectors.example.org/ds-connector-ABCD",
@@ -1973,7 +1961,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "GeneralError",
-											"message": "component.error",
+											"message": "errorMessage",
 											"properties": {
 												"foo": "bar"
 											}
@@ -1994,7 +1982,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "UnauthorizedError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -2012,7 +2000,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "InternalServerError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -2060,7 +2048,7 @@
 										"value": {
 											"@context": [
 												"https://schema.org",
-												"https://w3id.org/gaia-x/development",
+												"https://schema.twindev.org/gaia-x-loire/",
 												"https://schema.twindev.org/federated-catalogue/"
 											],
 											"id": "https://my-ds-connectors.example.org/ds-connector-ABCD",
@@ -2113,7 +2101,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "GeneralError",
-											"message": "component.error",
+											"message": "errorMessage",
 											"properties": {
 												"foo": "bar"
 											}
@@ -2134,7 +2122,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "UnauthorizedError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -2152,7 +2140,7 @@
 									"exampleResponse": {
 										"value": {
 											"name": "InternalServerError",
-											"message": "component.error"
+											"message": "errorMessage"
 										}
 									}
 								}
@@ -2692,7 +2680,7 @@
 					},
 					{
 						"type": "string",
-						"const": "https://w3id.org/gaia-x/development"
+						"const": "https://schema.twindev.org/gaia-x-loire/"
 					},
 					{
 						"type": "string",

@@ -26,8 +26,8 @@ export interface IDataResourceListRequest extends IFederatedCatalogueGetRequest 
 		cursor?: string;
 
 		/**
-		 * The maximum number of entities in a page.
+		 * Limit the number of entities to return.
 		 */
-		pageSize?: number | string;
+		limit?: string;
 	};
 }

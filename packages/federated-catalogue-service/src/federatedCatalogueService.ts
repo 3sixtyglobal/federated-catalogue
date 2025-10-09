@@ -67,15 +67,15 @@ import { ComplianceCredentialVerificationService } from "./verification/complian
  */
 export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	/**
+	 * Runtime name for the class.
+	 */
+	public static readonly CLASS_NAME: string = nameof<FederatedCatalogueService>();
+
+	/**
 	 * Fields to skip when persisting entries to the Catalogue
 	 * @internal
 	 */
 	private static readonly _FIELDS_TO_SKIP = ["@context", "type"];
-
-	/**
-	 * Runtime name for the class.
-	 */
-	public readonly CLASS_NAME: string = nameof<FederatedCatalogueService>();
 
 	/**
 	 * The identity resolver used to dereference DIDs.
@@ -162,7 +162,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * @returns The Id of the Participant (DID usually).
 	 */
 	public async registerComplianceCredential(credentialJwt: string): Promise<string> {
-		Guards.string(this.CLASS_NAME, nameof(credentialJwt), credentialJwt);
+		Guards.string(FederatedCatalogueService.CLASS_NAME, nameof(credentialJwt), credentialJwt);
 
 		// This will raise exceptions as it has been coded reusing code from Gaia-X
 		const complianceCredential = await this.decodeJwt(credentialJwt);
@@ -172,15 +172,19 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		if (!result.verified) {
 			this._logging?.log({
 				level: "error",
-				source: this.CLASS_NAME,
+				source: FederatedCatalogueService.CLASS_NAME,
 				ts: Date.now(),
 				message: "complianceCredentialNotVerified",
 				data: { result }
 			});
 
-			throw new UnprocessableError(this.CLASS_NAME, "complianceCredentialNotVerified", {
-				reason: result.verificationFailureReason
-			});
+			throw new UnprocessableError(
+				FederatedCatalogueService.CLASS_NAME,
+				"complianceCredentialNotVerified",
+				{
+					reason: result.verificationFailureReason
+				}
+			);
 		}
 
 		const targetCredential = result.credentials.find(
@@ -188,7 +192,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		) as IParticipantCredential;
 
 		if (Is.undefined(targetCredential)) {
-			throw new UnprocessableError(this.CLASS_NAME, "noEvidence");
+			throw new UnprocessableError(FederatedCatalogueService.CLASS_NAME, "noEvidence");
 		}
 		const { participantEntry, extraData } = this.extractParticipantEntry(
 			complianceCredential,
@@ -204,7 +208,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 
 		await this._logging?.log({
 			level: "info",
-			source: this.CLASS_NAME,
+			source: FederatedCatalogueService.CLASS_NAME,
 			ts: Date.now(),
 			message: "complianceCredentialVerified",
 			data: {
@@ -221,8 +225,8 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * @param id The identity of the participant.
 	 * @param legalRegistrationNumber The legal registration number.
 	 * @param lrnType The legal registration number type (EORI, VATID, GLEIF, KENYA_PIN, etc.)
-	 * @param cursor The cursor to request the next page of entities.
-	 * @param pageSize The maximum number of entities in a page.
+	 * @param cursor The cursor to request the next chunk of entities.
+	 * @param limit Limit the number of entities to return.
 	 * @returns All the entities for the storage matching the conditions,
 	 * and a cursor which can be used to request more entities.
 	 * @throws NotImplementedError if the implementation does not support retrieval.
@@ -232,7 +236,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		legalRegistrationNumber?: string,
 		lrnType?: string,
 		cursor?: string,
-		pageSize?: number
+		limit?: number
 	): Promise<IParticipantList> {
 		const conditions: EntityCondition<ParticipantEntry>[] = [];
 
@@ -271,7 +275,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			undefined,
 			undefined,
 			cursor,
-			pageSize
+			limit
 		);
 
 		const itemList = entries.entities.map(entry => {
@@ -304,7 +308,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		entryType: FederatedCatalogueEntryType,
 		entryId: string
 	): Promise<ICatalogueEntry> {
-		Guards.stringValue(this.CLASS_NAME, nameof(entryId), entryId);
+		Guards.stringValue(FederatedCatalogueService.CLASS_NAME, nameof(entryId), entryId);
 
 		let itemsAndCursor;
 		switch (entryType) {
@@ -322,7 +326,9 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 				itemsAndCursor = await this.queryDataResources(entryId);
 				break;
 			default:
-				throw new GeneralError(this.CLASS_NAME, "unknownEntryType", { entryType });
+				throw new GeneralError(FederatedCatalogueService.CLASS_NAME, "unknownEntryType", {
+					entryType
+				});
 		}
 
 		if (Is.arrayValue(itemsAndCursor?.itemListElement)) {
@@ -338,7 +344,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			return result as ICatalogueEntry;
 		}
 
-		throw new NotFoundError(this.CLASS_NAME, "entryNotFound", entryId);
+		throw new NotFoundError(FederatedCatalogueService.CLASS_NAME, "entryNotFound", entryId);
 	}
 
 	/**
@@ -347,7 +353,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * @returns The identifier of the Data Space Connector registered.
 	 */
 	public async registerDataSpaceConnectorCredential(credentialJwt: string): Promise<string> {
-		Guards.string(this.CLASS_NAME, nameof(credentialJwt), credentialJwt);
+		Guards.string(FederatedCatalogueService.CLASS_NAME, nameof(credentialJwt), credentialJwt);
 
 		// This will raise exceptions as it has been coded reusing code from Gaia-X
 		const complianceCredential = await this.decodeJwt(credentialJwt);
@@ -357,15 +363,19 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		if (!result.verified) {
 			this._logging?.log({
 				level: "error",
-				source: this.CLASS_NAME,
+				source: FederatedCatalogueService.CLASS_NAME,
 				ts: Date.now(),
 				message: "complianceCredentialNotVerified",
 				data: { result }
 			});
 
-			throw new UnprocessableError(this.CLASS_NAME, "complianceCredentialNotVerified", {
-				reason: result.verificationFailureReason
-			});
+			throw new UnprocessableError(
+				FederatedCatalogueService.CLASS_NAME,
+				"complianceCredentialNotVerified",
+				{
+					reason: result.verificationFailureReason
+				}
+			);
 		}
 
 		const targetCredential = result.credentials.find(credential => {
@@ -382,7 +392,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		) as IDataResourceCredential[];
 
 		if (Is.undefined(targetCredential)) {
-			throw new UnprocessableError(this.CLASS_NAME, "noEvidence");
+			throw new UnprocessableError(FederatedCatalogueService.CLASS_NAME, "noEvidence");
 		}
 
 		await this.checkParticipantExists(targetCredential.issuer);
@@ -418,7 +428,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 
 		await this._logging?.log({
 			level: "info",
-			source: this.CLASS_NAME,
+			source: FederatedCatalogueService.CLASS_NAME,
 			ts: Date.now(),
 			message: "complianceCredentialVerified",
 			data: {
@@ -436,7 +446,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * @returns The list of Data Resources created.
 	 */
 	public async registerDataResourceCredential(credentialJwt: string): Promise<string[]> {
-		Guards.string(this.CLASS_NAME, nameof(credentialJwt), credentialJwt);
+		Guards.string(FederatedCatalogueService.CLASS_NAME, nameof(credentialJwt), credentialJwt);
 
 		const complianceCredential = await this.decodeJwt(credentialJwt);
 
@@ -445,15 +455,19 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		if (!result.verified) {
 			this._logging?.log({
 				level: "error",
-				source: this.CLASS_NAME,
+				source: FederatedCatalogueService.CLASS_NAME,
 				ts: Date.now(),
 				message: "complianceCredentialNotVerified",
 				data: { result }
 			});
 
-			throw new UnprocessableError(this.CLASS_NAME, "complianceCredentialNotVerified", {
-				reason: result.verificationFailureReason
-			});
+			throw new UnprocessableError(
+				FederatedCatalogueService.CLASS_NAME,
+				"complianceCredentialNotVerified",
+				{
+					reason: result.verificationFailureReason
+				}
+			);
 		}
 
 		const dataResourceCredentials = result.credentials.filter(
@@ -461,7 +475,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		) as IDataResourceCredential[];
 
 		if (dataResourceCredentials.length === 0) {
-			throw new UnprocessableError(this.CLASS_NAME, "noEvidence");
+			throw new UnprocessableError(FederatedCatalogueService.CLASS_NAME, "noEvidence");
 		}
 
 		const dataResourceIds: string[] = [];
@@ -486,7 +500,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 
 		await this._logging?.log({
 			level: "info",
-			source: this.CLASS_NAME,
+			source: FederatedCatalogueService.CLASS_NAME,
 			ts: Date.now(),
 			message: "complianceCredentialVerified",
 			data: {
@@ -502,8 +516,8 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * Query the federated catalogue.
 	 * @param id The identity of the participant.
 	 * @param maintainer The DS Connector maintainer.
-	 * @param cursor The cursor to request the next page of entities.
-	 * @param pageSize The maximum number of entities in a page.
+	 * @param cursor The cursor to request the next chunk of entities.
+	 * @param limit Limit the number of entities to return.
 	 * @returns All the entities for the storage matching the conditions,
 	 * and a cursor which can be used to request more entities.
 	 * @throws NotImplementedError if the implementation does not support retrieval.
@@ -512,7 +526,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		id?: string,
 		maintainer?: string,
 		cursor?: string,
-		pageSize?: number
+		limit?: number
 	): Promise<IDataSpaceConnectorList> {
 		const conditions: EntityCondition<DataSpaceConnectorEntry>[] = [];
 
@@ -541,7 +555,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			undefined,
 			undefined,
 			cursor,
-			pageSize
+			limit
 		);
 
 		const itemList = entries.entities.map(entry => {
@@ -572,7 +586,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * @returns Nothing.
 	 */
 	public async registerServiceOfferingCredential(credentialJwt: string): Promise<string[]> {
-		Guards.string(this.CLASS_NAME, nameof(credentialJwt), credentialJwt);
+		Guards.string(FederatedCatalogueService.CLASS_NAME, nameof(credentialJwt), credentialJwt);
 
 		// This will raise exceptions as it has been coded reusing code from Gaia-X
 		const sdComplianceCredential = await this.decodeJwt(credentialJwt);
@@ -582,15 +596,19 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		if (!result.verified) {
 			this._logging?.log({
 				level: "error",
-				source: this.CLASS_NAME,
+				source: FederatedCatalogueService.CLASS_NAME,
 				ts: Date.now(),
 				message: "complianceCredentialNotVerified",
 				data: { result }
 			});
 
-			throw new UnprocessableError(this.CLASS_NAME, "complianceCredentialNotVerified", {
-				reason: result.verificationFailureReason
-			});
+			throw new UnprocessableError(
+				FederatedCatalogueService.CLASS_NAME,
+				"complianceCredentialNotVerified",
+				{
+					reason: result.verificationFailureReason
+				}
+			);
 		}
 
 		const serviceOfferingCredentials = result.credentials.filter(
@@ -602,7 +620,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		) as IDataResourceCredential[];
 
 		if (serviceOfferingCredentials.length === 0) {
-			throw new UnprocessableError(this.CLASS_NAME, "noEvidence");
+			throw new UnprocessableError(FederatedCatalogueService.CLASS_NAME, "noEvidence");
 		}
 
 		const serviceOfferingIds: string[] = [];
@@ -646,7 +664,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 
 		await this._logging?.log({
 			level: "info",
-			source: this.CLASS_NAME,
+			source: FederatedCatalogueService.CLASS_NAME,
 			ts: Date.now(),
 			message: "complianceCredentialVerified",
 			data: {
@@ -662,8 +680,8 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * Query the federated catalogue.
 	 * @param id Service Id.
 	 * @param providedBy The identity of the participant.
-	 * @param cursor The cursor to request the next page of entities.
-	 * @param pageSize The maximum number of entities in a page.
+	 * @param cursor The cursor to request the next chunk of entities.
+	 * @param limit Limit the number of entities to return.
 	 * @returns All the entities for the storage matching the conditions,
 	 * and a cursor which can be used to request more entities.
 	 * @throws NotImplementedError if the implementation does not support retrieval.
@@ -672,7 +690,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		id?: string,
 		providedBy?: string,
 		cursor?: string,
-		pageSize?: number
+		limit?: number
 	): Promise<IServiceOfferingList> {
 		const conditions: EntityCondition<ServiceOfferingEntry>[] = [];
 
@@ -701,7 +719,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			undefined,
 			undefined,
 			cursor,
-			pageSize
+			limit
 		);
 
 		const itemList = entries.entities.map(entry => {
@@ -727,8 +745,8 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * Query the federated catalogue.
 	 * @param id The identity of the DataResource.
 	 * @param producedBy The identity of the participant.
-	 * @param cursor The cursor to request the next page of entities.
-	 * @param pageSize The maximum number of entities in a page.
+	 * @param cursor The cursor to request the next chunk of entities.
+	 * @param limit Limit the number of entities to return.
 	 * @returns All the entities for the storage matching the conditions,
 	 * and a cursor which can be used to request more entities.
 	 * @throws NotImplementedError if the implementation does not support retrieval.
@@ -737,7 +755,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		id?: string,
 		producedBy?: string,
 		cursor?: string,
-		pageSize?: number
+		limit?: number
 	): Promise<IDataResourceList> {
 		const conditions: EntityCondition<DataResourceEntry>[] = [];
 
@@ -766,7 +784,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			undefined,
 			undefined,
 			cursor,
-			pageSize
+			limit
 		);
 
 		const itemList = entries.entities.map(entry => {
@@ -851,7 +869,11 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	): { participantEntry: IParticipantEntry; extraData?: IJsonLdNodeObject } {
 		const participantData = participantCredential.credentialSubject;
 
-		Guards.objectValue(this.CLASS_NAME, nameof(participantData), participantData);
+		Guards.objectValue(
+			FederatedCatalogueService.CLASS_NAME,
+			nameof(participantData),
+			participantData
+		);
 
 		const evidences: string[] = [];
 		for (const evidence of complianceCredential.evidence) {
@@ -889,7 +911,11 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	): { dataSpaceConnectorEntry: IDataSpaceConnectorEntry; extraData?: IJsonLdNodeObject } {
 		const credentialData = dataSpaceConnectorCredential.credentialSubject;
 
-		Guards.objectValue(this.CLASS_NAME, nameof(credentialData), credentialData);
+		Guards.objectValue(
+			FederatedCatalogueService.CLASS_NAME,
+			nameof(credentialData),
+			credentialData
+		);
 
 		const { extraData, data } = this.extractExtraData<IDataSpaceConnector>(
 			credentialData,
@@ -925,7 +951,11 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	): { serviceOfferingEntry: IServiceOfferingEntry; extraData?: IJsonLdNodeObject } {
 		const credentialData = serviceOfferingCredential.credentialSubject;
 
-		Guards.objectValue(this.CLASS_NAME, nameof(credentialData), credentialData);
+		Guards.objectValue(
+			FederatedCatalogueService.CLASS_NAME,
+			nameof(credentialData),
+			credentialData
+		);
 
 		const { data, extraData } = this.extractExtraData<IServiceOffering>(
 			credentialData,
@@ -964,7 +994,11 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		dataResourceCredential: IDataResourceCredential
 	): { dataResourceEntry: IDataResourceEntry; extraData?: IJsonLdNodeObject } {
 		const credentialData = dataResourceCredential.credentialSubject;
-		Guards.objectValue(this.CLASS_NAME, nameof(credentialData), credentialData);
+		Guards.objectValue(
+			FederatedCatalogueService.CLASS_NAME,
+			nameof(credentialData),
+			credentialData
+		);
 
 		const { data, extraData } = this.extractExtraData<IDataResource>(
 			credentialData,
@@ -1013,15 +1047,19 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		if (!participantData) {
 			this._logging?.log({
 				level: "error",
-				source: this.CLASS_NAME,
+				source: FederatedCatalogueService.CLASS_NAME,
 				ts: Date.now(),
 				message: "providerIsNotParticipant",
 				data: { providedBy: participantId }
 			});
 
-			throw new UnprocessableError(this.CLASS_NAME, "providerIsNotParticipant", {
-				providedBy: participantId
-			});
+			throw new UnprocessableError(
+				FederatedCatalogueService.CLASS_NAME,
+				"providerIsNotParticipant",
+				{
+					providedBy: participantId
+				}
+			);
 		}
 	}
 
