@@ -16,7 +16,7 @@
 	"scripts": {
 		"clean": "rimraf dist coverage docs/reference",
 		"build": "tspc",
-		"build:watch": "nodemon --watch src --ext ts --exec \"npm run build && npm run bundle:esm\"",
+		"dev": "nodemon --watch src --ext ts --exec \"npm run build && npm run bundle:esm\"",
 		"test": "vitest --run --config ./vitest.config.ts --no-cache",
 		"test:build": "tspc -p ./tests/tsconfig.json --noEmit",
 		"validate-locales": "validate-locales",
