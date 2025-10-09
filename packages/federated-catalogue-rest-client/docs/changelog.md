@@ -1,5 +1,19 @@
 # @twin.org/federated-catalogue-rest-client - Changelog
 
+## [0.0.2-next.5](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-rest-client-v0.0.2-next.4...federated-catalogue-rest-client-v0.0.2-next.5) (2025-10-09)
+
+
+### Features
+
+* add validate-locales ([3d8d60d](https://github.com/twinfoundation/federated-catalogue/commit/3d8d60d9291e5a6f8c6d4562d6a862456a9917bc))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.0.2-next.4 to 0.0.2-next.5
+
 ## [0.0.2-next.4](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-rest-client-v0.0.2-next.3...federated-catalogue-rest-client-v0.0.2-next.4) (2025-09-29)
 
 

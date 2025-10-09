@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.0.2-next.5](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-rest-server-v0.0.2-next.4...federated-catalogue-rest-server-v0.0.2-next.5) (2025-10-09)
+
+
+### Features
+
+* add validate-locales ([3d8d60d](https://github.com/twinfoundation/federated-catalogue/commit/3d8d60d9291e5a6f8c6d4562d6a862456a9917bc))
+* simplify node ([e80db0e](https://github.com/twinfoundation/federated-catalogue/commit/e80db0e1b4935daaa7ff7d4343280efaa6250bf8))
+
+
+### Bug Fixes
+
+* support extended fields ([#22](https://github.com/twinfoundation/federated-catalogue/issues/22)) ([46e6796](https://github.com/twinfoundation/federated-catalogue/commit/46e67967e501eb79cba05adcae59777ae2d4c301))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.0.2-next.4 to 0.0.2-next.5
+    * @twin.org/federated-catalogue-service bumped from 0.0.2-next.4 to 0.0.2-next.5
+
 ## [0.0.2-next.4](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-rest-server-v0.0.2-next.3...federated-catalogue-rest-server-v0.0.2-next.4) (2025-09-29)
 
 
