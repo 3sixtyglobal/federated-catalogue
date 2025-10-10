@@ -193,7 +193,7 @@ describe("federated-catalogue-service", () => {
 		);
 	});
 
-	test.skip("It should register a compliant Participant", async () => {
+	test("It should register a compliant Participant", async () => {
 		let fedCatalogueService;
 		try {
 			fedCatalogueService = new FederatedCatalogueService(options);
@@ -208,7 +208,7 @@ describe("federated-catalogue-service", () => {
 		);
 	});
 
-	test.skip("It should register a compliant Participant with extended properties", async () => {
+	test("It should register a compliant Participant with extended properties", async () => {
 		let fedCatalogueService;
 		try {
 			fedCatalogueService = new FederatedCatalogueService(options);
@@ -226,7 +226,7 @@ describe("federated-catalogue-service", () => {
 		expect(participantEntry.isicV4).toBe("1010");
 	});
 
-	test.skip("It should register a compliant Data Resource", async () => {
+	test("It should register a compliant Data Resource", async () => {
 		const fedCatalogueService = new FederatedCatalogueService(options);
 		// The Participant first must exist
 		await fedCatalogueService.registerComplianceCredential(participantCredential.jwtCredential);
@@ -248,8 +248,6 @@ describe("federated-catalogue-service", () => {
 		expect(dataResourceEntry.id).toBe(dataResourceId);
 	});
 
-	// This test is faling despite the use case working peefectly outside a test env
-	// To investigate
 	test("It should register a compliant Data Resource with extended properties", async () => {
 		const fedCatalogueService = new FederatedCatalogueService(options);
 		// The Participant first must exist
@@ -276,7 +274,7 @@ describe("federated-catalogue-service", () => {
 		expect(dataResourceEntry.id).toBe(dataResourceId);
 	});
 
-	test.skip("It should register a compliant Service Offering", async () => {
+	test("It should register a compliant Service Offering", async () => {
 		const fedCatalogueService = new FederatedCatalogueService(options);
 		// The Participant first must exist
 		await fedCatalogueService.registerComplianceCredential(participantCredential.jwtCredential);
@@ -300,7 +298,7 @@ describe("federated-catalogue-service", () => {
 		expect(serviceOfferingEntry.id).toBe(serviceOfferingId);
 	});
 
-	test.skip("It should register a compliant Data Space Connector", async () => {
+	test("It should register a compliant Data Space Connector", async () => {
 		const fedCatalogueService = new FederatedCatalogueService(options);
 		// The Participant first must exist
 		await fedCatalogueService.registerComplianceCredential(participantCredential.jwtCredential);
