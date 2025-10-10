@@ -1,7 +1,8 @@
 {
 	"id": "https://twinfoundation.github.io/federated-catalogue/public-web/test-credentials/data-resource-1.json",
 	"credentialSubject": {
-		"@context": "https://w3id.org/gaia-x/development",
+		"id": "https://data-resource-1.example.org",
+		"@context": "https://schema.twindev.org/gaia-x-loire/types.jsonld",
 		"type": "DataResource",
 		"producedBy": {
 			"id": "did:iota:testnet:0x1a7bded4d22dc54722435d624e4323e10fcbc570cd57462eabbf3a5ab2ced24f",

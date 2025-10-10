@@ -1,7 +1,8 @@
 {
 	"id": "https://twinfoundation.github.io/federated-catalogue/public-web/test-credentials/service-offering-1.json",
 	"credentialSubject": {
-		"@context": "https://w3id.org/gaia-x/development",
+		"@context": "https://schema.twindev.org/gaia-x-loire/types.jsonld",
+		"id": "https://service-offerings.example.org/1234",
 		"type": "ServiceOffering",
 		"name": "Service 1",
 		"servicePolicy": {

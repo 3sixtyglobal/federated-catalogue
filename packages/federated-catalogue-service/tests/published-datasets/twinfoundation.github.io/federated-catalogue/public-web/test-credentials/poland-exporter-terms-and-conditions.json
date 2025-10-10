@@ -6,10 +6,10 @@
 	"id": "https://twinfoundation.github.io/federated-catalogue/public-web/test-credentials/poland-exporter-terms-and-conditions.json",
 	"type": ["VerifiableCredential"],
 	"issuer": "did:iota:testnet:0x1ee831611a9fe9877c82e05075d9670c4970b4fd0904c208082ee50e45817a9d",
-	"validFrom": "2025-09-29T08:17:05Z",
-	"validUntil": "2028-01-10T16:17:05Z",
+	"validFrom": "2025-10-09T11:39:34Z",
+	"validUntil": "2028-01-20T19:39:34Z",
 	"credentialSubject": {
-		"@context": "https://w3id.org/gaia-x/development",
+		"@context": "https://schema.twindev.org/gaia-x-loire/types.jsonld",
 		"digestSRI": "sha256-0aXialGx6tzl9LQVIoVSkkDv6LCdYvJIcy4e5l7vNjU=",
 		"id": "https://gtscio.github.io/twin-webinar2-demo/docs/terms-and-conditions.json",
 		"type": "TermsAndConditions"
@@ -18,11 +18,11 @@
 		"type": "JsonWebSignature2020",
 		"verificationMethod": "did:iota:testnet:0x1ee831611a9fe9877c82e05075d9670c4970b4fd0904c208082ee50e45817a9d#bcQWcv9Jw-tXoQSspSsPx_Hpl-oDQuTqmhq5QwfwXPs",
 		"proofPurpose": "assertionMethod",
-		"created": "2025-03-11T15:48:28.943+01:00",
+		"created": "2025-10-09T11:39:34.943Z",
 		"@context": [
 			"https://www.w3.org/ns/credentials/v2",
 			"https://w3id.org/security/suites/jws-2020/v1"
 		],
-		"jws": "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..LKIXJxLRtu2gOAUPCZTuUa_cOoOR9dcN6ZuVoJ_GRi9KWPe9j9KZ0XExT1YYzon8DWEp9-YszHnL0z4WfbUsDg"
+		"jws": "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..xEbvK9NOPXXZf7nJGg4_Lm1ur30NNr-kf34rtDb0yeJ7KW2JeKTW1TyAqaZ5UVWL-uZVnQ4bftPeehzIdmevAA"
 	}
 }

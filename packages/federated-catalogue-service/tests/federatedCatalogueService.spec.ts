@@ -250,7 +250,7 @@ describe("federated-catalogue-service", () => {
 
 	// This test is faling despite the use case working peefectly outside a test env
 	// To investigate
-	test.skip("It should register a compliant Data Resource with extended properties", async () => {
+	test("It should register a compliant Data Resource with extended properties", async () => {
 		const fedCatalogueService = new FederatedCatalogueService(options);
 		// The Participant first must exist
 		await fedCatalogueService.registerComplianceCredential(
@@ -264,7 +264,7 @@ describe("federated-catalogue-service", () => {
 		expect(queryResult.itemListElement.length).toBe(1);
 
 		expect(queryResult.itemListElement[0].id).toBe(
-			dataResourceCredential.credential.credentialSubject.id
+			dataResourceCredentialWithExt.credential.credentialSubject.id
 		);
 		expect(queryResult.itemListElement[0].type).toBe(GaiaXTypes.DataResource);
 
