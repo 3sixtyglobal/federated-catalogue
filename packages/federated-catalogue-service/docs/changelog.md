@@ -1,5 +1,19 @@
 # @twin.org/federated-catalogue-service - Changelog
 
+## [0.0.2-next.6](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-service-v0.0.2-next.5...federated-catalogue-service-v0.0.2-next.6) (2025-10-10)
+
+
+### Bug Fixes
+
+* tests now passing. Gaia-X direct references are removed ([#24](https://github.com/twinfoundation/federated-catalogue/issues/24)) ([845dfe3](https://github.com/twinfoundation/federated-catalogue/commit/845dfe312efe6069ba8487c926f029550a24fa84))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.0.2-next.5 to 0.0.2-next.6
+
 ## [0.0.2-next.5](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-service-v0.0.2-next.4...federated-catalogue-service-v0.0.2-next.5) (2025-10-09)
 
 
