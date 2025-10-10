@@ -314,7 +314,7 @@ export class FederatedCatalogueRestClient
 			"GET",
 			{
 				pathParams: {
-					id: entryId
+					id: encodeURIComponent(entryId)
 				},
 				headers: {
 					[HeaderTypes.Accept]: MimeTypes.JsonLd
@@ -337,7 +337,7 @@ export class FederatedCatalogueRestClient
 			"GET",
 			{
 				pathParams: {
-					id: entryId
+					id: encodeURIComponent(entryId)
 				},
 				headers: {
 					[HeaderTypes.Accept]: MimeTypes.JsonLd
@@ -360,7 +360,7 @@ export class FederatedCatalogueRestClient
 			"GET",
 			{
 				pathParams: {
-					id: entryId
+					id: encodeURIComponent(entryId)
 				},
 				headers: {
 					[HeaderTypes.Accept]: MimeTypes.JsonLd
@@ -383,7 +383,7 @@ export class FederatedCatalogueRestClient
 			"GET",
 			{
 				pathParams: {
-					id: entryId
+					id: encodeURIComponent(entryId)
 				},
 				headers: {
 					[HeaderTypes.Accept]: MimeTypes.JsonLd
