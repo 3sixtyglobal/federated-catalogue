@@ -1,6 +1,6 @@
-// Copyright 2024 IOTA Stiftung.
+// Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { IDataResourceList } from "../data-resource/IDataResourceList";
+import type { IDataResourceList } from "../data-resource/IDataResourceList.js";
 
 /**
  * Response fo data resource list.

@@ -1,12 +1,12 @@
-// Copyright 2024 IOTA Stiftung.
+// Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 import type { IComponent } from "@twin.org/core";
-import type { IDataResourceList } from "./data-resource/IDataResourceList";
-import type { IDataSpaceConnectorList } from "./data-space-connector/IDataSpaceConnectorList";
-import type { FederatedCatalogueEntryType } from "./federatedCatalogueEntryType";
-import type { ICatalogueEntry } from "./ICatalogueEntry";
-import type { IParticipantList } from "./participant/IParticipantList";
-import type { IServiceOfferingList } from "./service-offering/IServiceOfferingList";
+import type { IDataResourceList } from "./data-resource/IDataResourceList.js";
+import type { IDataSpaceConnectorList } from "./data-space-connector/IDataSpaceConnectorList.js";
+import type { FederatedCatalogueEntryType } from "./federatedCatalogueEntryType.js";
+import type { ICatalogueEntry } from "./ICatalogueEntry.js";
+import type { IParticipantList } from "./participant/IParticipantList.js";
+import type { IServiceOfferingList } from "./service-offering/IServiceOfferingList.js";
 
 /**
  * Interface describing a Federated Catalogue Contract.

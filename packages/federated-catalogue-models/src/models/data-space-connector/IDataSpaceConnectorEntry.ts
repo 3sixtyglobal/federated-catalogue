@@ -1,8 +1,8 @@
-// Copyright 2024 IOTA Stiftung.
+// Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { ICatalogueBase } from "../ICatalogueBase";
-import type { IDataSpaceConnector } from "./IDataSpaceConnector";
-import type { FederatedCatalogueContextType } from "../federatedCatalogueContextType";
+import type { ICatalogueBase } from "../ICatalogueBase.js";
+import type { IDataSpaceConnector } from "./IDataSpaceConnector.js";
+import type { FederatedCatalogueContextType } from "../federatedCatalogueContextType.js";
 
 /**
  * Interface describing a participant.

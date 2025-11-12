@@ -1,7 +1,7 @@
-// Copyright 2024 IOTA Stiftung.
+// Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { ICredential } from "./ICredential";
-import type { IVerificationResult } from "./IVerificationResult";
+import type { ICredential } from "./ICredential.js";
+import type { IVerificationResult } from "./IVerificationResult.js";
 
 /**
  * Compliance verification result

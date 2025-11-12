@@ -1,4 +1,4 @@
-// Copyright 2024 IOTA Stiftung.
+// Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 import { BaseRestClient } from "@twin.org/api-core";
 import type { IBaseRestClientConfig, ICreatedResponse, IHttpRequest } from "@twin.org/api-models";
@@ -52,6 +52,14 @@ export class FederatedCatalogueRestClient
 	 */
 	constructor(config: IBaseRestClientConfig) {
 		super(nameof<FederatedCatalogueRestClient>(), config, "federated-catalogue");
+	}
+
+	/**
+	 * Returns the class name of the component.
+	 * @returns The class name of the component.
+	 */
+	public className(): string {
+		return FederatedCatalogueRestClient.CLASS_NAME;
 	}
 
 	/**

@@ -1,4 +1,4 @@
-// Copyright 2024 IOTA Stiftung.
+// Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 import fs from "node:fs";
 import path from "node:path";
@@ -21,20 +21,20 @@ import { nameof, nameofKebabCase } from "@twin.org/nameof";
 import { GaiaXTypes } from "@twin.org/standards-gaia-x";
 import { addAllContextsToDocumentCache } from "@twin.org/standards-ld-contexts";
 import type { IDidDocument } from "@twin.org/standards-w3c-did";
-import type { DataResourceEntry } from "../src/entities/dataResourceEntry";
-import type { DataSpaceConnectorEntry } from "../src/entities/dataSpaceConnectorEntry";
-import type { ParticipantEntry } from "../src/entities/participantEntry";
-import type { ServiceOfferingEntry } from "../src/entities/serviceOfferingEntry";
-import { FederatedCatalogueService } from "../src/federatedCatalogueService";
-import type { IFederatedCatalogueServiceConstructorOptions } from "../src/models/IFederatedCatalogueServiceConstructorOptions";
-import { initSchema } from "../src/schema";
-import dataResourceCredential from "./dataset/credentials/compliance/data-resource-credential.json" assert { type: "json" };
-import dataSpaceConnectorCredential from "./dataset/credentials/compliance/data-space-connector-credential.json" assert { type: "json" };
-import dataResourceCredentialWithExt from "./dataset/credentials/compliance/exporter-consignments-compliant-data-resource.json" assert { type: "json" };
-import participantCredential from "./dataset/credentials/compliance/participant-credential.json" assert { type: "json" };
-import participantCredentialWithExt from "./dataset/credentials/compliance/poland-exporter-compliant-participant.json" assert { type: "json" };
-import serviceOfferingCedential from "./dataset/credentials/compliance/service-offering-credential.json" assert { type: "json" };
-import { cleanupTestEnv, setupTestEnv } from "./setupTestEnv";
+import type { DataResourceEntry } from "../src/entities/dataResourceEntry.js";
+import type { DataSpaceConnectorEntry } from "../src/entities/dataSpaceConnectorEntry.js";
+import type { ParticipantEntry } from "../src/entities/participantEntry.js";
+import type { ServiceOfferingEntry } from "../src/entities/serviceOfferingEntry.js";
+import { FederatedCatalogueService } from "../src/federatedCatalogueService.js";
+import type { IFederatedCatalogueServiceConstructorOptions } from "../src/models/IFederatedCatalogueServiceConstructorOptions.js";
+import { initSchema } from "../src/schema.js";
+import dataResourceCredential from "./dataset/credentials/compliance/data-resource-credential.json" with { type: "json" };
+import dataSpaceConnectorCredential from "./dataset/credentials/compliance/data-space-connector-credential.json" with { type: "json" };
+import dataResourceCredentialWithExt from "./dataset/credentials/compliance/exporter-consignments-compliant-data-resource.json" with { type: "json" };
+import participantCredential from "./dataset/credentials/compliance/participant-credential.json" with { type: "json" };
+import participantCredentialWithExt from "./dataset/credentials/compliance/poland-exporter-compliant-participant.json" with { type: "json" };
+import serviceOfferingCedential from "./dataset/credentials/compliance/service-offering-credential.json" with { type: "json" };
+import { cleanupTestEnv, setupTestEnv } from "./setupTestEnv.js";
 
 let participantStore: MemoryEntityStorageConnector<ParticipantEntry>;
 let dataResourceStore: MemoryEntityStorageConnector<DataResourceEntry>;
@@ -115,7 +115,7 @@ describe("federated-catalogue-service", () => {
 					const filePath = url.pathname;
 					const domainName = url.host;
 					const pathToFile = path.join(__dirname, "published-datasets", domainName, filePath);
-					const contentBuffer = await fs.readFileSync(pathToFile);
+					const contentBuffer = fs.readFileSync(pathToFile);
 					const content = contentBuffer.toString();
 					return {
 						status: 200,
@@ -137,9 +137,7 @@ describe("federated-catalogue-service", () => {
 						const didUrn = Urn.fromValidString(did);
 						const didId = didUrn.parts().pop() as string;
 
-						const contentBuffer = await fs.readFileSync(
-							path.join(__dirname, "dataset", "dids", didId)
-						);
+						const contentBuffer = fs.readFileSync(path.join(__dirname, "dataset", "dids", didId));
 						const content = contentBuffer.toString();
 						return JSON.parse(content) as IDidDocument;
 					}
@@ -157,7 +155,7 @@ describe("federated-catalogue-service", () => {
 	});
 
 	beforeEach(async () => {
-		addAllContextsToDocumentCache();
+		await addAllContextsToDocumentCache();
 
 		participantStore = new MemoryEntityStorageConnector<ParticipantEntry>({
 			entitySchema: nameof<ParticipantEntry>()

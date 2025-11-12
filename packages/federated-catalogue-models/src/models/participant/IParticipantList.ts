@@ -1,8 +1,8 @@
-// Copyright 2024 IOTA Stiftung.
+// Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 import type { SchemaOrgTypes } from "@twin.org/standards-schema-org";
-import type { IParticipantEntry } from "./IParticipantEntry";
-import type { FederatedCatalogueContextType } from "../federatedCatalogueContextType";
+import type { IParticipantEntry } from "./IParticipantEntry.js";
+import type { FederatedCatalogueContextType } from "../federatedCatalogueContextType.js";
 
 /**
  * Interface describing a participant entry list.

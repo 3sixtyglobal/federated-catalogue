@@ -1,9 +1,9 @@
-// Copyright 2024 IOTA Stiftung.
+// Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { IDataResourceEntry } from "./data-resource/IDataResourceEntry";
-import type { IDataSpaceConnectorEntry } from "./data-space-connector/IDataSpaceConnectorEntry";
-import type { IParticipantEntry } from "./participant/IParticipantEntry";
-import type { IServiceOfferingEntry } from "./service-offering/IServiceOfferingEntry";
+import type { IDataResourceEntry } from "./data-resource/IDataResourceEntry.js";
+import type { IDataSpaceConnectorEntry } from "./data-space-connector/IDataSpaceConnectorEntry.js";
+import type { IParticipantEntry } from "./participant/IParticipantEntry.js";
+import type { IServiceOfferingEntry } from "./service-offering/IServiceOfferingEntry.js";
 
 /**
  * Catalogue entry base fields.

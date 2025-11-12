@@ -1,9 +1,9 @@
-// Copyright 2024 IOTA Stiftung.
+// Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 import type { IServiceOffering } from "@twin.org/standards-gaia-x";
 import type { IOdrlPolicy } from "@twin.org/standards-w3c-odrl";
-import type { FederatedCatalogueContextType } from "../federatedCatalogueContextType";
-import type { ICatalogueBase } from "../ICatalogueBase";
+import type { FederatedCatalogueContextType } from "../federatedCatalogueContextType.js";
+import type { ICatalogueBase } from "../ICatalogueBase.js";
 
 /**
  * Interface describing a Service Offering.

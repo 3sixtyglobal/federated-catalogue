@@ -1,16 +1,16 @@
-// Copyright 2024 IOTA Stiftung.
+// Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 import { DataTypeHandlerFactory, type IJsonSchema } from "@twin.org/data-core";
-import { FederatedCatalogueContexts } from "../models/federatedCatalogueContexts";
-import { FederatedCatalogueTypes } from "../models/federatedCatalogueTypes";
-import DataResourceEntrySchema from "../schemas/DataResourceEntry.json";
-import DataResourceListSchema from "../schemas/DataResourceList.json";
-import DataSpaceConnectorEntrySchema from "../schemas/DataSpaceConnectorEntry.json";
-import DataSpaceConnectorListSchema from "../schemas/DataSpaceConnectorList.json";
-import ParticipantEntrySchema from "../schemas/ParticipantEntry.json";
-import ParticipantListSchema from "../schemas/ParticipantList.json";
-import ServiceOfferingEntrySchema from "../schemas/ServiceOfferingEntry.json";
-import ServiceOfferingListSchema from "../schemas/ServiceOfferingList.json";
+import { FederatedCatalogueContexts } from "../models/federatedCatalogueContexts.js";
+import { FederatedCatalogueTypes } from "../models/federatedCatalogueTypes.js";
+import DataResourceEntrySchema from "../schemas/DataResourceEntry.json" with { type: "json" };
+import DataResourceListSchema from "../schemas/DataResourceList.json" with { type: "json" };
+import DataSpaceConnectorEntrySchema from "../schemas/DataSpaceConnectorEntry.json" with { type: "json" };
+import DataSpaceConnectorListSchema from "../schemas/DataSpaceConnectorList.json" with { type: "json" };
+import ParticipantEntrySchema from "../schemas/ParticipantEntry.json" with { type: "json" };
+import ParticipantListSchema from "../schemas/ParticipantList.json" with { type: "json" };
+import ServiceOfferingEntrySchema from "../schemas/ServiceOfferingEntry.json" with { type: "json" };
+import ServiceOfferingListSchema from "../schemas/ServiceOfferingList.json" with { type: "json" };
 
 /**
  * Handle all the data types for federated catalogue.

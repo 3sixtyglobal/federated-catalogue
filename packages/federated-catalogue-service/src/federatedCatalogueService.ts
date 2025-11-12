@@ -1,4 +1,4 @@
-// Copyright 2024 IOTA Stiftung.
+// Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 import {
 	ArrayHelper,
@@ -55,12 +55,12 @@ import {
 } from "@twin.org/standards-gaia-x";
 import { SchemaOrgDataTypes, SchemaOrgTypes } from "@twin.org/standards-schema-org";
 import type { IOdrlPolicy } from "@twin.org/standards-w3c-odrl";
-import type { DataResourceEntry } from "./entities/dataResourceEntry";
-import type { DataSpaceConnectorEntry } from "./entities/dataSpaceConnectorEntry";
-import type { ParticipantEntry } from "./entities/participantEntry";
-import type { ServiceOfferingEntry } from "./entities/serviceOfferingEntry";
-import type { IFederatedCatalogueServiceConstructorOptions } from "./models/IFederatedCatalogueServiceConstructorOptions";
-import { ComplianceCredentialVerificationService } from "./verification/complianceCredentialVerificationService";
+import type { DataResourceEntry } from "./entities/dataResourceEntry.js";
+import type { DataSpaceConnectorEntry } from "./entities/dataSpaceConnectorEntry.js";
+import type { ParticipantEntry } from "./entities/participantEntry.js";
+import type { ServiceOfferingEntry } from "./entities/serviceOfferingEntry.js";
+import type { IFederatedCatalogueServiceConstructorOptions } from "./models/IFederatedCatalogueServiceConstructorOptions.js";
+import { ComplianceCredentialVerificationService } from "./verification/complianceCredentialVerificationService.js";
 
 /**
  * Service for performing logging operations to a connector.
@@ -157,6 +157,14 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	}
 
 	/**
+	 * Returns the class name of the component.
+	 * @returns The class name of the component.
+	 */
+	public className(): string {
+		return FederatedCatalogueService.CLASS_NAME;
+	}
+
+	/**
 	 * Registers a Participant's compliance Credential.
 	 * @param credentialJwt The credential (wrapped into a presentation) as JWT.
 	 * @returns The Id of the Participant (DID usually).
@@ -170,7 +178,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		const result = await this._complianceCredentialVerifier.verify(complianceCredential);
 
 		if (!result.verified) {
-			this._logging?.log({
+			await this._logging?.log({
 				level: "error",
 				source: FederatedCatalogueService.CLASS_NAME,
 				ts: Date.now(),
@@ -361,7 +369,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		const result = await this._complianceCredentialVerifier.verify(complianceCredential);
 
 		if (!result.verified) {
-			this._logging?.log({
+			await this._logging?.log({
 				level: "error",
 				source: FederatedCatalogueService.CLASS_NAME,
 				ts: Date.now(),
@@ -453,7 +461,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		const result = await this._complianceCredentialVerifier.verify(complianceCredential);
 
 		if (!result.verified) {
-			this._logging?.log({
+			await this._logging?.log({
 				level: "error",
 				source: FederatedCatalogueService.CLASS_NAME,
 				ts: Date.now(),
@@ -594,7 +602,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		const result = await this._complianceCredentialVerifier.verify(sdComplianceCredential);
 
 		if (!result.verified) {
-			this._logging?.log({
+			await this._logging?.log({
 				level: "error",
 				source: FederatedCatalogueService.CLASS_NAME,
 				ts: Date.now(),
@@ -1045,7 +1053,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	private async checkParticipantExists(participantId: string): Promise<void> {
 		const participantData = await this._entityStorageParticipants.get(participantId);
 		if (!participantData) {
-			this._logging?.log({
+			await this._logging?.log({
 				level: "error",
 				source: FederatedCatalogueService.CLASS_NAME,
 				ts: Date.now(),

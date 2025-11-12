@@ -1,6 +1,6 @@
-// Copyright 2024 IOTA Stiftung.
+// Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { IServiceOfferingEntry } from "../service-offering/IServiceOfferingEntry";
+import type { IServiceOfferingEntry } from "../service-offering/IServiceOfferingEntry.js";
 
 /**
  * Service Offering response

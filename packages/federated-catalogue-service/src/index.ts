@@ -1,12 +1,12 @@
-// Copyright 2024 IOTA Stiftung.
+// Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-export * from "./entities/dataResourceEntry";
-export * from "./entities/dataSpaceConnectorEntry";
-export * from "./entities/participantEntry";
-export * from "./entities/serviceOfferingEntry";
-export * from "./federatedCatalogueRoutes";
-export * from "./federatedCatalogueService";
-export * from "./models/IFederatedCatalogueServiceConfig";
-export * from "./models/IFederatedCatalogueServiceConstructorOptions";
-export * from "./restEntryPoints";
-export * from "./schema";
+export * from "./entities/dataResourceEntry.js";
+export * from "./entities/dataSpaceConnectorEntry.js";
+export * from "./entities/participantEntry.js";
+export * from "./entities/serviceOfferingEntry.js";
+export * from "./federatedCatalogueRoutes.js";
+export * from "./federatedCatalogueService.js";
+export * from "./models/IFederatedCatalogueServiceConfig.js";
+export * from "./models/IFederatedCatalogueServiceConstructorOptions.js";
+export * from "./restEntryPoints.js";
+export * from "./schema.js";

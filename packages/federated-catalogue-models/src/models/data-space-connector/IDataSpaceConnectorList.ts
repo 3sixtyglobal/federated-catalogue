@@ -1,8 +1,8 @@
-// Copyright 2024 IOTA Stiftung.
+// Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 import type { SchemaOrgTypes } from "@twin.org/standards-schema-org";
-import type { IDataSpaceConnectorEntry } from "./IDataSpaceConnectorEntry";
-import type { FederatedCatalogueContextType } from "../federatedCatalogueContextType";
+import type { IDataSpaceConnectorEntry } from "./IDataSpaceConnectorEntry.js";
+import type { FederatedCatalogueContextType } from "../federatedCatalogueContextType.js";
 
 /**
  * Interface describing a list of Data Space Connectors.

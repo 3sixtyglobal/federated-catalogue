@@ -1,7 +1,7 @@
-// Copyright 2024 IOTA Stiftung.
+// Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 import type { GaiaXTypes } from "@twin.org/standards-gaia-x";
-import type { FederatedCatalogueTypes } from "./federatedCatalogueTypes";
+import type { FederatedCatalogueTypes } from "./federatedCatalogueTypes.js";
 
 /**
  * Types of entries in the Federated Catalogue

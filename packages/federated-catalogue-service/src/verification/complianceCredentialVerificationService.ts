@@ -1,4 +1,4 @@
-// Copyright 2024 IOTA Stiftung.
+// Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 import {
 	Coerce,
@@ -197,7 +197,7 @@ export class ComplianceCredentialVerificationService {
 		);
 
 		const credentialUrl = evidence.id;
-		this._logger?.log({
+		await this._logger?.log({
 			source: ComplianceCredentialVerificationService.CLASS_NAME,
 			level: "info",
 			message: "verifyingEvidenceCredential",
@@ -215,7 +215,7 @@ export class ComplianceCredentialVerificationService {
 			{ cacheTtlMs: this._subResourceCacheTtlMs }
 		);
 		if (!credentialResponse.ok) {
-			this._logger?.log({
+			await this._logger?.log({
 				source: ComplianceCredentialVerificationService.CLASS_NAME,
 				level: "error",
 				message: "credentialCannotBeRetrieved",
@@ -238,7 +238,7 @@ export class ComplianceCredentialVerificationService {
 		delete theCredential.proof;
 
 		// Checking the hash
-		const canonicalized = JsonHelper.canonicalize(theCredential) as string;
+		const canonicalized = JsonHelper.canonicalize(theCredential);
 		const hashingDetails = evidence.digestSRI;
 		const [hashingAlg, hash] = hashingDetails.split("-");
 		let hashToCheck: string | null = "";
@@ -275,7 +275,7 @@ export class ComplianceCredentialVerificationService {
 
 			verified = await ProofHelper.verifyProof(theCredential, proof, jwk);
 		} catch (error) {
-			this._logger?.log({
+			await this._logger?.log({
 				source: ComplianceCredentialVerificationService.CLASS_NAME,
 				level: "error",
 				message: "credentialVerificationError",
@@ -291,7 +291,7 @@ export class ComplianceCredentialVerificationService {
 			};
 		}
 
-		this._logger?.log({
+		await this._logger?.log({
 			source: ComplianceCredentialVerificationService.CLASS_NAME,
 			level: "info",
 			message: "credentialEvidenceVerified",

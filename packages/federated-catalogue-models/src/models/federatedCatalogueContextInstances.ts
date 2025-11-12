@@ -1,9 +1,9 @@
-// Copyright 2024 IOTA Stiftung.
+// Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 import { GaiaXContexts } from "@twin.org/standards-gaia-x";
 import { SchemaOrgContexts } from "@twin.org/standards-schema-org";
-import { FederatedCatalogueContexts } from "./federatedCatalogueContexts";
-import type { FederatedCatalogueContextType } from "./federatedCatalogueContextType";
+import { FederatedCatalogueContexts } from "./federatedCatalogueContexts.js";
+import type { FederatedCatalogueContextType } from "./federatedCatalogueContextType.js";
 
 /**
  * The LD context instances concerning the Federated Catalogue.
