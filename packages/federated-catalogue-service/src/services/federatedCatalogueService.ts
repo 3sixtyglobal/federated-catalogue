@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0.
 import {
 	BaseError,
+	ComponentFactory,
 	Converter,
 	GeneralError,
 	Guards,
@@ -70,7 +71,9 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * @param options The options for the service.
 	 */
 	constructor(options?: IFederatedCatalogueServiceConstructorOptions) {
-		this._logging = options?.loggingComponent;
+		this._logging = ComponentFactory.getIfExists<ILoggingComponent>(
+			options?.loggingComponentType ?? "logging"
+		);
 
 		this._datasetStorage = EntityStorageConnectorFactory.get(
 			options?.datasetStorageConnectorType ?? "dataset"

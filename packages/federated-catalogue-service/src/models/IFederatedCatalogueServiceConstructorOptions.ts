@@ -1,6 +1,5 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { ILoggingComponent } from "@twin.org/logging-models";
 
 /**
  * Options for the FederatedCatalogueService constructor.
@@ -14,5 +13,5 @@ export interface IFederatedCatalogueServiceConstructorOptions {
 	/**
 	 * The logging component for the service.
 	 */
-	loggingComponent?: ILoggingComponent;
+	loggingComponentType?: string;
 }

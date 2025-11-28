@@ -12,8 +12,8 @@ The type of the entity storage connector for datasets.
 
 ***
 
-### loggingComponent?
+### loggingComponentType?
 
-> `optional` **loggingComponent**: `ILoggingComponent`
+> `optional` **loggingComponentType**: `string`
 
 The logging component for the service.
