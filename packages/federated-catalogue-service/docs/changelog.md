@@ -1,5 +1,19 @@
 # @twin.org/federated-catalogue-service - Changelog
 
+## [0.0.3-next.3](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.2...federated-catalogue-service-v0.0.3-next.3) (2025-11-28)
+
+
+### Bug Fixes
+
+* service logging constructor type ([35e63cc](https://github.com/twinfoundation/federated-catalogue/commit/35e63cc6a46769b32c817f43157233d9f05346da))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.0.3-next.2 to 0.0.3-next.3
+
 ## [0.0.3-next.2](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.1...federated-catalogue-service-v0.0.3-next.2) (2025-11-28)
 
 

@@ -1,5 +1,12 @@
 # @twin.org/federated-catalogue-models - Changelog
 
+## [0.0.3-next.3](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-models-v0.0.3-next.2...federated-catalogue-models-v0.0.3-next.3) (2025-11-28)
+
+
+### Miscellaneous Chores
+
+* **federated-catalogue-models:** Synchronize repo versions
+
 ## [0.0.3-next.2](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-models-v0.0.3-next.1...federated-catalogue-models-v0.0.3-next.2) (2025-11-28)
 
 
