@@ -1,8 +1,8 @@
 # Function: generateRestRoutesFederatedCatalogue()
 
-> **generateRestRoutesFederatedCatalogue**(`baseRouteName`, `factoryServiceName`): `IRestRoute`\<`any`, `any`\>[]
+> **generateRestRoutesFederatedCatalogue**(`baseRouteName`, `componentName`): `IRestRoute`\<`any`, `any`\>[]
 
-The REST routes for Federated Catalogue.
+The REST routes for federated catalogue.
 
 ## Parameters
 
@@ -12,11 +12,11 @@ The REST routes for Federated Catalogue.
 
 Prefix to prepend to the paths.
 
-### factoryServiceName
+### componentName
 
 `string`
 
-The name of the service to use in the routes store in the ServiceFactory.
+The name of the component to use in the routes stored in the ComponentFactory.
 
 ## Returns
 

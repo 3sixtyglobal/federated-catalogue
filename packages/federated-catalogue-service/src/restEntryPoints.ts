@@ -9,7 +9,7 @@ import {
 export const restEntryPoints: IRestRouteEntryPoint[] = [
 	{
 		name: "federated-catalogue",
-		defaultBaseRoute: "federated-catalogue",
+		defaultBaseRoute: "catalog",
 		tags: tagsFederatedCatalogue,
 		generateRoutes: generateRestRoutesFederatedCatalogue
 	}

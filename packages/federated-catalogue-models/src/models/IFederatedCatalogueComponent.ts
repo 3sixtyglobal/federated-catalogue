@@ -1,121 +1,46 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 import type { IComponent } from "@twin.org/core";
-import type { IDataResourceList } from "./data-resource/IDataResourceList.js";
-import type { IDataSpaceConnectorList } from "./data-space-connector/IDataSpaceConnectorList.js";
-import type { FederatedCatalogueEntryType } from "./federatedCatalogueEntryType.js";
-import type { ICatalogueEntry } from "./ICatalogueEntry.js";
-import type { IParticipantList } from "./participant/IParticipantList.js";
-import type { IServiceOfferingList } from "./service-offering/IServiceOfferingList.js";
+import type { ICatalog, IDataset } from "@twin.org/standards-w3c-dcat";
 
 /**
- * Interface describing a Federated Catalogue Contract.
+ * Interface describing a federated catalogue component.
+ * Provides Dataspace Protocol-compliant catalog endpoints for dataset registry and query.
  */
 export interface IFederatedCatalogueComponent extends IComponent {
 	/**
-	 * Registers a Participant's compliance Credential to the service.
-	 * @param credential The credential as JWT.
-	 * @returns The participant Id (usually a DID).
+	 * Retrieve a dataset by its unique identifier.
+	 * @param dataSetId The unique identifier of the dataset.
+	 * @returns The dataset if found.
+	 * @throws NotFoundError if the dataset does not exist.
 	 */
-	registerComplianceCredential(credential: string): Promise<string>;
+	get(dataSetId: string): Promise<IDataset>;
 
 	/**
-	 * Query the federated catalogue.
-	 * @param participant The identity of the participant.
-	 * @param legalRegistrationNumber The legal registration number.
-	 * @param lrnType The legal registration number type (EORI, VATID, GLEIF, Kenya's PIN, etc.)
-	 * @param cursor The cursor to request the next chunk of entities.
-	 * @param limit Limit the number of entities to return.
-	 * @returns All the entities for the storage matching the conditions,
-	 * and a cursor which can be used to request more entities.
-	 * @throws NotImplementedError if the implementation does not support retrieval.
+	 * Insert or update a dataset in the catalogue.
+	 * This method is internal and should not be exposed via REST endpoints.
+	 * @param dataSet The dataset to store.
+	 * @returns Nothing.
 	 */
-	queryParticipants(
-		participant?: string,
-		legalRegistrationNumber?: string,
-		lrnType?: string,
-		cursor?: string,
-		limit?: number
-	): Promise<IParticipantList>;
+	set(dataSet: IDataset): Promise<void>;
 
 	/**
-	 * Registers a Data Space Connector to the service.
-	 * @param credential The credential as JWT.
-	 * @returns The Data Space Connector Id registered.
+	 * Execute a query against the catalogue using registered filter plugins.
+	 * Returns a complete DCAT Catalog object with proper JSON-LD context, metadata, and datasets.
+	 * Filter plugins must be registered in FilterFactory before service initialization.
+	 * The filter payload is evaluated by the appropriate filter plugin based on its structure.
+	 * Pagination properties (cursor, limit) and filter type (@type) should be included
+	 * within the filter object per Eclipse Dataspace Protocol JSON-LD extension patterns.
+	 * @param filter The filter criteria containing @type, optional cursor and limit properties.
+	 * @returns Complete ICatalog object with @context, @id, @type, dcat:dataset, and optional cursor.
+	 * @throws NotFoundError if the @type field is missing or if the filter type is not registered.
 	 */
-	registerDataSpaceConnectorCredential(credential: string): Promise<string>;
+	query(filter?: unknown[]): Promise<ICatalog>;
 
 	/**
-	 * Query the federated catalogue.
-	 * @param id Data Space Connector Id.
-	 * @param maintainer The identity of the participant maintaining the Data Space Connector.
-	 * @param cursor The cursor to request the next chunk of entities.
-	 * @param limit Limit the number of entities to return.
-	 * @returns All the entities for the storage matching the conditions,
-	 * and a cursor which can be used to request more entities.
-	 * @throws NotImplementedError if the implementation does not support retrieval.
+	 * Remove a dataset from the catalogue by its unique identifier.
+	 * @param dataSetId The unique identifier of the dataset to remove.
+	 * @returns Nothing.
 	 */
-	queryDataSpaceConnectors(
-		id?: string,
-		maintainer?: string,
-		cursor?: string,
-		limit?: number
-	): Promise<IDataSpaceConnectorList>;
-
-	/**
-	 * Registers a service offering Credential to the service.
-	 * @param credential The credential as JWT.
-	 * @returns The Id of the Service Offerings registered.
-	 */
-	registerServiceOfferingCredential(credential: string): Promise<string[]>;
-
-	/**
-	 * Registers a data resource Credential to the service.
-	 * @param credential The credential as JWT.
-	 * @returns The Id of the Data Resources registered.
-	 */
-	registerDataResourceCredential(credential: string): Promise<string[]>;
-
-	/**
-	 * Query the federated catalogue.
-	 * @param id Service Offering id.
-	 * @param providedBy The identity of the participant providing the Offering.
-	 * @param cursor The cursor to request the next chunk of entities.
-	 * @param limit Limit the number of entities to return.
-	 * @returns All the entities for the storage matching the conditions,
-	 * and a cursor which can be used to request more entities.
-	 * @throws NotImplementedError if the implementation does not support retrieval.
-	 */
-	queryServiceOfferings(
-		id?: string,
-		providedBy?: string,
-		cursor?: string,
-		limit?: number
-	): Promise<IServiceOfferingList>;
-
-	/**
-	 * Query the federated catalogue.
-	 * @param id The id of the Data Resource.
-	 * @param producedBy The identity of the participant producing the data behind the data resource.
-	 * @param cursor The cursor to request the next chunk of entities.
-	 * @param limit Limit the number of entities to return.
-	 * @returns All the entities for the storage matching the conditions,
-	 * and a cursor which can be used to request more entities.
-	 * @throws NotImplementedError if the implementation does not support retrieval.
-	 */
-	queryDataResources(
-		id?: string,
-		producedBy?: string,
-		cursor?: string,
-		limit?: number
-	): Promise<IDataResourceList>;
-
-	/**
-	 * Returns a Federated Catalogue entry.
-	 * @param entryType The type of entry.
-	 * @param entryId The entry's id.
-	 * @returns Catalogue Entry
-	 * @throws NotFoundError if not found.
-	 */
-	getEntry(entryType: FederatedCatalogueEntryType, entryId: string): Promise<ICatalogueEntry>;
+	remove(dataSetId: string): Promise<void>;
 }

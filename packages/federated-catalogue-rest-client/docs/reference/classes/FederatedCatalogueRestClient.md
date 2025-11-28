@@ -1,6 +1,6 @@
 # Class: FederatedCatalogueRestClient
 
-Client for performing auditable item graph through to REST endpoints.
+Client for performing federated catalogue operations through REST endpoints.
 
 ## Extends
 
@@ -62,342 +62,106 @@ The class name of the component.
 
 ***
 
-### registerComplianceCredential()
+### query()
 
-> **registerComplianceCredential**(`credential`): `Promise`\<`string`\>
+> **query**(`filter?`): `Promise`\<`ICatalog`\>
 
-Registers a Participant's compliance Credential to the service.
+Query the federated catalogue with an optional filter.
 
 #### Parameters
 
-##### credential
+##### filter?
 
-`string`
+`unknown`[]
 
-The credential as JWT.
+Optional filter criteria for querying datasets.
 
 #### Returns
 
-`Promise`\<`string`\>
+`Promise`\<`ICatalog`\>
 
-The participant Id (usually a DID).
+The catalog containing matching datasets.
 
 #### Implementation of
 
-`IFederatedCatalogueComponent.registerComplianceCredential`
+`IFederatedCatalogueComponent.query`
 
 ***
 
-### queryParticipants()
+### get()
 
-> **queryParticipants**(`participant?`, `legalRegistrationNumber?`, `lrnType?`, `cursor?`, `limit?`): `Promise`\<`IParticipantList`\>
+> **get**(`datasetId`): `Promise`\<`IDataset`\>
 
-Query the federated catalogue.
+Retrieve a specific dataset by its unique identifier.
 
 #### Parameters
 
-##### participant?
+##### datasetId
 
 `string`
 
-The identity of the participant.
-
-##### legalRegistrationNumber?
-
-`string`
-
-The legal registration number.
-
-##### lrnType?
-
-`string`
-
-The legal registration number type (EORI, VATID, GLEIF, Kenya's PIN, etc.)
-
-##### cursor?
-
-`string`
-
-The cursor to request the next chunk of entities.
-
-##### limit?
-
-`number`
-
-Limit the number of entities to return.
+The unique identifier of the dataset.
 
 #### Returns
 
-`Promise`\<`IParticipantList`\>
+`Promise`\<`IDataset`\>
 
-All the entities for the storage matching the conditions,
-and a cursor which can be used to request more entities.
-
-#### Throws
-
-NotImplementedError if the implementation does not support retrieval.
+The dataset if found.
 
 #### Implementation of
 
-`IFederatedCatalogueComponent.queryParticipants`
+`IFederatedCatalogueComponent.get`
 
 ***
 
-### registerDataSpaceConnectorCredential()
+### set()
 
-> **registerDataSpaceConnectorCredential**(`credential`): `Promise`\<`string`\>
+> **set**(`dataSet`): `Promise`\<`void`\>
 
-Registers a Data Space Connector to the service.
+Insert or update a dataset in the catalogue.
+This method is internal and is not exposed via REST endpoints.
 
 #### Parameters
 
-##### credential
+##### dataSet
 
-`string`
+`IDataset`
 
-The credential as JWT.
+The dataset to store.
 
 #### Returns
 
-`Promise`\<`string`\>
+`Promise`\<`void`\>
 
-The Data Space Connector Id registered.
+Nothing.
 
 #### Implementation of
 
-`IFederatedCatalogueComponent.registerDataSpaceConnectorCredential`
+`IFederatedCatalogueComponent.set`
 
 ***
 
-### queryDataSpaceConnectors()
+### remove()
 
-> **queryDataSpaceConnectors**(`id?`, `maintainer?`, `cursor?`, `limit?`): `Promise`\<`IDataSpaceConnectorList`\>
+> **remove**(`dataSetId`): `Promise`\<`void`\>
 
-Query the federated catalogue.
-
-#### Parameters
-
-##### id?
-
-`string`
-
-Data Space Connector Id.
-
-##### maintainer?
-
-`string`
-
-The identity of the participant maintaining the Data Space Connector.
-
-##### cursor?
-
-`string`
-
-The cursor to request the next chunk of entities.
-
-##### limit?
-
-`number`
-
-Limit the number of entities to return.
-
-#### Returns
-
-`Promise`\<`IDataSpaceConnectorList`\>
-
-All the entities for the storage matching the conditions,
-and a cursor which can be used to request more entities.
-
-#### Throws
-
-NotImplementedError if the implementation does not support retrieval.
-
-#### Implementation of
-
-`IFederatedCatalogueComponent.queryDataSpaceConnectors`
-
-***
-
-### registerServiceOfferingCredential()
-
-> **registerServiceOfferingCredential**(`credential`): `Promise`\<`string`[]\>
-
-Registers a service offering Credential to the service.
+Remove a dataset from the catalogue by its unique identifier.
+This method is internal and is not exposed via REST endpoints.
 
 #### Parameters
 
-##### credential
+##### dataSetId
 
 `string`
 
-The credential as JWT.
+The unique identifier of the dataset to remove.
 
 #### Returns
 
-`Promise`\<`string`[]\>
+`Promise`\<`void`\>
 
-The Id of the Service Offerings registered.
-
-#### Implementation of
-
-`IFederatedCatalogueComponent.registerServiceOfferingCredential`
-
-***
-
-### registerDataResourceCredential()
-
-> **registerDataResourceCredential**(`credential`): `Promise`\<`string`[]\>
-
-Registers a data resource Credential to the service.
-
-#### Parameters
-
-##### credential
-
-`string`
-
-The credential as JWT.
-
-#### Returns
-
-`Promise`\<`string`[]\>
-
-The Id of the Data Resources registered.
+Nothing.
 
 #### Implementation of
 
-`IFederatedCatalogueComponent.registerDataResourceCredential`
-
-***
-
-### queryServiceOfferings()
-
-> **queryServiceOfferings**(`id?`, `providedBy?`, `cursor?`, `limit?`): `Promise`\<`IServiceOfferingList`\>
-
-Query the federated catalogue.
-
-#### Parameters
-
-##### id?
-
-`string`
-
-Service Offering id.
-
-##### providedBy?
-
-`string`
-
-The identity of the participant providing the Offering.
-
-##### cursor?
-
-`string`
-
-The cursor to request the next chunk of entities.
-
-##### limit?
-
-`number`
-
-Limit the number of entities to return.
-
-#### Returns
-
-`Promise`\<`IServiceOfferingList`\>
-
-All the entities for the storage matching the conditions,
-and a cursor which can be used to request more entities.
-
-#### Throws
-
-NotImplementedError if the implementation does not support retrieval.
-
-#### Implementation of
-
-`IFederatedCatalogueComponent.queryServiceOfferings`
-
-***
-
-### queryDataResources()
-
-> **queryDataResources**(`id?`, `producedBy?`, `cursor?`, `limit?`): `Promise`\<`IDataResourceList`\>
-
-Query the federated catalogue.
-
-#### Parameters
-
-##### id?
-
-`string`
-
-The id of the Data Resource.
-
-##### producedBy?
-
-`string`
-
-The identity of the participant producing the data behind the data resource.
-
-##### cursor?
-
-`string`
-
-The cursor to request the next chunk of entities.
-
-##### limit?
-
-`number`
-
-Limit the number of entities to return.
-
-#### Returns
-
-`Promise`\<`IDataResourceList`\>
-
-All the entities for the storage matching the conditions,
-and a cursor which can be used to request more entities.
-
-#### Throws
-
-NotImplementedError if the implementation does not support retrieval.
-
-#### Implementation of
-
-`IFederatedCatalogueComponent.queryDataResources`
-
-***
-
-### getEntry()
-
-> **getEntry**(`entryType`, `entryId`): `Promise`\<`ICatalogueEntry`\>
-
-Returns a Federated Catalogue entry.
-
-#### Parameters
-
-##### entryType
-
-`FederatedCatalogueEntryType`
-
-The type of entry.
-
-##### entryId
-
-`string`
-
-The entry's id.
-
-#### Returns
-
-`Promise`\<`ICatalogueEntry`\>
-
-Catalogue Entry
-
-#### Throws
-
-NotFoundError if not found.
-
-#### Implementation of
-
-`IFederatedCatalogueComponent.getEntry`
+`IFederatedCatalogueComponent.remove`

@@ -2,7 +2,7 @@
 
 > `const` **FederatedCatalogueContexts**: `object`
 
-The LD context concerning the Federated Catalogue.
+The contexts of federated catalogue data.
 
 ## Type Declaration
 

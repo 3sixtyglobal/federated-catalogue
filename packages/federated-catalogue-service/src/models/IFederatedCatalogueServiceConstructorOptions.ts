@@ -1,47 +1,18 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { IFederatedCatalogueServiceConfig } from "./IFederatedCatalogueServiceConfig.js";
+import type { ILoggingComponent } from "@twin.org/logging-models";
 
 /**
- * Federated Catalogue service options
+ * Options for the FederatedCatalogueService constructor.
  */
 export interface IFederatedCatalogueServiceConstructorOptions {
 	/**
-	 * The identity resolver component used.
+	 * The type of the entity storage connector for datasets.
 	 */
-	identityResolverComponentType?: string;
+	datasetStorageConnectorType?: string;
 
 	/**
-	 * Logging component type
+	 * The logging component for the service.
 	 */
-	loggingComponentType?: string;
-
-	/**
-	 * The configuration of the Federated Catalogue service.
-	 */
-	config: IFederatedCatalogueServiceConfig;
-
-	/**
-	 * The entity storage for participants.
-	 * @default participant-entry
-	 */
-	participantEntityStorageType?: string;
-
-	/**
-	 * The entity storage for data resources.
-	 * @default data-resource-entry
-	 */
-	dataResourceEntityStorageType?: string;
-
-	/**
-	 * The entity storage for service offerings.
-	 * @default service-offering-entry
-	 */
-	serviceOfferingEntityStorageType?: string;
-
-	/**
-	 * The entity storage for data space connectors.
-	 * @default data-space-connector-entry
-	 */
-	dataSpaceConnectorStorageType?: string;
+	loggingComponent?: ILoggingComponent;
 }

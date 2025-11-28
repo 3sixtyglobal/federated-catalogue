@@ -1,8 +1,8 @@
-// Copyright 2025 IOTA Stiftung.
+// Copyright 2024 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 
 /**
- * The LD context concerning the Federated Catalogue.
+ * The contexts of federated catalogue data.
  */
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const FederatedCatalogueContexts = {
@@ -13,7 +13,7 @@ export const FederatedCatalogueContexts = {
 } as const;
 
 /**
- * The Exported types
+ * The contexts of federated catalogue data.
  */
 export type FederatedCatalogueContexts =
 	(typeof FederatedCatalogueContexts)[keyof typeof FederatedCatalogueContexts];

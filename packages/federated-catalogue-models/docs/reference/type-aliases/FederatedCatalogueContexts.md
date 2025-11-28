@@ -2,4 +2,4 @@
 
 > **FederatedCatalogueContexts** = *typeof* [`FederatedCatalogueContexts`](../variables/FederatedCatalogueContexts.md)\[keyof *typeof* [`FederatedCatalogueContexts`](../variables/FederatedCatalogueContexts.md)\]
 
-The Exported types
+The contexts of federated catalogue data.

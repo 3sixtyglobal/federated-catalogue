@@ -36,7 +36,13 @@
 		"twinfoundation",
 		"buildx",
 		"dcmi",
-		"twindev"
+		"twindev",
+		"Dataspace",
+		"Dcat",
+		"dcat",
+		"dcterms",
+		"prov",
+		"Foaf"
 	],
 	"ignoreRegExpList": [
 		"/from\\s+(['\"]).*\\1/",

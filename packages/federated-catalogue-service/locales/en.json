@@ -1,25 +1,19 @@
 {
 	"error": {
 		"federatedCatalogueService": {
-			"complianceCredentialNotVerified": "Compliance credential cannot be verified",
-			"noEvidence": "No Credential evidence provided for the type of Compliance Claimed",
-			"providerIsNotParticipant": "Provider is not known as participant",
-			"entryNotFound": "The requested entry has not been found in the Catalogue",
-			"unknownEntryType": "The entry type is not known to the Catalogue"
-		},
-		"complianceCredentialVerificationService": {
-			"credentialCannotBeRetrieved": "Credential \"{credentialUrl}\" cannot be retrieved",
-			"credentialVerificationError": "Credential \"{credentialUrl}\" verification error",
-			"unknownHashingAlgorithm": "Unknown hashing algorithm: \"{hashingAlg}\""
+			"datasetNotFound": "Dataset with ID \"{notFoundId}\" not found in the catalogue",
+			"filterIndexCreationFailed": "Failed to create filter index for dataset \"{dataSetId}\" using filter \"{filterType}\"",
+			"multipleFiltersNotSupported": "Multiple filters are not supported in a single query"
 		}
 	},
 	"info": {
 		"federatedCatalogueService": {
-			"complianceCredentialVerified": "Compliance credential verified and entry added to the Catalogue"
-		},
-		"complianceCredentialVerificationService": {
-			"credentialEvidenceVerified": "Credential evidence \"{credentialUrl}\" verified",
-			"verifyingEvidenceCredential": "Verifying evidence credential \"{credentialUrl}\""
+			"datasetRetrieve": "Retrieving dataset \"{dataSetId}\" from catalogue",
+			"datasetSet": "Storing dataset \"{dataSetId}\" in catalogue",
+			"datasetRemove": "Removing dataset \"{dataSetId}\" from catalogue",
+			"catalogQuery": "Executing catalogue query",
+			"catalogQueryComplete": "Catalogue query complete, found {resultCount} results",
+			"filterIndexPersisted": "Filter indexes persisted for dataset \"{dataSetId}\" using filter \"{filterType}\", {indexCount} entries"
 		}
 	}
 }

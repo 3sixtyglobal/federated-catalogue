@@ -1,9 +1,7 @@
 {
 	"error": {
 		"federatedCatalogueRestClient": {
-			"idNotFoundFromLocationURL": "An entry Id cannot be extracted from location header",
-			"locationURLNotProvided": "Location URL header not provided by the server",
-			"unknownEntryType": "The entry type is not known to the Catalogue"
+			"notSupportedOnClient": "The method \"{methodName}\" is not supported on the REST client, it can only be used on a server side component"
 		}
 	}
 }

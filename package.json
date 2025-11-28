@@ -55,6 +55,7 @@
 		"packages/federated-catalogue-models",
 		"packages/federated-catalogue-service",
 		"packages/federated-catalogue-rest-client",
+		"packages/federated-catalogue-filters",
 		"apps/federated-catalogue-rest-server"
 	],
 	"type": "module",
