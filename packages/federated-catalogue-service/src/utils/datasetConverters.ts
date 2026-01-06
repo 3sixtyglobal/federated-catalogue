@@ -1,6 +1,6 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { IDataset } from "@twin.org/standards-w3c-dcat";
+import type { IDcatDataset } from "@twin.org/standards-w3c-dcat";
 import type { Dataset } from "../entities/dataset.js";
 
 /**
@@ -9,8 +9,8 @@ import type { Dataset } from "../entities/dataset.js";
  * @param entity The dataset entity from storage (may be partial from query results).
  * @returns The IDataset model for API responses.
  */
-export function datasetEntityToModel(entity: Dataset | Partial<Dataset>): IDataset {
-	return { ...entity } as IDataset;
+export function datasetEntityToModel(entity: Dataset | Partial<Dataset>): IDcatDataset {
+	return { ...entity } as IDcatDataset;
 }
 
 /**
@@ -20,6 +20,6 @@ export function datasetEntityToModel(entity: Dataset | Partial<Dataset>): IDatas
  * @param model The IDataset model from API requests.
  * @returns The Dataset entity for storage.
  */
-export function datasetModelToEntity(model: IDataset): Dataset {
+export function datasetModelToEntity(model: IDcatDataset): Dataset {
 	return { ...model } as Dataset;
 }

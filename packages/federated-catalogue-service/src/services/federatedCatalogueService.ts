@@ -37,8 +37,8 @@ import {
 	DcatContexts,
 	type DcatContextType,
 	DcatDataTypes,
-	type ICatalog,
-	type IDataset
+	type IDcatCatalog,
+	type IDcatDataset
 } from "@twin.org/standards-w3c-dcat";
 import type { Dataset } from "../entities/dataset.js";
 import type { IFederatedCatalogueServiceConstructorOptions } from "../models/IFederatedCatalogueServiceConstructorOptions.js";
@@ -100,7 +100,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * @returns The dataset if found.
 	 * @throws NotFoundError if the dataset does not exist.
 	 */
-	public async get(dataSetId: string): Promise<IDataset> {
+	public async get(dataSetId: string): Promise<IDcatDataset> {
 		Guards.stringValue(FederatedCatalogueService.CLASS_NAME, nameof(dataSetId), dataSetId);
 
 		await this._logging?.log({
@@ -125,7 +125,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * This method is internal and should not be exposed via REST endpoints.
 	 * @param dataSet The dataset to store.
 	 */
-	public async set(dataSet: IDataset): Promise<void> {
+	public async set(dataSet: IDcatDataset): Promise<void> {
 		Guards.object(FederatedCatalogueService.CLASS_NAME, nameof(dataSet), dataSet);
 
 		const dataSetId = dataSet["@id"] ?? dataSet["dcterms:identifier"];
@@ -181,8 +181,8 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * @returns Complete ICatalog object with @context, @id, @type, dcat:dataset, and optional cursor.
 	 * @throws NotFoundError if @type is missing or if the filter type is not registered.
 	 */
-	public async query(filter?: IBaseFilter[]): Promise<ICatalog> {
-		let datasets: IDataset[];
+	public async query(filter?: IBaseFilter[]): Promise<IDcatCatalog> {
+		let datasets: IDcatDataset[];
 		let resultCursor: string | undefined;
 
 		const isArray = Is.array(filter);
@@ -245,7 +245,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		const catalogId = `urn:x-catalog:${catalogHash}`;
 
 		// Return complete catalog with deterministic ID
-		const catalog: ICatalog = {
+		const catalog: IDcatCatalog = {
 			"@context": [
 				DataspaceProtocolContexts.ContextRoot,
 				{

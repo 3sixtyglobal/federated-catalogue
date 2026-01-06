@@ -1,7 +1,7 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 import { entity, property } from "@twin.org/entity";
-import type { IDataset } from "@twin.org/standards-w3c-dcat";
+import type { IDcatDataset } from "@twin.org/standards-w3c-dcat";
 
 /**
  * Class describing a DCAT dataset for entity storage.
@@ -20,173 +20,173 @@ export class Dataset {
 	 * The JSON-LD context for the dataset.
 	 */
 	@property({ type: "object" })
-	public "@context"!: IDataset["@context"];
+	public "@context"!: IDcatDataset["@context"];
 
 	/**
 	 * The type of the resource (typically "Dataset").
 	 */
 	@property({ type: "string" })
-	public "@type"!: IDataset["@type"];
+	public "@type"!: IDcatDataset["@type"];
 
 	/**
 	 * A name given to the resource.
 	 */
 	@property({ type: "object", optional: true })
-	public "dcterms:title"?: IDataset["dcterms:title"];
+	public "dcterms:title"?: IDcatDataset["dcterms:title"];
 
 	/**
 	 * A free-text account of the resource.
 	 */
 	@property({ type: "object", optional: true })
-	public "dcterms:description"?: IDataset["dcterms:description"];
+	public "dcterms:description"?: IDcatDataset["dcterms:description"];
 
 	/**
 	 * A unique identifier of the resource.
 	 */
 	@property({ type: "object", optional: true })
-	public "dcterms:identifier"?: IDataset["dcterms:identifier"];
+	public "dcterms:identifier"?: IDcatDataset["dcterms:identifier"];
 
 	/**
 	 * Date of formal issuance (publication) of the resource.
 	 */
 	@property({ type: "string", optional: true })
-	public "dcterms:issued"?: IDataset["dcterms:issued"];
+	public "dcterms:issued"?: IDcatDataset["dcterms:issued"];
 
 	/**
 	 * Most recent date on which the resource was changed, updated or modified.
 	 */
 	@property({ type: "string", optional: true })
-	public "dcterms:modified"?: IDataset["dcterms:modified"];
+	public "dcterms:modified"?: IDcatDataset["dcterms:modified"];
 
 	/**
 	 * A language of the resource.
 	 */
 	@property({ type: "object", optional: true })
-	public "dcterms:language"?: IDataset["dcterms:language"];
+	public "dcterms:language"?: IDcatDataset["dcterms:language"];
 
 	/**
 	 * An entity responsible for making the resource available.
 	 */
 	@property({ type: "object", optional: true })
-	public "dcterms:publisher"?: IDataset["dcterms:publisher"];
+	public "dcterms:publisher"?: IDcatDataset["dcterms:publisher"];
 
 	/**
 	 * An entity responsible for producing the resource.
 	 */
 	@property({ type: "object", optional: true })
-	public "dcterms:creator"?: IDataset["dcterms:creator"];
+	public "dcterms:creator"?: IDcatDataset["dcterms:creator"];
 
 	/**
 	 * Information about who can access the resource or an indication of its security status.
 	 */
 	@property({ type: "object", optional: true })
-	public "dcterms:accessRights"?: IDataset["dcterms:accessRights"];
+	public "dcterms:accessRights"?: IDcatDataset["dcterms:accessRights"];
 
 	/**
 	 * A legal document under which the resource is made available.
 	 */
 	@property({ type: "object", optional: true })
-	public "dcterms:license"?: IDataset["dcterms:license"];
+	public "dcterms:license"?: IDcatDataset["dcterms:license"];
 
 	/**
 	 * Information about rights held in and over the resource.
 	 */
 	@property({ type: "object", optional: true })
-	public "dcterms:rights"?: IDataset["dcterms:rights"];
+	public "dcterms:rights"?: IDcatDataset["dcterms:rights"];
 
 	/**
 	 * An established standard to which the resource conforms.
 	 */
 	@property({ type: "object", optional: true })
-	public "dcterms:conformsTo"?: IDataset["dcterms:conformsTo"];
+	public "dcterms:conformsTo"?: IDcatDataset["dcterms:conformsTo"];
 
 	/**
 	 * The nature or genre of the resource.
 	 */
 	@property({ type: "string", optional: true })
-	public "dcterms:type"?: IDataset["dcterms:type"];
+	public "dcterms:type"?: IDcatDataset["dcterms:type"];
 
 	/**
 	 * Relevant contact information for the catalogued resource.
 	 */
 	@property({ type: "object", optional: true })
-	public "dcat:contactPoint"?: IDataset["dcat:contactPoint"];
+	public "dcat:contactPoint"?: IDcatDataset["dcat:contactPoint"];
 
 	/**
 	 * A keyword or tag describing the resource.
 	 */
 	@property({ type: "object", optional: true })
-	public "dcat:keyword"?: IDataset["dcat:keyword"];
+	public "dcat:keyword"?: IDcatDataset["dcat:keyword"];
 
 	/**
 	 * A main category of the resource. A resource can have multiple themes.
 	 */
 	@property({ type: "object", optional: true })
-	public "dcat:theme"?: IDataset["dcat:theme"];
+	public "dcat:theme"?: IDcatDataset["dcat:theme"];
 
 	/**
 	 * A Web page that can be navigated to gain access to the resource.
 	 */
 	@property({ type: "object", optional: true })
-	public "dcat:landingPage"?: IDataset["dcat:landingPage"];
+	public "dcat:landingPage"?: IDcatDataset["dcat:landingPage"];
 
 	/**
 	 * Link to a description of a relationship with another resource.
 	 */
 	@property({ type: "object", optional: true })
-	public "dcat:qualifiedRelation"?: IDataset["dcat:qualifiedRelation"];
+	public "dcat:qualifiedRelation"?: IDcatDataset["dcat:qualifiedRelation"];
 
 	/**
 	 * An ODRL conformant policy expressing the rights associated with the resource.
 	 */
 	@property({ type: "object", optional: true })
-	public "odrl:hasPolicy"?: IDataset["odrl:hasPolicy"];
+	public "odrl:hasPolicy"?: IDcatDataset["odrl:hasPolicy"];
 
 	/**
 	 * An available distribution of the dataset.
 	 */
 	@property({ type: "object", optional: true })
-	public "dcat:distribution"?: IDataset["dcat:distribution"];
+	public "dcat:distribution"?: IDcatDataset["dcat:distribution"];
 
 	/**
 	 * The frequency at which the dataset is published.
 	 */
 	@property({ type: "string", optional: true })
-	public "dcterms:accrualPeriodicity"?: IDataset["dcterms:accrualPeriodicity"];
+	public "dcterms:accrualPeriodicity"?: IDcatDataset["dcterms:accrualPeriodicity"];
 
 	/**
 	 * A dataset series of which the dataset is part.
 	 */
 	@property({ type: "string", optional: true })
-	public "dcat:inSeries"?: IDataset["dcat:inSeries"];
+	public "dcat:inSeries"?: IDcatDataset["dcat:inSeries"];
 
 	/**
 	 * The geographical area covered by the dataset.
 	 */
 	@property({ type: "object", optional: true })
-	public "dcterms:spatial"?: IDataset["dcterms:spatial"];
+	public "dcterms:spatial"?: IDcatDataset["dcterms:spatial"];
 
 	/**
 	 * Minimum spatial separation resolvable in a dataset, measured in meters.
 	 */
 	@property({ type: "object", optional: true })
-	public "dcat:spatialResolutionInMeters"?: IDataset["dcat:spatialResolutionInMeters"];
+	public "dcat:spatialResolutionInMeters"?: IDcatDataset["dcat:spatialResolutionInMeters"];
 
 	/**
 	 * The temporal period that the dataset covers.
 	 */
 	@property({ type: "object", optional: true })
-	public "dcterms:temporal"?: IDataset["dcterms:temporal"];
+	public "dcterms:temporal"?: IDcatDataset["dcterms:temporal"];
 
 	/**
 	 * Minimum time period resolvable in the dataset.
 	 */
 	@property({ type: "object", optional: true })
-	public "dcat:temporalResolution"?: IDataset["dcat:temporalResolution"];
+	public "dcat:temporalResolution"?: IDcatDataset["dcat:temporalResolution"];
 
 	/**
 	 * An activity that generated, or provides the business context for, the creation of the dataset.
 	 */
 	@property({ type: "object", optional: true })
-	public "prov:wasGeneratedBy"?: IDataset["prov:wasGeneratedBy"];
+	public "prov:wasGeneratedBy"?: IDcatDataset["prov:wasGeneratedBy"];
 }

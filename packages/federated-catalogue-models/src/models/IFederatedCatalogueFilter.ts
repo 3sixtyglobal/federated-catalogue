@@ -1,7 +1,7 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 import type { IComponent } from "@twin.org/core";
-import type { IDataset } from "@twin.org/standards-w3c-dcat";
+import type { IDcatDataset } from "@twin.org/standards-w3c-dcat";
 
 /**
  * Interface describing a filter plugin for the federated catalogue.
@@ -16,7 +16,7 @@ export interface IFederatedCatalogueFilter extends IComponent {
 	 * @param filter The filter criteria (structure depends on the filter implementation).
 	 * @returns Object containing datasets matching the filter criteria and optional cursor for next page.
 	 */
-	query(filter: unknown): Promise<{ datasets: IDataset[]; cursor?: string }>;
+	query(filter: unknown): Promise<{ datasets: IDcatDataset[]; cursor?: string }>;
 
 	/**
 	 * Generate filter indexes for a dataset to optimize future queries.
@@ -24,5 +24,5 @@ export interface IFederatedCatalogueFilter extends IComponent {
 	 * @param dataSet The dataset to index.
 	 * @returns Record mapping filter-specific index keys to values.
 	 */
-	createIndex(dataSet: IDataset): Promise<{ [key: string]: unknown }>;
+	createIndex(dataSet: IDcatDataset): Promise<{ [key: string]: unknown }>;
 }

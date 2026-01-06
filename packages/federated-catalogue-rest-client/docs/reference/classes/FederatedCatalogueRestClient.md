@@ -64,7 +64,7 @@ The class name of the component.
 
 ### query()
 
-> **query**(`filter?`): `Promise`\<`ICatalog`\>
+> **query**(`filter?`): `Promise`\<`IDcatCatalog`\>
 
 Query the federated catalogue with an optional filter.
 
@@ -78,7 +78,7 @@ Optional filter criteria for querying datasets.
 
 #### Returns
 
-`Promise`\<`ICatalog`\>
+`Promise`\<`IDcatCatalog`\>
 
 The catalog containing matching datasets.
 
@@ -90,7 +90,7 @@ The catalog containing matching datasets.
 
 ### get()
 
-> **get**(`datasetId`): `Promise`\<`IDataset`\>
+> **get**(`datasetId`): `Promise`\<`IDcatDataset`\>
 
 Retrieve a specific dataset by its unique identifier.
 
@@ -104,7 +104,7 @@ The unique identifier of the dataset.
 
 #### Returns
 
-`Promise`\<`IDataset`\>
+`Promise`\<`IDcatDataset`\>
 
 The dataset if found.
 
@@ -125,7 +125,7 @@ This method is internal and is not exposed via REST endpoints.
 
 ##### dataSet
 
-`IDataset`
+`IDcatDataset`
 
 The dataset to store.
 

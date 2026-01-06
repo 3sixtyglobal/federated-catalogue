@@ -12,7 +12,7 @@ Filters are registered by name in the FilterFactory and do not need to self-iden
 
 ### query()
 
-> **query**(`filter`): `Promise`\<\{ `datasets`: `IDataset`[]; `cursor?`: `string`; \}\>
+> **query**(`filter`): `Promise`\<\{ `datasets`: `IDcatDataset`[]; `cursor?`: `string`; \}\>
 
 Execute a filter-specific query over the catalogue.
 Each filter interprets the payload according to its own semantics.
@@ -28,7 +28,7 @@ The filter criteria (structure depends on the filter implementation).
 
 #### Returns
 
-`Promise`\<\{ `datasets`: `IDataset`[]; `cursor?`: `string`; \}\>
+`Promise`\<\{ `datasets`: `IDcatDataset`[]; `cursor?`: `string`; \}\>
 
 Object containing datasets matching the filter criteria and optional cursor for next page.
 
@@ -45,7 +45,7 @@ Indexes are stored as properties on the dataset entity itself.
 
 ##### dataSet
 
-`IDataset`
+`IDcatDataset`
 
 The dataset to index.
 

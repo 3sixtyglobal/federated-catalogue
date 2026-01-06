@@ -57,7 +57,7 @@ The class name of the component.
 
 ### query()
 
-> **query**(`filter`): `Promise`\<\{ `datasets`: `IDataset`[]; `cursor?`: `string`; \}\>
+> **query**(`filter`): `Promise`\<\{ `datasets`: `IDcatDataset`[]; `cursor?`: `string`; \}\>
 
 Execute a filter-specific query over the catalogue.
 Uses database-level filtering with query conditions.
@@ -72,7 +72,7 @@ The filter criteria (Partial<IDataset> with example values).
 
 #### Returns
 
-`Promise`\<\{ `datasets`: `IDataset`[]; `cursor?`: `string`; \}\>
+`Promise`\<\{ `datasets`: `IDcatDataset`[]; `cursor?`: `string`; \}\>
 
 Object containing datasets matching the filter criteria and optional cursor for next page.
 
@@ -94,7 +94,7 @@ Indexes are stored as properties on the dataset entity itself.
 
 ##### dataSet
 
-`IDataset`
+`IDcatDataset`
 
 The dataset to index.
 

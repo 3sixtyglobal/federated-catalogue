@@ -8,7 +8,7 @@ import {
 } from "@twin.org/entity-storage-models";
 import type { IFederatedCatalogueFilter } from "@twin.org/federated-catalogue-models";
 import { nameof } from "@twin.org/nameof";
-import type { IDataset } from "@twin.org/standards-w3c-dcat";
+import type { IDcatDataset } from "@twin.org/standards-w3c-dcat";
 import type { IFilterByExampleConstructorOptions } from "./models/IFilterByExampleConstructorOptions.js";
 
 /**
@@ -25,7 +25,7 @@ export class FilterByExample implements IFederatedCatalogueFilter {
 	 * The entity storage connector for datasets.
 	 * @internal
 	 */
-	private readonly _datasetStorage: IEntityStorageConnector<IDataset>;
+	private readonly _datasetStorage: IEntityStorageConnector<IDcatDataset>;
 
 	/**
 	 * Create a new instance of FilterByExample.
@@ -51,26 +51,26 @@ export class FilterByExample implements IFederatedCatalogueFilter {
 	 * @param filter The filter criteria (Partial<IDataset> with example values).
 	 * @returns Object containing datasets matching the filter criteria and optional cursor for next page.
 	 */
-	public async query(filter: unknown): Promise<{ datasets: IDataset[]; cursor?: string }> {
+	public async query(filter: unknown): Promise<{ datasets: IDcatDataset[]; cursor?: string }> {
 		if (!Is.objectValue(filter)) {
 			const result = await this._datasetStorage.query();
-			const datasets = result.entities.map(entity => entity as unknown as IDataset);
+			const datasets = result.entities.map(entity => entity as unknown as IDcatDataset);
 			return { datasets };
 		}
 
-		const filterObj = filter as Partial<IDataset>;
+		const filterObj = filter as Partial<IDcatDataset>;
 
 		const conditions = this.buildQueryConditions(filterObj);
 		if (conditions.length > 0) {
 			const result = await this._datasetStorage.query({
 				conditions
 			});
-			const datasets = result.entities.map(entity => entity as IDataset);
+			const datasets = result.entities.map(entity => entity as IDcatDataset);
 			return { datasets };
 		}
 
 		const result = await this._datasetStorage.query();
-		const datasets = result.entities.map(entity => entity as IDataset);
+		const datasets = result.entities.map(entity => entity as IDcatDataset);
 		return { datasets };
 	}
 
@@ -81,7 +81,7 @@ export class FilterByExample implements IFederatedCatalogueFilter {
 	 * @param dataSet The dataset to index.
 	 * @returns Record mapping property names to their values for indexing.
 	 */
-	public async createIndex(dataSet: IDataset): Promise<{ [key: string]: unknown }> {
+	public async createIndex(dataSet: IDcatDataset): Promise<{ [key: string]: unknown }> {
 		Guards.object(FilterByExample.CLASS_NAME, nameof(dataSet), dataSet);
 
 		const indexes: { [key: string]: unknown } = {};
@@ -113,7 +113,7 @@ export class FilterByExample implements IFederatedCatalogueFilter {
 	 * @returns Query conditions array for entity storage.
 	 */
 	private buildQueryConditions(
-		filter: Partial<IDataset>
+		filter: Partial<IDcatDataset>
 	): { property: string; value: unknown; comparison: ComparisonOperator }[] {
 		const conditions: {
 			property: string;

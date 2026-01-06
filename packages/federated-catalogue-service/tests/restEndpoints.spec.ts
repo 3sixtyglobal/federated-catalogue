@@ -11,7 +11,7 @@ import {
 	type IGetDatasetResponse
 } from "@twin.org/federated-catalogue-models";
 import { nameof } from "@twin.org/nameof";
-import { CatalogTypes, DataspaceProtocolContexts } from "@twin.org/standards-dataspace-protocol";
+import { DataspaceProtocolCatalogTypes, DataspaceProtocolContexts } from "@twin.org/standards-dataspace-protocol";
 import { DublinCoreContexts } from "@twin.org/standards-dublin-core";
 import { addAllContextsToDocumentCache } from "@twin.org/standards-ld-contexts";
 import { DcatClasses, DcatContexts } from "@twin.org/standards-w3c-dcat";
@@ -102,7 +102,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			const request: ICatalogRequestRequest = {
 				body: {
 					"@context": [DataspaceProtocolContexts.ContextRoot],
-					"@type": CatalogTypes.CatalogRequestMessage,
+					"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage,
 					filter: [
 						{
 							"@type": "FilterByExample",

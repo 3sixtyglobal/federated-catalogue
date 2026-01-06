@@ -6,6 +6,6 @@ The request parameters for the catalog request method.
 
 ### body
 
-> **body**: `ICatalogRequestMessage`
+> **body**: `IDataspaceProtocolCatalogRequestMessage`
 
 The request body containing the catalog query.

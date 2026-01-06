@@ -36,12 +36,9 @@
 		"OperatorType": "https://schema.twindev.org/w3c-odrl/OperatorType",
 		"LeftOperandType": "https://schema.twindev.org/w3c-odrl/LeftOperandType",
 		"RightOperandType": "https://schema.twindev.org/w3c-odrl/RightOperandType",
-		"IAddress": "https://schema.twindev.org/gaia-x/Address",
-		"IDataResource": "https://schema.twindev.org/gaia-x/DataResource",
-		"IDataExchangeComponent": "https://schema.twindev.org/gaia-x/DataExchangeComponent",
-		"IEndpoint": "https://schema.twindev.org/gaia-x/Endpoint",
-		"IParticipant": "https://schema.twindev.org/gaia-x/Participant",
-		"IRegistrationNumber": "https://schema.twindev.org/gaia-x/RegistrationNumber",
-		"IServiceOffering": "https://schema.twindev.org/gaia-x/ServiceOffering"
+		"DataspaceProtocol(.*?)": "https://schema.twindev.org/dataspace-protocol/DataspaceProtocol$1",
+		"Dcat(.*?)": "https://schema.twindev.org/dcat/Dcat$1",
+		"DublinCore(.*?)": "https://schema.twindev.org/dublin-core/DublinCore$1",
+		"Foaf(.*?)": "https://schema.twindev.org/foaf/Foaf$1"
 	}
 }

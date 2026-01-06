@@ -6,6 +6,6 @@ The response payload for the get dataset method.
 
 ### body
 
-> **body**: `IDataset`
+> **body**: `IDcatDataset`
 
 The response payload containing the dataset.

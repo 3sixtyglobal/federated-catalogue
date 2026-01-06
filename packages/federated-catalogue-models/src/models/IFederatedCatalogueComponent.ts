@@ -1,7 +1,7 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 import type { IComponent } from "@twin.org/core";
-import type { ICatalog, IDataset } from "@twin.org/standards-w3c-dcat";
+import type { IDcatCatalog, IDcatDataset } from "@twin.org/standards-w3c-dcat";
 
 /**
  * Interface describing a federated catalogue component.
@@ -14,7 +14,7 @@ export interface IFederatedCatalogueComponent extends IComponent {
 	 * @returns The dataset if found.
 	 * @throws NotFoundError if the dataset does not exist.
 	 */
-	get(dataSetId: string): Promise<IDataset>;
+	get(dataSetId: string): Promise<IDcatDataset>;
 
 	/**
 	 * Insert or update a dataset in the catalogue.
@@ -22,7 +22,7 @@ export interface IFederatedCatalogueComponent extends IComponent {
 	 * @param dataSet The dataset to store.
 	 * @returns Nothing.
 	 */
-	set(dataSet: IDataset): Promise<void>;
+	set(dataSet: IDcatDataset): Promise<void>;
 
 	/**
 	 * Execute a query against the catalogue using registered filter plugins.
@@ -35,7 +35,7 @@ export interface IFederatedCatalogueComponent extends IComponent {
 	 * @returns Complete ICatalog object with @context, @id, @type, dcat:dataset, and optional cursor.
 	 * @throws NotFoundError if the @type field is missing or if the filter type is not registered.
 	 */
-	query(filter?: unknown[]): Promise<ICatalog>;
+	query(filter?: unknown[]): Promise<IDcatCatalog>;
 
 	/**
 	 * Remove a dataset from the catalogue by its unique identifier.

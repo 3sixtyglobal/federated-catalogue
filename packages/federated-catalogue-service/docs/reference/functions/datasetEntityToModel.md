@@ -1,6 +1,6 @@
 # Function: datasetEntityToModel()
 
-> **datasetEntityToModel**(`entity`): `IDataset`
+> **datasetEntityToModel**(`entity`): `IDcatDataset`
 
 Convert a Dataset entity to an IDataset model.
 Removes internal entity properties that should not be exposed in API responses.
@@ -15,6 +15,6 @@ The dataset entity from storage (may be partial from query results).
 
 ## Returns
 
-`IDataset`
+`IDcatDataset`
 
 The IDataset model for API responses.

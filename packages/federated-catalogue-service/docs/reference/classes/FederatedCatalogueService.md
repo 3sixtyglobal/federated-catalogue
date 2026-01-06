@@ -57,7 +57,7 @@ The class name of the component.
 
 ### get()
 
-> **get**(`dataSetId`): `Promise`\<`IDataset`\>
+> **get**(`dataSetId`): `Promise`\<`IDcatDataset`\>
 
 Retrieve a dataset by its unique identifier.
 
@@ -71,7 +71,7 @@ The unique identifier of the dataset.
 
 #### Returns
 
-`Promise`\<`IDataset`\>
+`Promise`\<`IDcatDataset`\>
 
 The dataset if found.
 
@@ -96,7 +96,7 @@ This method is internal and should not be exposed via REST endpoints.
 
 ##### dataSet
 
-`IDataset`
+`IDcatDataset`
 
 The dataset to store.
 
@@ -112,7 +112,7 @@ The dataset to store.
 
 ### query()
 
-> **query**(`filter?`): `Promise`\<`ICatalog`\>
+> **query**(`filter?`): `Promise`\<`IDcatCatalog`\>
 
 Execute a query against the catalogue using registered filter plugins.
 Returns a complete DCAT Catalog object with proper JSON-LD context, metadata, and datasets.
@@ -129,7 +129,7 @@ The filter criteria containing @type, optional cursor and limit properties.
 
 #### Returns
 
-`Promise`\<`ICatalog`\>
+`Promise`\<`IDcatCatalog`\>
 
 Complete ICatalog object with @context, @id, @type, dcat:dataset, and optional cursor.
 

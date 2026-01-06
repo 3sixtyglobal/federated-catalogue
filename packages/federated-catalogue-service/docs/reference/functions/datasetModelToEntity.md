@@ -10,7 +10,7 @@ Creates a shallow copy to avoid mutating the input model.
 
 ### model
 
-`IDataset`
+`IDcatDataset`
 
 The IDataset model from API requests.
 

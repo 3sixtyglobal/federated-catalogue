@@ -12,8 +12,8 @@ import {
 	type IGetDatasetResponse
 } from "@twin.org/federated-catalogue-models";
 import { nameof } from "@twin.org/nameof";
-import { CatalogTypes, DataspaceProtocolContexts } from "@twin.org/standards-dataspace-protocol";
-import type { ICatalog, IDataset } from "@twin.org/standards-w3c-dcat";
+import { DataspaceProtocolCatalogTypes, DataspaceProtocolContexts } from "@twin.org/standards-dataspace-protocol";
+import type { IDcatCatalog, IDcatDataset } from "@twin.org/standards-w3c-dcat";
 
 /**
  * Client for performing federated catalogue operations through REST endpoints.
@@ -48,7 +48,7 @@ export class FederatedCatalogueRestClient
 	 * @param filter Optional filter criteria for querying datasets.
 	 * @returns The catalog containing matching datasets.
 	 */
-	public async query(filter?: unknown[]): Promise<ICatalog> {
+	public async query(filter?: unknown[]): Promise<IDcatCatalog> {
 		const response = await this.fetch<ICatalogRequestRequest, ICatalogRequestResponse>(
 			"/request",
 			"POST",
@@ -58,7 +58,7 @@ export class FederatedCatalogueRestClient
 						DataspaceProtocolContexts.ContextRoot,
 						FederatedCatalogueContexts.ContextRoot
 					],
-					"@type": CatalogTypes.CatalogRequestMessage,
+					"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage,
 					filter
 				}
 			}
@@ -72,7 +72,7 @@ export class FederatedCatalogueRestClient
 	 * @param datasetId The unique identifier of the dataset.
 	 * @returns The dataset if found.
 	 */
-	public async get(datasetId: string): Promise<IDataset> {
+	public async get(datasetId: string): Promise<IDcatDataset> {
 		Guards.stringValue(FederatedCatalogueRestClient.CLASS_NAME, nameof(datasetId), datasetId);
 
 		const response = await this.fetch<IGetDatasetRequest, IGetDatasetResponse>(
@@ -94,7 +94,7 @@ export class FederatedCatalogueRestClient
 	 * @param dataSet The dataset to store.
 	 * @returns Nothing.
 	 */
-	public async set(dataSet: IDataset): Promise<void> {
+	public async set(dataSet: IDcatDataset): Promise<void> {
 		throw new NotSupportedError(FederatedCatalogueRestClient.CLASS_NAME, "notSupportedOnClient", {
 			methodName: "set"
 		});

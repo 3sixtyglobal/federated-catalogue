@@ -42,7 +42,7 @@ The type of the resource (typically "Dataset").
 
 ### dcterms:title?
 
-> `optional` **dcterms:title**: `LiteralType`
+> `optional` **dcterms:title**: `DcatLiteralType`
 
 A name given to the resource.
 
@@ -50,7 +50,7 @@ A name given to the resource.
 
 ### dcterms:description?
 
-> `optional` **dcterms:description**: `LiteralType`
+> `optional` **dcterms:description**: `DcatLiteralType`
 
 A free-text account of the resource.
 
@@ -58,7 +58,7 @@ A free-text account of the resource.
 
 ### dcterms:identifier?
 
-> `optional` **dcterms:identifier**: `LiteralType`
+> `optional` **dcterms:identifier**: `DcatLiteralType`
 
 A unique identifier of the resource.
 
@@ -90,7 +90,7 @@ A language of the resource.
 
 ### dcterms:publisher?
 
-> `optional` **dcterms:publisher**: `string` \| `IAgent`
+> `optional` **dcterms:publisher**: `string` \| `IFoafAgent`
 
 An entity responsible for making the resource available.
 
@@ -98,7 +98,7 @@ An entity responsible for making the resource available.
 
 ### dcterms:creator?
 
-> `optional` **dcterms:creator**: `IAgent`
+> `optional` **dcterms:creator**: `IFoafAgent`
 
 An entity responsible for producing the resource.
 
@@ -154,7 +154,7 @@ Relevant contact information for the catalogued resource.
 
 ### dcat:keyword?
 
-> `optional` **dcat:keyword**: `LiteralType`
+> `optional` **dcat:keyword**: `DcatLiteralType`
 
 A keyword or tag describing the resource.
 
@@ -178,7 +178,7 @@ A Web page that can be navigated to gain access to the resource.
 
 ### dcat:qualifiedRelation?
 
-> `optional` **dcat:qualifiedRelation**: `string` \| `IRelationship`
+> `optional` **dcat:qualifiedRelation**: `string` \| `IDcatRelationship`
 
 Link to a description of a relationship with another resource.
 
@@ -194,7 +194,7 @@ An ODRL conformant policy expressing the rights associated with the resource.
 
 ### dcat:distribution?
 
-> `optional` **dcat:distribution**: `ObjectOrArray`\<`IDistribution`\>
+> `optional` **dcat:distribution**: `ObjectOrArray`\<`IDcatDistribution`\>
 
 An available distribution of the dataset.
 
@@ -234,7 +234,7 @@ Minimum spatial separation resolvable in a dataset, measured in meters.
 
 ### dcterms:temporal?
 
-> `optional` **dcterms:temporal**: `IPeriodOfTime`
+> `optional` **dcterms:temporal**: `IDublinCorePeriodOfTime`
 
 The temporal period that the dataset covers.
 

@@ -6,6 +6,6 @@ The response payload for the catalog request method.
 
 ### body
 
-> **body**: `ICatalog`
+> **body**: `IDcatCatalog`
 
 The response payload containing the catalog with matching datasets.
