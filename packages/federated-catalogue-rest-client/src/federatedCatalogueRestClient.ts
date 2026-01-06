@@ -12,7 +12,10 @@ import {
 	type IGetDatasetResponse
 } from "@twin.org/federated-catalogue-models";
 import { nameof } from "@twin.org/nameof";
-import { DataspaceProtocolCatalogTypes, DataspaceProtocolContexts } from "@twin.org/standards-dataspace-protocol";
+import {
+	DataspaceProtocolCatalogTypes,
+	DataspaceProtocolContexts
+} from "@twin.org/standards-dataspace-protocol";
 import type { IDcatCatalog, IDcatDataset } from "@twin.org/standards-w3c-dcat";
 
 /**

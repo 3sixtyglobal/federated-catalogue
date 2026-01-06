@@ -12,7 +12,10 @@ import type {
 } from "@twin.org/federated-catalogue-models";
 import { FederatedCatalogueContexts } from "@twin.org/federated-catalogue-models";
 import { nameof } from "@twin.org/nameof";
-import { DataspaceProtocolCatalogTypes, DataspaceProtocolContexts } from "@twin.org/standards-dataspace-protocol";
+import {
+	DataspaceProtocolCatalogTypes,
+	DataspaceProtocolContexts
+} from "@twin.org/standards-dataspace-protocol";
 import { DublinCoreContexts } from "@twin.org/standards-dublin-core";
 import { DcatClasses, DcatContexts, type DcatContextType } from "@twin.org/standards-w3c-dcat";
 
