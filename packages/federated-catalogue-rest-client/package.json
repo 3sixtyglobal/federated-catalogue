@@ -7,7 +7,7 @@
 		"url": "git+https://github.com/twinfoundation/federated-catalogue.git",
 		"directory": "packages/federated-catalogue-rest-client"
 	},
-	"author": "jose.cantera@iota.org",
+	"author": "cornel.filip@iota.org",
 	"license": "Apache-2.0",
 	"type": "module",
 	"engines": {

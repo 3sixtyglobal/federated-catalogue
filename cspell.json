@@ -42,7 +42,8 @@
 		"dcat",
 		"dcterms",
 		"prov",
-		"Foaf"
+		"Foaf",
+		"dspace"
 	],
 	"ignoreRegExpList": [
 		"/from\\s+(['\"]).*\\1/",

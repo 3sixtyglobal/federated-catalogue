@@ -57,7 +57,7 @@ The class name of the component.
 
 ### get()
 
-> **get**(`dataSetId`): `Promise`\<`IDcatDataset`\>
+> **get**(`dataSetId`): `Promise`\<`IDcatDataset` \| `IDataspaceProtocolCatalogError`\>
 
 Retrieve a dataset by its unique identifier.
 
@@ -71,13 +71,9 @@ The unique identifier of the dataset.
 
 #### Returns
 
-`Promise`\<`IDcatDataset`\>
+`Promise`\<`IDcatDataset` \| `IDataspaceProtocolCatalogError`\>
 
-The dataset if found.
-
-#### Throws
-
-NotFoundError if the dataset does not exist.
+The dataset if found, or a CatalogError if not found or an error occurs.
 
 #### Implementation of
 
@@ -112,30 +108,44 @@ The dataset to store.
 
 ### query()
 
-> **query**(`filter?`): `Promise`\<`IDcatCatalog`\>
+> **query**(`filter?`, `cursor?`, `limit?`): `Promise`\<\{ `catalog`: `IDataspaceProtocolCatalogError` \| `IDataspaceProtocolCatalog`; `cursor?`: `string`; \}\>
 
 Execute a query against the catalogue using registered filter plugins.
-Returns a complete DCAT Catalog object with proper JSON-LD context, metadata, and datasets.
-The filter payload is evaluated by the appropriate filter plugin based on its structure.
-Pagination properties (cursor, limit) and filter type (@type) are extracted from the filter object.
+Returns a DS Protocol compliant Catalog object with participantId.
+
+The root catalog's participantId is the requesting participant (from context).
+Own datasets (matching requestingParticipantId) go directly in root dataset[].
+Other participants' datasets are grouped in nested catalog[] entries.
+
+For anonymous requests (no context), uses the first publisher found as fallback.
+Returns CatalogError 404 when no datasets exist, CatalogError 400 for invalid requests.
 
 #### Parameters
 
 ##### filter?
 
-`IBaseFilter`[]
+`unknown`[]
 
 The filter criteria containing @type, optional cursor and limit properties.
 
+##### cursor?
+
+`string`
+
+Optional cursor for pagination.
+
+##### limit?
+
+`number`
+
+Optional limit for pagination.
+
 #### Returns
 
-`Promise`\<`IDcatCatalog`\>
+`Promise`\<\{ `catalog`: `IDataspaceProtocolCatalogError` \| `IDataspaceProtocolCatalog`; `cursor?`: `string`; \}\>
 
-Complete ICatalog object with @context, @id, @type, dcat:dataset, and optional cursor.
-
-#### Throws
-
-NotFoundError if
+Complete IDataspaceProtocolCatalog with @context, @id, @type, participantId, dataset/catalog,
+or CatalogError if validation fails or an error occurs.
 
 #### Implementation of
 

@@ -2,21 +2,23 @@
 // SPDX-License-Identifier: Apache-2.0.
 import { BaseRestClient } from "@twin.org/api-core";
 import type { IBaseRestClientConfig } from "@twin.org/api-models";
-import { Guards, NotSupportedError } from "@twin.org/core";
-import {
-	FederatedCatalogueContexts,
-	type IFederatedCatalogueComponent,
-	type ICatalogRequestRequest,
-	type ICatalogRequestResponse,
-	type IGetDatasetRequest,
-	type IGetDatasetResponse
+import { Coerce, Guards, NotSupportedError } from "@twin.org/core";
+import type {
+	ICatalogRequestRequest,
+	ICatalogRequestResponse,
+	IFederatedCatalogueComponent,
+	IGetDatasetRequest,
+	IGetDatasetResponse
 } from "@twin.org/federated-catalogue-models";
 import { nameof } from "@twin.org/nameof";
 import {
 	DataspaceProtocolCatalogTypes,
-	DataspaceProtocolContexts
+	DataspaceProtocolContexts,
+	type IDataspaceProtocolCatalog,
+	type IDataspaceProtocolCatalogError
 } from "@twin.org/standards-dataspace-protocol";
-import type { IDcatCatalog, IDcatDataset } from "@twin.org/standards-w3c-dcat";
+import type { IDcatDataset } from "@twin.org/standards-w3c-dcat";
+import { HeaderHelper, HeaderTypes } from "@twin.org/web";
 
 /**
  * Client for performing federated catalogue operations through REST endpoints.
@@ -49,33 +51,47 @@ export class FederatedCatalogueRestClient
 	/**
 	 * Query the federated catalogue with an optional filter.
 	 * @param filter Optional filter criteria for querying datasets.
-	 * @returns The catalog containing matching datasets.
+	 * @param cursor Optional cursor for pagination.
+	 * @param limit Optional limit for pagination.
+	 * @returns The catalog containing matching datasets (or CatalogError if none found), with cursor if more pages exist.
 	 */
-	public async query(filter?: unknown[]): Promise<IDcatCatalog> {
+	public async query(
+		filter?: unknown[],
+		cursor?: string,
+		limit?: number
+	): Promise<{
+		catalog: IDataspaceProtocolCatalog | IDataspaceProtocolCatalogError;
+		cursor?: string;
+	}> {
 		const response = await this.fetch<ICatalogRequestRequest, ICatalogRequestResponse>(
 			"/request",
 			"POST",
 			{
+				query: {
+					cursor,
+					limit: Coerce.string(limit)
+				},
 				body: {
-					"@context": [
-						DataspaceProtocolContexts.ContextRoot,
-						FederatedCatalogueContexts.ContextRoot
-					],
+					"@context": [DataspaceProtocolContexts.JsonLdContext],
 					"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage,
 					filter
 				}
 			}
 		);
 
-		return response.body;
+		return {
+			catalog: response.body,
+			cursor: HeaderHelper.extractLinkHeaderRelation(response.headers?.[HeaderTypes.Link], "next")
+				?.urlQueryParams?.cursor
+		};
 	}
 
 	/**
 	 * Retrieve a specific dataset by its unique identifier.
 	 * @param datasetId The unique identifier of the dataset.
-	 * @returns The dataset if found.
+	 * @returns The dataset if found, or a CatalogError if not found or an error occurs.
 	 */
-	public async get(datasetId: string): Promise<IDcatDataset> {
+	public async get(datasetId: string): Promise<IDcatDataset | IDataspaceProtocolCatalogError> {
 		Guards.stringValue(FederatedCatalogueRestClient.CLASS_NAME, nameof(datasetId), datasetId);
 
 		const response = await this.fetch<IGetDatasetRequest, IGetDatasetResponse>(

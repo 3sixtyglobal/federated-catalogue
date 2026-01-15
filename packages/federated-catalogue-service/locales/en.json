@@ -2,8 +2,12 @@
 	"error": {
 		"federatedCatalogueService": {
 			"datasetNotFound": "Dataset with ID \"{notFoundId}\" not found in the catalogue",
+			"datasetNotConformant": "Dataset \"{dataSetId}\" does not conform to DS Protocol specification",
+			"datasetIdInvalidUri": "Dataset @id \"{dataSetId}\" must be a valid URI (URN or URL) per DS Protocol",
+			"datasetMissingPublisher": "Dataset \"{dataSetId}\" is missing required dcterms:publisher property (needed for participant identification)",
 			"filterIndexCreationFailed": "Failed to create filter index for dataset \"{dataSetId}\" using filter \"{filterType}\"",
-			"multipleFiltersNotSupported": "Multiple filters are not supported in a single query"
+			"multipleFiltersNotSupported": "Multiple filters are not supported in a single query",
+			"noDatasetsFound": "No datasets found in the catalogue"
 		}
 	},
 	"info": {

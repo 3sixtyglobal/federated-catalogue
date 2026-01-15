@@ -1,7 +1,11 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 import type { IComponent } from "@twin.org/core";
-import type { IDcatCatalog, IDcatDataset } from "@twin.org/standards-w3c-dcat";
+import type {
+	IDataspaceProtocolCatalog,
+	IDataspaceProtocolCatalogError
+} from "@twin.org/standards-dataspace-protocol";
+import type { IDcatDataset } from "@twin.org/standards-w3c-dcat";
 
 /**
  * Interface describing a federated catalogue component.
@@ -11,10 +15,9 @@ export interface IFederatedCatalogueComponent extends IComponent {
 	/**
 	 * Retrieve a dataset by its unique identifier.
 	 * @param dataSetId The unique identifier of the dataset.
-	 * @returns The dataset if found.
-	 * @throws NotFoundError if the dataset does not exist.
+	 * @returns The dataset if found, or a CatalogError if not found or an error occurs.
 	 */
-	get(dataSetId: string): Promise<IDcatDataset>;
+	get(dataSetId: string): Promise<IDcatDataset | IDataspaceProtocolCatalogError>;
 
 	/**
 	 * Insert or update a dataset in the catalogue.
@@ -26,16 +29,30 @@ export interface IFederatedCatalogueComponent extends IComponent {
 
 	/**
 	 * Execute a query against the catalogue using registered filter plugins.
-	 * Returns a complete DCAT Catalog object with proper JSON-LD context, metadata, and datasets.
-	 * Filter plugins must be registered in FilterFactory before service initialization.
-	 * The filter payload is evaluated by the appropriate filter plugin based on its structure.
-	 * Pagination properties (cursor, limit) and filter type (@type) should be included
-	 * within the filter object per Eclipse Dataspace Protocol JSON-LD extension patterns.
-	 * @param filter The filter criteria containing @type, optional cursor and limit properties.
-	 * @returns Complete ICatalog object with @context, @id, @type, dcat:dataset, and optional cursor.
+	 * Returns a DS Protocol compliant Catalog object with participantId.
+	 *
+	 * The root catalog's participantId is the requesting participant (from context).
+	 * Own datasets (matching requestingParticipantId) go directly in root dataset[].
+	 * Other participants' datasets are grouped in nested catalog[] entries.
+	 *
+	 * For anonymous requests (no context), uses the first publisher found as fallback.
+	 * Returns CatalogError 404 when no datasets exist.
+	 *
+	 * @param filter The filter criteria containing @type.
+	 * @param cursor Optional cursor for pagination.
+	 * @param limit Optional limit for pagination.
+	 * @returns Complete IDataspaceProtocolCatalog with @context, @id, @type, participantId, dataset/catalog,
+	 * or IDataspaceProtocolCatalogError if no datasets found.
 	 * @throws NotFoundError if the @type field is missing or if the filter type is not registered.
 	 */
-	query(filter?: unknown[]): Promise<IDcatCatalog>;
+	query(
+		filter?: unknown[],
+		cursor?: string,
+		limit?: number
+	): Promise<{
+		catalog: IDataspaceProtocolCatalog | IDataspaceProtocolCatalogError;
+		cursor?: string;
+	}>;
 
 	/**
 	 * Remove a dataset from the catalogue by its unique identifier.

@@ -6,7 +6,7 @@ import type { IDcatDataset } from "@twin.org/standards-w3c-dcat";
 /**
  * Class describing a DCAT dataset for entity storage.
  * This wrapper enables efficient database indexing and querying while preserving
- * the full IDataset JSON-LD structure.
+ * the full IDcatDataset JSON-LD structure.
  */
 @entity()
 export class Dataset {

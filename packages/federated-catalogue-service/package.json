@@ -7,7 +7,7 @@
 		"url": "https://github.com/twinfoundation/federated-catalogue.git",
 		"directory": "packages/federated-catalogue-service"
 	},
-	"author": "jose.cantera@iota.org",
+	"author": "cornel.filip@iota.org",
 	"license": "Apache-2.0",
 	"type": "module",
 	"engines": {

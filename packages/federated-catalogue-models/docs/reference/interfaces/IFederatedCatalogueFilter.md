@@ -12,11 +12,10 @@ Filters are registered by name in the FilterFactory and do not need to self-iden
 
 ### query()
 
-> **query**(`filter`): `Promise`\<\{ `datasets`: `IDcatDataset`[]; `cursor?`: `string`; \}\>
+> **query**(`filter`, `cursor?`, `limit?`): `Promise`\<\{ `datasets`: `IDcatDataset`[]; `cursor?`: `string`; \}\>
 
 Execute a filter-specific query over the catalogue.
 Each filter interprets the payload according to its own semantics.
-Pagination properties (cursor, limit) are extracted from the filter object by the service layer.
 
 #### Parameters
 
@@ -25,6 +24,18 @@ Pagination properties (cursor, limit) are extracted from the filter object by th
 `unknown`
 
 The filter criteria (structure depends on the filter implementation).
+
+##### cursor?
+
+`string`
+
+The pagination cursor from the previous query, if any.
+
+##### limit?
+
+`number`
+
+The maximum number of results to return.
 
 #### Returns
 

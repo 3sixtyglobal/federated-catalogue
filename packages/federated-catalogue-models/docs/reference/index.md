@@ -10,11 +10,6 @@
 - [IGetDatasetResponse](interfaces/IGetDatasetResponse.md)
 - [IBaseFilter](interfaces/IBaseFilter.md)
 
-## Type Aliases
-
-- [FederatedCatalogueContexts](type-aliases/FederatedCatalogueContexts.md)
-
 ## Variables
 
 - [FederatedCatalogueFilterFactory](variables/FederatedCatalogueFilterFactory.md)
-- [FederatedCatalogueContexts](variables/FederatedCatalogueContexts.md)

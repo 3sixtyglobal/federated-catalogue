@@ -1,8 +1,7 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 import type { IHttpRequestContext, IRestRoute, ITag } from "@twin.org/api-models";
-import { ComponentFactory, Guards } from "@twin.org/core";
-import type { IJsonLdContextDefinitionRoot } from "@twin.org/data-json-ld";
+import { Coerce, ComponentFactory, Guards, Is } from "@twin.org/core";
 import type {
 	ICatalogRequestRequest,
 	ICatalogRequestResponse,
@@ -10,14 +9,15 @@ import type {
 	IGetDatasetRequest,
 	IGetDatasetResponse
 } from "@twin.org/federated-catalogue-models";
-import { FederatedCatalogueContexts } from "@twin.org/federated-catalogue-models";
 import { nameof } from "@twin.org/nameof";
 import {
 	DataspaceProtocolCatalogTypes,
-	DataspaceProtocolContexts
+	DataspaceProtocolContexts,
+	type IDataspaceProtocolCatalog,
+	type IDataspaceProtocolCatalogError
 } from "@twin.org/standards-dataspace-protocol";
-import { DublinCoreContexts } from "@twin.org/standards-dublin-core";
-import { DcatClasses, DcatContexts, type DcatContextType } from "@twin.org/standards-w3c-dcat";
+import { DcatClasses, type DcatContextType, type IDcatDataset } from "@twin.org/standards-w3c-dcat";
+import { HeaderHelper, HeaderTypes, HttpStatusCode } from "@twin.org/web";
 
 /**
  * The source used when communicating about these routes.
@@ -60,7 +60,7 @@ export function generateRestRoutesFederatedCatalogue(
 					id: "catalogRequestExample",
 					request: {
 						body: {
-							"@context": [DataspaceProtocolContexts.ContextRoot],
+							"@context": [DataspaceProtocolContexts.JsonLdContext],
 							"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage,
 							filter: [
 								{
@@ -74,7 +74,7 @@ export function generateRestRoutesFederatedCatalogue(
 					id: "catalogRequestNoFilterExample",
 					request: {
 						body: {
-							"@context": [DataspaceProtocolContexts.ContextRoot],
+							"@context": [DataspaceProtocolContexts.JsonLdContext],
 							"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage
 						}
 					}
@@ -89,28 +89,22 @@ export function generateRestRoutesFederatedCatalogue(
 						id: "catalogRequestResponseExample",
 						response: {
 							body: {
-								"@context": [
-									DataspaceProtocolContexts.ContextRoot,
-									{
-										dcat: DcatContexts.ContextRoot,
-										dcterms: DublinCoreContexts.ContextTerms,
-										cursor: `${FederatedCatalogueContexts.ContextRoot}cursor`
-									}
-								] as IJsonLdContextDefinitionRoot as DcatContextType,
+								"@context": [DataspaceProtocolContexts.JsonLdContext],
 								"@id":
 									"urn:x-catalog:a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2",
-								"@type": DcatClasses.Catalog,
+								"@type": "Catalog",
 								participantId: "did:example:node-identity-123",
-								"dcat:dataset": [
+								dataset: [
 									{
+										"@context": [DataspaceProtocolContexts.JsonLdContext],
 										"@id": "urn:uuid:dataset-123",
-										"@type": DcatClasses.Dataset,
-										"dcterms:title": "Energy Consumption Data",
-										"dcterms:description": "Historical energy consumption data"
+										"@type": "Dataset",
+										title: "Energy Consumption Data",
+										description: "Historical energy consumption data"
 									}
 								]
 							}
-						}
+						} as unknown as ICatalogRequestResponse
 					}
 				]
 			}
@@ -146,13 +140,7 @@ export function generateRestRoutesFederatedCatalogue(
 						id: "getDatasetResponseExample",
 						response: {
 							body: {
-								"@context": [
-									DataspaceProtocolContexts.ContextRoot,
-									{
-										dcat: DcatContexts.ContextRoot,
-										dcterms: DublinCoreContexts.ContextTerms
-									}
-								] as IJsonLdContextDefinitionRoot as DcatContextType,
+								"@context": DataspaceProtocolContexts.JsonLdContext as unknown as DcatContextType,
 								"@id": "urn:uuid:dataset-123",
 								"@type": DcatClasses.Dataset,
 								"dcterms:title": "Energy Consumption Data",
@@ -169,6 +157,21 @@ export function generateRestRoutesFederatedCatalogue(
 }
 
 /**
+ * Map the DS Protocol result to an HTTP status code.
+ * @param result The result to map.
+ * @returns The mapped status code or undefined if no mapping was found or not an error.
+ */
+function mapCatalogError(
+	result: IDataspaceProtocolCatalog | IDcatDataset | IDataspaceProtocolCatalogError | undefined
+): HttpStatusCode | undefined {
+	if (result?.["@type"] === DataspaceProtocolCatalogTypes.CatalogError && Is.objectValue(result)) {
+		return (Coerce.integer(result.code) as HttpStatusCode) ?? HttpStatusCode.badRequest;
+	}
+
+	return undefined;
+}
+
+/**
  * Handle the catalog request operation.
  * @param httpRequestContext The request context for the operation.
  * @param componentName The name of the component to use.
@@ -182,21 +185,29 @@ async function catalogRequest(
 ): Promise<ICatalogRequestResponse> {
 	Guards.object<ICatalogRequestRequest>(ROUTES_SOURCE, nameof(request), request);
 	Guards.object(ROUTES_SOURCE, nameof(request.body), request.body);
+	Guards.stringValue(ROUTES_SOURCE, "@type", request.body["@type"]);
 
 	const component: IFederatedCatalogueComponent = ComponentFactory.get(componentName);
 
-	const filter = request.body.filter;
-
-	const catalog = await component.query(filter);
-
-	// Add participantId from nodeIdentity (the node providing the catalog)
-	const nodeIdentity = (httpRequestContext as { nodeIdentity?: string }).nodeIdentity;
-	if (nodeIdentity) {
-		(catalog as { participantId?: string }).participantId = nodeIdentity;
-	}
+	const result = await component.query(
+		request.body.filter as unknown[],
+		request.query?.cursor,
+		Coerce.integer(request.query?.limit)
+	);
 
 	return {
-		body: catalog
+		statusCode: mapCatalogError(result.catalog),
+		body: result.catalog,
+		headers:
+			Is.stringValue(result.cursor) && Is.stringValue(httpRequestContext.serverRequest?.url)
+				? {
+						[HeaderTypes.Link]: HeaderHelper.createLinkHeader(
+							httpRequestContext.serverRequest.url,
+							{ cursor: result.cursor },
+							"next"
+						)
+					}
+				: undefined
 	};
 }
 
@@ -222,9 +233,10 @@ async function getDataset(
 
 	const component: IFederatedCatalogueComponent = ComponentFactory.get(componentName);
 
-	const dataset = await component.get(request.pathParams.datasetId);
+	const result = await component.get(request.pathParams.datasetId);
 
 	return {
-		body: dataset
+		statusCode: mapCatalogError(result),
+		body: result
 	};
 }

@@ -7,7 +7,7 @@
 		"url": "https://github.com/twinfoundation/federated-catalogue.git",
 		"directory": "packages/federated-catalogue-models"
 	},
-	"author": "jose.cantera@iota.org",
+	"author": "cornel.filip@iota.org",
 	"license": "Apache-2.0",
 	"type": "module",
 	"engines": {
@@ -35,7 +35,8 @@
 		"@twin.org/entity": "next",
 		"@twin.org/nameof": "next",
 		"@twin.org/standards-dataspace-protocol": "next",
-		"@twin.org/standards-w3c-dcat": "next"
+		"@twin.org/standards-w3c-dcat": "next",
+		"@twin.org/web": "next"
 	},
 	"devDependencies": {
 		"@twin.org/nameof-transformer": "next",

@@ -10,4 +10,20 @@ export interface ICatalogRequestRequest {
 	 * The request body containing the catalog query.
 	 */
 	body: IDataspaceProtocolCatalogRequestMessage;
+
+	/**
+	 * Optional query parameters for pagination.
+	 * Used when following Link header URLs per DS Protocol spec.
+	 */
+	query?: {
+		/**
+		 * Opaque cursor token for pagination.
+		 */
+		cursor?: string;
+
+		/**
+		 * Limit for pagination.
+		 */
+		limit?: string;
+	};
 }

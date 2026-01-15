@@ -64,7 +64,7 @@ The class name of the component.
 
 ### query()
 
-> **query**(`filter?`): `Promise`\<`IDcatCatalog`\>
+> **query**(`filter?`, `cursor?`, `limit?`): `Promise`\<\{ `catalog`: `IDataspaceProtocolCatalogError` \| `IDataspaceProtocolCatalog`; `cursor?`: `string`; \}\>
 
 Query the federated catalogue with an optional filter.
 
@@ -76,11 +76,23 @@ Query the federated catalogue with an optional filter.
 
 Optional filter criteria for querying datasets.
 
+##### cursor?
+
+`string`
+
+Optional cursor for pagination.
+
+##### limit?
+
+`number`
+
+Optional limit for pagination.
+
 #### Returns
 
-`Promise`\<`IDcatCatalog`\>
+`Promise`\<\{ `catalog`: `IDataspaceProtocolCatalogError` \| `IDataspaceProtocolCatalog`; `cursor?`: `string`; \}\>
 
-The catalog containing matching datasets.
+The catalog containing matching datasets (or CatalogError if none found), with cursor if more pages exist.
 
 #### Implementation of
 
@@ -90,7 +102,7 @@ The catalog containing matching datasets.
 
 ### get()
 
-> **get**(`datasetId`): `Promise`\<`IDcatDataset`\>
+> **get**(`datasetId`): `Promise`\<`IDcatDataset` \| `IDataspaceProtocolCatalogError`\>
 
 Retrieve a specific dataset by its unique identifier.
 
@@ -104,9 +116,9 @@ The unique identifier of the dataset.
 
 #### Returns
 
-`Promise`\<`IDcatDataset`\>
+`Promise`\<`IDcatDataset` \| `IDataspaceProtocolCatalogError`\>
 
-The dataset if found.
+The dataset if found, or a CatalogError if not found or an error occurs.
 
 #### Implementation of
 

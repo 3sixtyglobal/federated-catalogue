@@ -1,6 +1,7 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import { ArrayHelper, GuardError, Is, NotFoundError } from "@twin.org/core";
+import { ContextIdKeys, ContextIdStore } from "@twin.org/context";
+import { ArrayHelper, GeneralError, GuardError, Is } from "@twin.org/core";
 import { MemoryEntityStorageConnector } from "@twin.org/entity-storage-connector-memory";
 import { EntityStorageConnectorFactory } from "@twin.org/entity-storage-models";
 import {
@@ -8,9 +9,17 @@ import {
 	type IBaseFilter
 } from "@twin.org/federated-catalogue-models";
 import { nameof } from "@twin.org/nameof";
+import {
+	DataspaceProtocolCatalogTypes,
+	DataspaceProtocolDataTypes,
+	type IDataspaceProtocolCatalog,
+	type IDataspaceProtocolCatalogError
+} from "@twin.org/standards-dataspace-protocol";
 import { DublinCoreContexts } from "@twin.org/standards-dublin-core";
-import { DcatClasses, DcatContexts } from "@twin.org/standards-w3c-dcat";
-import { afterAll, beforeAll, describe, expect, test } from "vitest";
+import { addAllContextsToDocumentCache } from "@twin.org/standards-ld-contexts";
+import { DcatClasses, DcatContexts, type IDcatDataset } from "@twin.org/standards-w3c-dcat";
+import { OdrlContexts, PolicyType } from "@twin.org/standards-w3c-odrl";
+import { afterAll, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import type { Dataset } from "../src/entities/dataset.js";
 import { initSchema } from "../src/schema.js";
 import { FederatedCatalogueService } from "../src/services/federatedCatalogueService.js";
@@ -20,17 +29,25 @@ let datasetEntityStorage: MemoryEntityStorageConnector<Dataset>;
 describe("FederatedCatalogueService", () => {
 	beforeAll(async () => {
 		initSchema();
+		DataspaceProtocolDataTypes.registerTypes();
+		await addAllContextsToDocumentCache();
 
 		datasetEntityStorage = new MemoryEntityStorageConnector<Dataset>({
 			entitySchema: nameof<Dataset>()
 		});
 
 		EntityStorageConnectorFactory.register("dataset", () => datasetEntityStorage);
+
+		// Mock ContextIdStore.getContextIds to return undefined (anonymous) by default
+		ContextIdStore.getContextIds = vi.fn().mockResolvedValue(undefined);
 	});
 
 	beforeEach(async () => {
 		// Clear factory before each test to remove all registrations
 		FederatedCatalogueFilterFactory.clear();
+
+		// Reset ContextIdStore mock to return undefined (anonymous) by default
+		vi.mocked(ContextIdStore.getContextIds).mockResolvedValue(undefined);
 
 		// Clear dataset storage
 		const allDatasets = await datasetEntityStorage.query();
@@ -80,30 +97,49 @@ describe("FederatedCatalogueService", () => {
 
 		const testDataset = {
 			"@context": {
-				dcat: DcatContexts.ContextRoot,
-				dcterms: DublinCoreContexts.ContextTerms
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
 			},
 			"@id": "https://example.com/datasets/test-dataset-1",
 			"@type": DcatClasses.Dataset,
 			"dcterms:title": "Test Dataset",
-			"dcterms:description": "A test dataset for unit testing"
+			"dcterms:description": "A test dataset for unit testing",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/test-dist-1",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.JsonLdContext,
+				"@type": PolicyType.Offer,
+				uid: "https://example.com/policies/test-policy-1",
+				permission: [{ action: "use" }]
+			}
 		};
 
 		await service.set(testDataset);
 
 		const retrieved = await service.get("https://example.com/datasets/test-dataset-1");
 
-		expect(retrieved).toEqual(testDataset);
+		expect(retrieved).toBeDefined();
+		expect((retrieved as IDcatDataset)["@id"]).toBe("https://example.com/datasets/test-dataset-1");
 	});
 
-	test("Get throws NotFoundError for non-existent dataset", async () => {
+	test("Get returns CatalogError for non-existent dataset", async () => {
 		const service = new FederatedCatalogueService({
 			datasetStorageConnectorType: "dataset"
 		});
 
-		await expect(service.get("https://example.com/datasets/non-existent")).rejects.toThrow(
-			NotFoundError
-		);
+		const result = await service.get("https://example.com/datasets/non-existent");
+
+		// Verify it's a CatalogError
+		expect(result["@type"]).toBe("CatalogError");
+		expect(result["@context"]).toBe("https://w3id.org/dspace/2025/1/context.jsonld");
+		expect((result as { code?: string }).code).toBe("404");
+		expect((result as { reason?: string[] }).reason).toBeDefined();
 	});
 
 	test("Can query datasets with no filter", async () => {
@@ -114,23 +150,51 @@ describe("FederatedCatalogueService", () => {
 		// Add test datasets
 		const dataset1 = {
 			"@context": {
-				dcat: DcatContexts.ContextRoot,
-				dcterms: DublinCoreContexts.ContextTerms
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
 			},
 			"@id": "https://example.com/datasets/query-test-1",
 			"@type": DcatClasses.Dataset,
-			"dcterms:title": "Query Test Dataset 1"
-		};
+			"dcterms:title": "Query Test Dataset 1",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/query-dist-1",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.JsonLdContext,
+				"@type": "Offer",
+				uid: "https://example.com/policies/query-policy-1",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
 
 		const dataset2 = {
 			"@context": {
-				dcat: DcatContexts.ContextRoot,
-				dcterms: DublinCoreContexts.ContextTerms
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
 			},
 			"@id": "https://example.com/datasets/query-test-2",
 			"@type": DcatClasses.Dataset,
-			"dcterms:title": "Query Test Dataset 2"
-		};
+			"dcterms:title": "Query Test Dataset 2",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/query-dist-2",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.JsonLdContext,
+				"@type": "Offer",
+				uid: "https://example.com/policies/query-policy-2",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
 
 		await service.set(dataset1);
 		await service.set(dataset2);
@@ -144,9 +208,9 @@ describe("FederatedCatalogueService", () => {
 			createIndex: async dataSet => ({})
 		}));
 
-		const catalog = await service.query([{ "@type": "FilterByExample" }]);
+		const result = await service.query([{ "@type": "FilterByExample" }]);
 		const datasets = ArrayHelper.fromObjectOrArray(
-			(catalog as { dataset?: unknown }).dataset ?? []
+			(result.catalog as { dataset?: unknown }).dataset ?? []
 		);
 
 		expect(datasets.length).toBeGreaterThanOrEqual(2);
@@ -170,6 +234,253 @@ describe("FederatedCatalogueService", () => {
 		).toBe(true);
 	});
 
+	test("Query returns catalog with participantId derived from dcterms:publisher (single participant)", async () => {
+		const service = new FederatedCatalogueService({
+			datasetStorageConnectorType: "dataset"
+		});
+
+		const publisherId = "https://example.com/participants/participant-1";
+		const dataset = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": "https://example.com/datasets/participant-test-1",
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "Participant Test Dataset",
+			"dcterms:publisher": publisherId,
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/part-dist-1",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.JsonLdContext,
+				"@type": "Offer",
+				uid: "https://example.com/policies/part-policy-1",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		await service.set(dataset);
+
+		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
+			className: () => "FilterByExample",
+			query: async filter => ({
+				datasets: [dataset],
+				cursor: undefined
+			}),
+			createIndex: async dataSet => ({})
+		}));
+
+		const result = await service.query([{ "@type": "FilterByExample" }]);
+
+		// Verify single participant returns flat catalog with participantId
+		expect(result.catalog).toBeDefined();
+		expect(result.catalog["@type"]).toBe("Catalog");
+
+		// Type guard: verify it's a catalog, not an error
+		const catalog = result.catalog as IDataspaceProtocolCatalog;
+		expect(catalog.participantId).toBe(publisherId);
+		// Should have dataset array, not nested catalogs
+		expect(catalog.dataset).toBeDefined();
+		expect(catalog.catalog).toBeUndefined();
+	});
+
+	test("Query returns nested catalogs for other participants (anonymous request)", async () => {
+		const service = new FederatedCatalogueService({
+			datasetStorageConnectorType: "dataset"
+		});
+
+		const publisher1 = "https://example.com/participants/participant-1";
+		const publisher2 = "https://example.com/participants/participant-2";
+
+		const dataset1 = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": "https://example.com/datasets/multi-part-1",
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "Multi Participant Dataset 1",
+			"dcterms:publisher": publisher1,
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/mp-dist-1",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.JsonLdContext,
+				"@type": "Offer",
+				uid: "https://example.com/policies/mp-policy-1",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		const dataset2 = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": "https://example.com/datasets/multi-part-2",
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "Multi Participant Dataset 2",
+			"dcterms:publisher": publisher2,
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/mp-dist-2",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.JsonLdContext,
+				"@type": "Offer",
+				uid: "https://example.com/policies/mp-policy-2",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		await service.set(dataset1);
+		await service.set(dataset2);
+
+		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
+			className: () => "FilterByExample",
+			query: async filter => ({
+				datasets: [dataset1, dataset2],
+				cursor: undefined
+			}),
+			createIndex: async dataSet => ({})
+		}));
+
+		// Anonymous request (no context) - first publisher becomes root participantId
+		const result = await service.query([{ "@type": "FilterByExample" }]);
+
+		// Verify catalog structure for anonymous multi-participant query
+		expect(result.catalog).toBeDefined();
+		expect(result.catalog["@type"]).toBe("Catalog");
+
+		// Type guard: verify it's a catalog, not an error
+		const catalog = result.catalog as IDataspaceProtocolCatalog;
+
+		// For anonymous requests, first publisher (publisher1) becomes root participantId
+		// Root catalog gets publisher1's datasets, publisher2's datasets go in nested catalog
+		expect(catalog.participantId).toBe(publisher1);
+
+		// Root catalog should have dataset array for own datasets
+		const rootDatasets = ArrayHelper.fromObjectOrArray(catalog.dataset ?? []);
+		expect(rootDatasets.length).toBe(1);
+
+		// Root catalog should have nested catalog for other participant
+		const nestedCatalogs = ArrayHelper.fromObjectOrArray(catalog.catalog ?? []);
+		expect(nestedCatalogs.length).toBe(1);
+
+		// Nested catalog should have publisher2 as participantId
+		const nestedCatalog = nestedCatalogs[0] as { participantId?: string };
+		expect(nestedCatalog.participantId).toBe(publisher2);
+	});
+
+	test("Query returns own datasets at root level when authenticated", async () => {
+		const service = new FederatedCatalogueService({
+			datasetStorageConnectorType: "dataset"
+		});
+
+		const requestingParticipant = "https://example.com/participants/requesting-org";
+		const otherParticipant = "https://example.com/participants/other-org";
+
+		// Mock authenticated context with requesting participant
+		vi.mocked(ContextIdStore.getContextIds).mockResolvedValue({
+			[ContextIdKeys.Organization]: requestingParticipant
+		});
+
+		const ownDataset = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": "https://example.com/datasets/own-dataset",
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "Own Dataset",
+			"dcterms:publisher": requestingParticipant,
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/own-dist",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.JsonLdContext,
+				"@type": "Offer",
+				uid: "https://example.com/policies/own-policy",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		const otherDataset = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": "https://example.com/datasets/other-dataset",
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "Other Dataset",
+			"dcterms:publisher": otherParticipant,
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/other-dist",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.JsonLdContext,
+				"@type": "Offer",
+				uid: "https://example.com/policies/other-policy",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		await service.set(ownDataset);
+		await service.set(otherDataset);
+
+		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
+			className: () => "FilterByExample",
+			query: async filter => ({
+				datasets: [ownDataset, otherDataset],
+				cursor: undefined
+			}),
+			createIndex: async dataSet => ({})
+		}));
+
+		const result = await service.query([{ "@type": "FilterByExample" }]);
+
+		// Verify catalog structure for authenticated request
+		expect(result.catalog).toBeDefined();
+		expect(result.catalog["@type"]).toBe("Catalog");
+
+		// Type guard: verify it's a catalog, not an error
+		const catalog = result.catalog as IDataspaceProtocolCatalog;
+
+		// Root catalog should have requesting participant as participantId
+		expect(catalog.participantId).toBe(requestingParticipant);
+
+		// Root catalog should have own datasets
+		const rootDatasets = ArrayHelper.fromObjectOrArray(catalog.dataset ?? []);
+		expect(rootDatasets.length).toBe(1);
+		expect((rootDatasets[0] as { "@id"?: string })["@id"]).toBe(ownDataset["@id"]);
+
+		// Other participant's datasets should be in nested catalog
+		const nestedCatalogs = ArrayHelper.fromObjectOrArray(catalog.catalog ?? []);
+		expect(nestedCatalogs.length).toBe(1);
+		const nestedCatalog = nestedCatalogs[0] as { participantId?: string; dataset?: unknown[] };
+		expect(nestedCatalog.participantId).toBe(otherParticipant);
+	});
+
 	test("Can query datasets with filter", async () => {
 		const service = new FederatedCatalogueService({
 			datasetStorageConnectorType: "dataset"
@@ -178,14 +489,28 @@ describe("FederatedCatalogueService", () => {
 		// Add a dataset with specific properties
 		const dataset = {
 			"@context": {
-				dcat: DcatContexts.ContextRoot,
-				dcterms: DublinCoreContexts.ContextTerms
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
 			},
 			"@id": "https://example.com/datasets/filter-test",
 			"@type": DcatClasses.Dataset,
 			"dcterms:title": "Filterable Dataset",
-			"dcterms:identifier": "FILTER-TEST-123"
-		};
+			"dcterms:identifier": "FILTER-TEST-123",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/filter-dist",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.JsonLdContext,
+				"@type": "Offer",
+				uid: "https://example.com/policies/filter-policy",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
 
 		await service.set(dataset);
 
@@ -204,9 +529,9 @@ describe("FederatedCatalogueService", () => {
 			"dcterms:identifier": "FILTER-TEST-123"
 		};
 
-		const catalog = await service.query([filter]);
+		const result = await service.query([filter]);
 		const datasets = ArrayHelper.fromObjectOrArray(
-			(catalog as { dataset?: unknown }).dataset ?? []
+			(result.catalog as { dataset?: unknown }).dataset ?? []
 		);
 
 		expect(datasets.length).toBeGreaterThanOrEqual(1);
@@ -221,26 +546,29 @@ describe("FederatedCatalogueService", () => {
 		).toBe(true);
 	});
 
-	test("Can query datasets without no filters registered", async () => {
+	test("Query returns CatalogError 400 when filter type is missing", async () => {
 		const service = new FederatedCatalogueService({
 			datasetStorageConnectorType: "dataset"
 		});
 
-		await expect(service.query([{}] as IBaseFilter[])).rejects.toThrow(GuardError);
+		const result = await service.query([{}] as IBaseFilter[]);
+
+		expect(result.catalog["@type"]).toBe(DataspaceProtocolCatalogTypes.CatalogError);
+		expect((result.catalog as IDataspaceProtocolCatalogError).code).toBe("400");
 	});
 
-	test("Cursor is retained after JSON-LD compaction", async () => {
+	test("Query returns CatalogError 404 when no datasets exist", async () => {
 		const service = new FederatedCatalogueService({
 			datasetStorageConnectorType: "dataset"
 		});
 
-		// Create a mock filter that returns a cursor
+		// Create a mock filter that returns empty datasets
 		const mockFilter = {
-			className: () => "MockFilterWithCursor",
+			className: () => "MockEmptyFilter",
 			async query() {
 				return {
 					datasets: [],
-					cursor: "test-cursor-123"
+					cursor: undefined
 				};
 			},
 			async createIndex() {
@@ -248,18 +576,20 @@ describe("FederatedCatalogueService", () => {
 			}
 		};
 
-		FederatedCatalogueFilterFactory.register("MockFilterWithCursor", () => mockFilter);
+		FederatedCatalogueFilterFactory.register("MockEmptyFilter", () => mockFilter);
 
 		// Query with the mock filter
-		const catalog = await service.query([
+		const result = await service.query([
 			{
-				"@type": "MockFilterWithCursor"
+				"@type": "MockEmptyFilter"
 			}
 		]);
 
-		// Verify cursor is present after compaction
-		expect(catalog.cursor).toBeDefined();
-		expect(catalog.cursor).toBe("test-cursor-123");
+		// Verify it returns a CatalogError with 404
+		expect(result.catalog).toBeDefined();
+		expect(result.catalog["@type"]).toBe("CatalogError");
+		expect((result.catalog as { code?: string }).code).toBe("404");
+		expect(result.cursor).toBeUndefined();
 	});
 
 	test("Cursor is retained when query returns datasets with cursor", async () => {
@@ -270,23 +600,51 @@ describe("FederatedCatalogueService", () => {
 		// Add test datasets
 		const dataset1 = {
 			"@context": {
-				dcat: DcatContexts.ContextRoot,
-				dcterms: DublinCoreContexts.ContextTerms
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
 			},
 			"@id": "https://example.com/datasets/cursor-test-1",
 			"@type": DcatClasses.Dataset,
-			"dcterms:title": "Cursor Test Dataset 1"
-		};
+			"dcterms:title": "Cursor Test Dataset 1",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/cursor-dist-1",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.JsonLdContext,
+				"@type": "Offer",
+				uid: "https://example.com/policies/cursor-policy-1",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
 
 		const dataset2 = {
 			"@context": {
-				dcat: DcatContexts.ContextRoot,
-				dcterms: DublinCoreContexts.ContextTerms
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
 			},
 			"@id": "https://example.com/datasets/cursor-test-2",
 			"@type": DcatClasses.Dataset,
-			"dcterms:title": "Cursor Test Dataset 2"
-		};
+			"dcterms:title": "Cursor Test Dataset 2",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/cursor-dist-2",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.JsonLdContext,
+				"@type": "Offer",
+				uid: "https://example.com/policies/cursor-policy-2",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
 
 		await service.set(dataset1);
 		await service.set(dataset2);
@@ -308,19 +666,19 @@ describe("FederatedCatalogueService", () => {
 		FederatedCatalogueFilterFactory.register("MockFilterWithCursorAndData", () => mockFilter);
 
 		// Query with the mock filter
-		const catalog = await service.query([
+		const result = await service.query([
 			{
 				"@type": "MockFilterWithCursorAndData"
 			}
 		]);
 
 		// Verify cursor is present after compaction
-		expect(catalog.cursor).toBeDefined();
-		expect(catalog.cursor).toBe("next-page-cursor-456");
+		expect(result.cursor).toBeDefined();
+		expect(result.cursor).toBe("next-page-cursor-456");
 
 		// Verify datasets are also present
 		const datasets = ArrayHelper.fromObjectOrArray(
-			(catalog as { dataset?: unknown }).dataset ?? []
+			(result.catalog as { dataset?: unknown }).dataset ?? []
 		);
 		expect(datasets.length).toBe(1);
 		if (datasets[0] && typeof datasets[0] === "object") {
@@ -334,37 +692,491 @@ describe("FederatedCatalogueService", () => {
 			datasetStorageConnectorType: "dataset"
 		});
 
+		// Add a dataset
+		const dataset = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": "https://example.com/datasets/no-cursor-test",
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "No Cursor Test Dataset",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/no-cursor-dist",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.JsonLdContext,
+				"@type": "Offer",
+				uid: "https://example.com/policies/no-cursor-policy",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		await service.set(dataset);
+
+		// Register filter that returns the dataset but no cursor
 		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
 			className: () => "FilterByExample",
 			query: async filter => ({
-				datasets: [],
+				datasets: [dataset],
 				cursor: undefined
 			}),
 			createIndex: async dataSet => ({})
 		}));
 
-		// Add a dataset
-		const dataset = {
-			"@context": {
-				dcat: DcatContexts.ContextRoot,
-				dcterms: DublinCoreContexts.ContextTerms
-			},
-			"@id": "https://example.com/datasets/no-cursor-test",
-			"@type": DcatClasses.Dataset,
-			"dcterms:title": "No Cursor Test Dataset"
-		};
-
-		await service.set(dataset);
-
 		// Query without cursor (FilterByExample doesn't return cursor by default)
-		const catalog = await service.query([
+		const result = await service.query([
 			{
 				"@type": "FilterByExample"
 			}
 		]);
 
 		// Verify cursor is not present when filter doesn't return one
-		expect(catalog.cursor).toBeUndefined();
+		expect(result.cursor).toBeUndefined();
+		// Verify it's a valid catalog, not an error
+		expect(result.catalog["@type"]).toBe("Catalog");
+	});
+
+	// Issue #43: Dataset Validation Tests
+	test("Set throws GeneralError when dataset is missing @context (handled by conformance checker)", async () => {
+		const service = new FederatedCatalogueService({
+			datasetStorageConnectorType: "dataset"
+		});
+
+		const invalidDataset = {
+			"@id": "https://example.com/datasets/missing-context",
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "Dataset without @context",
+			"dcterms:publisher": "https://example.com/participants/test-publisher"
+		} as unknown as IDcatDataset;
+
+		// @context validation is handled by DataspaceProtocolHelper.checkConformance()
+		// Without @context, the schema cannot be registered, throwing schemaNotRegistered error
+		await expect(service.set(invalidDataset)).rejects.toThrow(GeneralError);
+		await expect(service.set(invalidDataset)).rejects.toThrow("schemaNotRegistered");
+	});
+
+	test("Set throws GuardError when dataset is missing @type", async () => {
+		const service = new FederatedCatalogueService({
+			datasetStorageConnectorType: "dataset"
+		});
+
+		const invalidDataset = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms
+			},
+			"@id": "https://example.com/datasets/missing-type"
+		} as unknown as IDcatDataset;
+
+		await expect(service.set(invalidDataset)).rejects.toThrow(GuardError);
+	});
+
+	test("Set throws GuardError when dataset is missing @id", async () => {
+		const service = new FederatedCatalogueService({
+			datasetStorageConnectorType: "dataset"
+		});
+
+		const invalidDataset = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms
+			},
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "Dataset without @id"
+		} as unknown as IDcatDataset;
+
+		await expect(service.set(invalidDataset)).rejects.toThrow(GuardError);
+	});
+
+	test("Set throws GeneralError when dataset is missing dcterms:publisher", async () => {
+		const service = new FederatedCatalogueService({
+			datasetStorageConnectorType: "dataset"
+		});
+
+		const datasetMissingPublisher = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": "https://example.com/datasets/missing-publisher",
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "Dataset without publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/dist-1",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.JsonLdContext,
+				"@type": "Offer",
+				uid: "https://example.com/policies/policy-1",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		// dcterms:publisher is required for multi-participant catalog
+		// to derive participantId when returning query results
+		await expect(service.set(datasetMissingPublisher)).rejects.toThrow(GeneralError);
+		await expect(service.set(datasetMissingPublisher)).rejects.toThrow("datasetMissingPublisher");
+	});
+
+	test("Set succeeds with valid minimal dataset (all required fields)", async () => {
+		const service = new FederatedCatalogueService({
+			datasetStorageConnectorType: "dataset"
+		});
+
+		const validMinimalDataset = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": "https://example.com/datasets/minimal-valid",
+			"@type": DcatClasses.Dataset,
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/minimal-dist",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.JsonLdContext,
+				"@type": "Offer",
+				uid: "https://example.com/policies/minimal-policy",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		await expect(service.set(validMinimalDataset)).resolves.toBeUndefined();
+
+		const retrieved = await service.get("https://example.com/datasets/minimal-valid");
+		expect(retrieved).toBeDefined();
+		expect((retrieved as IDcatDataset)["@id"]).toBe("https://example.com/datasets/minimal-valid");
+	});
+
+	test("Set succeeds with valid DS Protocol compliant dataset", async () => {
+		const service = new FederatedCatalogueService({
+			datasetStorageConnectorType: "dataset"
+		});
+
+		const validDsProtocolDataset = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": "https://example.com/datasets/ds-protocol-compliant",
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "DS Protocol Dataset",
+			"dcterms:description": "A dataset compliant with DS Protocol requirements",
+			"dcterms:issued": "2025-01-01T00:00:00Z",
+			"dcterms:modified": "2025-01-02T00:00:00Z",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/ds-protocol-dist",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.JsonLdContext,
+				"@type": "Offer",
+				uid: "https://example.com/policies/ds-protocol-policy",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		await expect(service.set(validDsProtocolDataset)).resolves.toBeUndefined();
+
+		const retrieved = await service.get("https://example.com/datasets/ds-protocol-compliant");
+		expect(retrieved).toBeDefined();
+		expect((retrieved as IDcatDataset)["@id"]).toBe(
+			"https://example.com/datasets/ds-protocol-compliant"
+		);
+	});
+
+	// Issue #44: DS Protocol Mandatory Properties Tests
+	test("Set throws GeneralError when dataset is missing distribution (prefixed form)", async () => {
+		const service = new FederatedCatalogueService({
+			datasetStorageConnectorType: "dataset"
+		});
+
+		const datasetMissingDistribution = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": "https://example.com/datasets/missing-distribution",
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "Dataset without distribution",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.JsonLdContext,
+				"@type": "Offer",
+				uid: "https://example.com/policies/policy-1",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		await expect(service.set(datasetMissingDistribution)).rejects.toThrow(GeneralError);
+		await expect(service.set(datasetMissingDistribution)).rejects.toThrow("datasetNotConformant");
+	});
+
+	test("Set throws GeneralError when dataset is missing hasPolicy (prefixed form)", async () => {
+		const service = new FederatedCatalogueService({
+			datasetStorageConnectorType: "dataset"
+		});
+
+		const datasetMissingPolicy = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms
+			},
+			"@id": "https://example.com/datasets/missing-policy",
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "Dataset without hasPolicy",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/dist-1",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			}
+		} as unknown as IDcatDataset;
+
+		await expect(service.set(datasetMissingPolicy)).rejects.toThrow(GeneralError);
+		await expect(service.set(datasetMissingPolicy)).rejects.toThrow("datasetNotConformant");
+	});
+
+	test("Set throws GeneralError when dataset is missing distribution (unprefixed form)", async () => {
+		const service = new FederatedCatalogueService({
+			datasetStorageConnectorType: "dataset"
+		});
+
+		const datasetMissingDistribution = {
+			"@context": {
+				"@vocab": "http://www.w3.org/ns/dcat#",
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": "https://example.com/datasets/missing-distribution-unprefixed",
+			"@type": "Dataset",
+			"dcterms:title": "Dataset without distribution (unprefixed)",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.JsonLdContext,
+				"@type": "Offer",
+				uid: "https://example.com/policies/policy-2",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		await expect(service.set(datasetMissingDistribution)).rejects.toThrow(GeneralError);
+		await expect(service.set(datasetMissingDistribution)).rejects.toThrow("datasetNotConformant");
+	});
+
+	test("Set throws GeneralError when dataset is missing hasPolicy (unprefixed form)", async () => {
+		const service = new FederatedCatalogueService({
+			datasetStorageConnectorType: "dataset"
+		});
+
+		const datasetMissingPolicy = {
+			"@context": {
+				"@vocab": "http://www.w3.org/ns/dcat#",
+				dcterms: DublinCoreContexts.NamespaceTerms
+			},
+			"@id": "https://example.com/datasets/missing-policy-unprefixed",
+			"@type": "Dataset",
+			"dcterms:title": "Dataset without hasPolicy (unprefixed)",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			distribution: {
+				"@type": "Distribution",
+				"@id": "https://example.com/distributions/dist-2",
+				"dcterms:format": "application/json",
+				accessService: "https://example.com/services/test-service"
+			}
+		} as unknown as IDcatDataset;
+
+		await expect(service.set(datasetMissingPolicy)).rejects.toThrow(GeneralError);
+		await expect(service.set(datasetMissingPolicy)).rejects.toThrow("datasetNotConformant");
+	});
+
+	test("Set succeeds with valid DS Protocol dataset (prefixed properties)", async () => {
+		const service = new FederatedCatalogueService({
+			datasetStorageConnectorType: "dataset"
+		});
+
+		const validDataset = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": "https://example.com/datasets/valid-prefixed",
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "Valid Dataset with Prefixed Properties",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/dist-3",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.JsonLdContext,
+				"@type": "Offer",
+				uid: "https://example.com/policies/policy-3",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		await expect(service.set(validDataset)).resolves.toBeUndefined();
+
+		const retrieved = await service.get("https://example.com/datasets/valid-prefixed");
+		expect(retrieved).toBeDefined();
+		expect((retrieved as IDcatDataset)["@id"]).toBe("https://example.com/datasets/valid-prefixed");
+	});
+
+	test("Set succeeds with valid DS Protocol dataset (unprefixed properties)", async () => {
+		const service = new FederatedCatalogueService({
+			datasetStorageConnectorType: "dataset"
+		});
+
+		const validDataset = {
+			"@context": {
+				"@vocab": "http://www.w3.org/ns/dcat#",
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": "https://example.com/datasets/valid-unprefixed",
+			"@type": "Dataset",
+			"dcterms:title": "Valid Dataset with Unprefixed Properties",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			distribution: {
+				"@type": "Distribution",
+				"@id": "https://example.com/distributions/dist-4",
+				"dcterms:format": "application/json",
+				accessService: "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.JsonLdContext,
+				"@type": "Offer",
+				uid: "https://example.com/policies/policy-4",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		await expect(service.set(validDataset)).resolves.toBeUndefined();
+
+		const retrieved = await service.get("https://example.com/datasets/valid-unprefixed");
+		expect(retrieved).toBeDefined();
+		expect((retrieved as IDcatDataset)["@id"]).toBe(
+			"https://example.com/datasets/valid-unprefixed"
+		);
+	});
+
+	test("Set throws GeneralError when distribution is missing dcterms:format", async () => {
+		const service = new FederatedCatalogueService({
+			datasetStorageConnectorType: "dataset"
+		});
+
+		const datasetMissingFormat = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": "https://example.com/datasets/missing-format",
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "Dataset with distribution missing format",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": [
+				{
+					"@type": "dcat:Distribution",
+					"dcat:accessService": "https://example.com/services/service-1"
+				}
+			],
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.JsonLdContext,
+				"@type": "Offer",
+				uid: "https://example.com/policies/policy-1",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		await expect(service.set(datasetMissingFormat)).rejects.toThrow(GeneralError);
+		await expect(service.set(datasetMissingFormat)).rejects.toThrow("datasetNotConformant");
+	});
+
+	test("Set throws GeneralError when distribution is missing dcat:accessService", async () => {
+		const service = new FederatedCatalogueService({
+			datasetStorageConnectorType: "dataset"
+		});
+
+		const datasetMissingAccessService = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": "https://example.com/datasets/missing-access-service",
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "Dataset with distribution missing accessService",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": [
+				{
+					"@type": "dcat:Distribution",
+					"dcterms:format": "application/json"
+				}
+			],
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.JsonLdContext,
+				"@type": "Offer",
+				uid: "https://example.com/policies/policy-1",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		await expect(service.set(datasetMissingAccessService)).rejects.toThrow(GeneralError);
+		await expect(service.set(datasetMissingAccessService)).rejects.toThrow("datasetNotConformant");
+	});
+
+	test("Set throws GeneralError when distribution array is empty", async () => {
+		const service = new FederatedCatalogueService({
+			datasetStorageConnectorType: "dataset"
+		});
+
+		const datasetEmptyDistribution = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": "https://example.com/datasets/empty-distribution",
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "Dataset with empty distribution array",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": [],
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.JsonLdContext,
+				"@type": "Offer",
+				uid: "https://example.com/policies/policy-1",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		await expect(service.set(datasetEmptyDistribution)).rejects.toThrow(GeneralError);
+		await expect(service.set(datasetEmptyDistribution)).rejects.toThrow("datasetNotConformant");
 	});
 
 	afterAll(() => {

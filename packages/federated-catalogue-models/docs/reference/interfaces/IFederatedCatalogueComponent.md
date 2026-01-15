@@ -11,7 +11,7 @@ Provides Dataspace Protocol-compliant catalog endpoints for dataset registry and
 
 ### get()
 
-> **get**(`dataSetId`): `Promise`\<`IDcatDataset`\>
+> **get**(`dataSetId`): `Promise`\<`IDcatDataset` \| `IDataspaceProtocolCatalogError`\>
 
 Retrieve a dataset by its unique identifier.
 
@@ -25,13 +25,9 @@ The unique identifier of the dataset.
 
 #### Returns
 
-`Promise`\<`IDcatDataset`\>
+`Promise`\<`IDcatDataset` \| `IDataspaceProtocolCatalogError`\>
 
-The dataset if found.
-
-#### Throws
-
-NotFoundError if the dataset does not exist.
+The dataset if found, or a CatalogError if not found or an error occurs.
 
 ***
 
@@ -60,14 +56,17 @@ Nothing.
 
 ### query()
 
-> **query**(`filter?`): `Promise`\<`IDcatCatalog`\>
+> **query**(`filter?`, `cursor?`, `limit?`): `Promise`\<\{ `catalog`: `IDataspaceProtocolCatalog` \| `IDataspaceProtocolCatalogError`; `cursor?`: `string`; \}\>
 
 Execute a query against the catalogue using registered filter plugins.
-Returns a complete DCAT Catalog object with proper JSON-LD context, metadata, and datasets.
-Filter plugins must be registered in FilterFactory before service initialization.
-The filter payload is evaluated by the appropriate filter plugin based on its structure.
-Pagination properties (cursor, limit) and filter type (@type) should be included
-within the filter object per Eclipse Dataspace Protocol JSON-LD extension patterns.
+Returns a DS Protocol compliant Catalog object with participantId.
+
+The root catalog's participantId is the requesting participant (from context).
+Own datasets (matching requestingParticipantId) go directly in root dataset[].
+Other participants' datasets are grouped in nested catalog[] entries.
+
+For anonymous requests (no context), uses the first publisher found as fallback.
+Returns CatalogError 404 when no datasets exist.
 
 #### Parameters
 
@@ -75,13 +74,26 @@ within the filter object per Eclipse Dataspace Protocol JSON-LD extension patter
 
 `unknown`[]
 
-The filter criteria containing @type, optional cursor and limit properties.
+The filter criteria containing @type.
+
+##### cursor?
+
+`string`
+
+Optional cursor for pagination.
+
+##### limit?
+
+`number`
+
+Optional limit for pagination.
 
 #### Returns
 
-`Promise`\<`IDcatCatalog`\>
+`Promise`\<\{ `catalog`: `IDataspaceProtocolCatalog` \| `IDataspaceProtocolCatalogError`; `cursor?`: `string`; \}\>
 
-Complete ICatalog object with @context, @id, @type, dcat:dataset, and optional cursor.
+Complete IDataspaceProtocolCatalog with @context, @id, @type, participantId, dataset/catalog,
+or IDataspaceProtocolCatalogError if no datasets found.
 
 #### Throws
 

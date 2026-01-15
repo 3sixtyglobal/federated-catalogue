@@ -57,7 +57,7 @@ The class name of the component.
 
 ### query()
 
-> **query**(`filter`): `Promise`\<\{ `datasets`: `IDcatDataset`[]; `cursor?`: `string`; \}\>
+> **query**(`filter`, `cursor?`, `limit?`): `Promise`\<\{ `datasets`: `IDcatDataset`[]; `cursor?`: `string`; \}\>
 
 Execute a filter-specific query over the catalogue.
 Uses database-level filtering with query conditions.
@@ -69,6 +69,18 @@ Uses database-level filtering with query conditions.
 `unknown`
 
 The filter criteria (Partial<IDataset> with example values).
+
+##### cursor?
+
+`string`
+
+The pagination cursor from the previous query, if any.
+
+##### limit?
+
+`number`
+
+The maximum number of results to return.
 
 #### Returns
 

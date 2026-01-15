@@ -49,29 +49,46 @@ export class FilterByExample implements IFederatedCatalogueFilter {
 	 * Execute a filter-specific query over the catalogue.
 	 * Uses database-level filtering with query conditions.
 	 * @param filter The filter criteria (Partial<IDataset> with example values).
+	 * @param cursor The pagination cursor from the previous query, if any.
+	 * @param limit The maximum number of results to return.
 	 * @returns Object containing datasets matching the filter criteria and optional cursor for next page.
 	 */
-	public async query(filter: unknown): Promise<{ datasets: IDcatDataset[]; cursor?: string }> {
+	public async query(
+		filter: unknown,
+		cursor?: string,
+		limit?: number
+	): Promise<{ datasets: IDcatDataset[]; cursor?: string }> {
 		if (!Is.objectValue(filter)) {
-			const result = await this._datasetStorage.query();
+			const result = await this._datasetStorage.query(
+				undefined,
+				undefined,
+				undefined,
+				cursor,
+				limit
+			);
 			const datasets = result.entities.map(entity => entity as unknown as IDcatDataset);
-			return { datasets };
+			return { datasets, cursor: result.cursor };
 		}
 
 		const filterObj = filter as Partial<IDcatDataset>;
 
 		const conditions = this.buildQueryConditions(filterObj);
-		if (conditions.length > 0) {
-			const result = await this._datasetStorage.query({
-				conditions
-			});
-			const datasets = result.entities.map(entity => entity as IDcatDataset);
-			return { datasets };
-		}
+		const results = await this._datasetStorage.query(
+			conditions.length > 0
+				? {
+						conditions
+					}
+				: undefined,
+			undefined,
+			undefined,
+			cursor,
+			limit
+		);
 
-		const result = await this._datasetStorage.query();
-		const datasets = result.entities.map(entity => entity as IDcatDataset);
-		return { datasets };
+		return {
+			datasets: results.entities.map(entity => entity as unknown as IDcatDataset),
+			cursor: results.cursor
+		};
 	}
 
 	/**

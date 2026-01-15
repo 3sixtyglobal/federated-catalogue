@@ -12,11 +12,16 @@ export interface IFederatedCatalogueFilter extends IComponent {
 	/**
 	 * Execute a filter-specific query over the catalogue.
 	 * Each filter interprets the payload according to its own semantics.
-	 * Pagination properties (cursor, limit) are extracted from the filter object by the service layer.
 	 * @param filter The filter criteria (structure depends on the filter implementation).
+	 * @param cursor The pagination cursor from the previous query, if any.
+	 * @param limit The maximum number of results to return.
 	 * @returns Object containing datasets matching the filter criteria and optional cursor for next page.
 	 */
-	query(filter: unknown): Promise<{ datasets: IDcatDataset[]; cursor?: string }>;
+	query(
+		filter: unknown,
+		cursor?: string,
+		limit?: number
+	): Promise<{ datasets: IDcatDataset[]; cursor?: string }>;
 
 	/**
 	 * Generate filter indexes for a dataset to optimize future queries.

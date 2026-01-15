@@ -47,8 +47,8 @@ describe("FilterByExample", () => {
 		// Add test datasets
 		const dataset1 = {
 			"@context": {
-				dcat: DcatContexts.ContextRoot,
-				dcterms: DublinCoreContexts.ContextTerms
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms
 			},
 			"@id": "https://example.com/datasets/test-1",
 			"@type": DcatClasses.Dataset,
@@ -57,8 +57,8 @@ describe("FilterByExample", () => {
 
 		const dataset2 = {
 			"@context": {
-				dcat: DcatContexts.ContextRoot,
-				dcterms: DublinCoreContexts.ContextTerms
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms
 			},
 			"@id": "https://example.com/datasets/test-2",
 			"@type": DcatClasses.Dataset,
@@ -78,8 +78,8 @@ describe("FilterByExample", () => {
 	test("Query with exact string match", async () => {
 		const dataset1 = {
 			"@context": {
-				dcat: DcatContexts.ContextRoot,
-				dcterms: DublinCoreContexts.ContextTerms
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms
 			},
 			"@id": "https://example.com/datasets/exact-match-1",
 			"@type": DcatClasses.Dataset,
@@ -89,8 +89,8 @@ describe("FilterByExample", () => {
 
 		const dataset2 = {
 			"@context": {
-				dcat: DcatContexts.ContextRoot,
-				dcterms: DublinCoreContexts.ContextTerms
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms
 			},
 			"@id": "https://example.com/datasets/exact-match-2",
 			"@type": DcatClasses.Dataset,
@@ -113,8 +113,8 @@ describe("FilterByExample", () => {
 	test("Query with multiple criteria (AND logic)", async () => {
 		const dataset1 = {
 			"@context": {
-				dcat: DcatContexts.ContextRoot,
-				dcterms: DublinCoreContexts.ContextTerms
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms
 			},
 			"@id": "https://example.com/datasets/multi-criteria-1",
 			"@type": DcatClasses.Dataset,
@@ -125,8 +125,8 @@ describe("FilterByExample", () => {
 
 		const dataset2 = {
 			"@context": {
-				dcat: DcatContexts.ContextRoot,
-				dcterms: DublinCoreContexts.ContextTerms
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms
 			},
 			"@id": "https://example.com/datasets/multi-criteria-2",
 			"@type": DcatClasses.Dataset,
@@ -150,8 +150,8 @@ describe("FilterByExample", () => {
 	test("Query with nested object properties", async () => {
 		const dataset1 = {
 			"@context": {
-				dcat: DcatContexts.ContextRoot,
-				dcterms: DublinCoreContexts.ContextTerms
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms
 			},
 			"@id": "https://example.com/datasets/nested-1",
 			"@type": DcatClasses.Dataset,
@@ -164,8 +164,8 @@ describe("FilterByExample", () => {
 
 		const dataset2 = {
 			"@context": {
-				dcat: DcatContexts.ContextRoot,
-				dcterms: DublinCoreContexts.ContextTerms
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms
 			},
 			"@id": "https://example.com/datasets/nested-2",
 			"@type": DcatClasses.Dataset,
@@ -201,8 +201,8 @@ describe("FilterByExample", () => {
 	test("Query with array property matching", async () => {
 		const dataset1 = {
 			"@context": {
-				dcat: DcatContexts.ContextRoot,
-				dcterms: DublinCoreContexts.ContextTerms
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms
 			},
 			"@id": "https://example.com/datasets/array-1",
 			"@type": DcatClasses.Dataset,
@@ -212,8 +212,8 @@ describe("FilterByExample", () => {
 
 		const dataset2 = {
 			"@context": {
-				dcat: DcatContexts.ContextRoot,
-				dcterms: DublinCoreContexts.ContextTerms
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms
 			},
 			"@id": "https://example.com/datasets/array-2",
 			"@type": DcatClasses.Dataset,
@@ -243,8 +243,8 @@ describe("FilterByExample", () => {
 	test("Query returns empty array when no matches", async () => {
 		const dataset = {
 			"@context": {
-				dcat: DcatContexts.ContextRoot,
-				dcterms: DublinCoreContexts.ContextTerms
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms
 			},
 			"@id": "https://example.com/datasets/no-match",
 			"@type": DcatClasses.Dataset,
@@ -264,8 +264,8 @@ describe("FilterByExample", () => {
 	test("Query handles null and undefined filter values gracefully", async () => {
 		const dataset = {
 			"@context": {
-				dcat: DcatContexts.ContextRoot,
-				dcterms: DublinCoreContexts.ContextTerms
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms
 			},
 			"@id": "https://example.com/datasets/null-test",
 			"@type": DcatClasses.Dataset,
@@ -286,8 +286,8 @@ describe("FilterByExample", () => {
 	test("Query with @type filter", async () => {
 		const catalogDataset = {
 			"@context": {
-				dcat: DcatContexts.ContextRoot,
-				dcterms: DublinCoreContexts.ContextTerms
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms
 			},
 			"@id": "https://example.com/datasets/catalog",
 			"@type": DcatClasses.Catalog,
@@ -296,8 +296,8 @@ describe("FilterByExample", () => {
 
 		const regularDataset = {
 			"@context": {
-				dcat: DcatContexts.ContextRoot,
-				dcterms: DublinCoreContexts.ContextTerms
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms
 			},
 			"@id": "https://example.com/datasets/regular",
 			"@type": DcatClasses.Dataset,
@@ -318,8 +318,8 @@ describe("FilterByExample", () => {
 	test("Query with partial string match in title", async () => {
 		const dataset1 = {
 			"@context": {
-				dcat: DcatContexts.ContextRoot,
-				dcterms: DublinCoreContexts.ContextTerms
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms
 			},
 			"@id": "https://example.com/datasets/partial-1",
 			"@type": DcatClasses.Dataset,
@@ -328,8 +328,8 @@ describe("FilterByExample", () => {
 
 		const dataset2 = {
 			"@context": {
-				dcat: DcatContexts.ContextRoot,
-				dcterms: DublinCoreContexts.ContextTerms
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms
 			},
 			"@id": "https://example.com/datasets/partial-2",
 			"@type": DcatClasses.Dataset,

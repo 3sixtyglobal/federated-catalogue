@@ -2,7 +2,7 @@
 
 Class describing a DCAT dataset for entity storage.
 This wrapper enables efficient database indexing and querying while preserving
-the full IDataset JSON-LD structure.
+the full IDcatDataset JSON-LD structure.
 
 ## Constructors
 
@@ -26,7 +26,7 @@ The unique identifier for the dataset (@id from JSON-LD).
 
 ### @context
 
-> **@context**: `DcatContextType` \| `undefined`
+> **@context**: `DcatContextType`
 
 The JSON-LD context for the dataset.
 
@@ -34,7 +34,7 @@ The JSON-LD context for the dataset.
 
 ### @type
 
-> **@type**: `"Catalog"` \| `"Dataset"` \| `"DatasetSeries"`
+> **@type**: `"dcat:Dataset"` \| `"dcat:Catalog"` \| `"dcat:DatasetSeries"`
 
 The type of the resource (typically "Dataset").
 
@@ -194,7 +194,7 @@ An ODRL conformant policy expressing the rights associated with the resource.
 
 ### dcat:distribution?
 
-> `optional` **dcat:distribution**: `ObjectOrArray`\<`IDcatDistribution`\>
+> `optional` **dcat:distribution**: `ObjectOrArray`\<`DistributionOptionalContext`\>
 
 An available distribution of the dataset.
 

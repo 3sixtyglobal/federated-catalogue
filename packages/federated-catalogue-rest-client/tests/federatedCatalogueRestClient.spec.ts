@@ -36,7 +36,7 @@ describe("FederatedCatalogueRestClient", () => {
 		// Verify method signature allows optional filter
 		// We don't execute the requests as they would need a running server
 		expect(typeof client.query).toBe("function");
-		expect(client.query.length).toBeLessThanOrEqual(1); // Accepts 0 or 1 arguments
+		expect(client.query.length).toBeLessThanOrEqual(3);
 	});
 
 	test("Client uses correct base route", () => {
