@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.0.3-next.5](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-rest-server-v0.0.3-next.4...federated-catalogue-rest-server-v0.0.3-next.5) (2026-01-15)
+
+
+### Bug Fixes
+
+* pagination and ld context ([#45](https://github.com/twinfoundation/federated-catalogue/issues/45)) ([e36f096](https://github.com/twinfoundation/federated-catalogue/commit/e36f096aa4fdc61eb5b929a0fc4403247dbd41ce))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.0.3-next.4 to 0.0.3-next.5
+    * @twin.org/federated-catalogue-service bumped from 0.0.3-next.4 to 0.0.3-next.5
+
 ## [0.0.3-next.4](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-rest-server-v0.0.3-next.3...federated-catalogue-rest-server-v0.0.3-next.4) (2026-01-06)
 
 

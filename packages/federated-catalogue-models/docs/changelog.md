@@ -1,5 +1,12 @@
 # @twin.org/federated-catalogue-models - Changelog
 
+## [0.0.3-next.5](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-models-v0.0.3-next.4...federated-catalogue-models-v0.0.3-next.5) (2026-01-15)
+
+
+### Bug Fixes
+
+* pagination and ld context ([#45](https://github.com/twinfoundation/federated-catalogue/issues/45)) ([e36f096](https://github.com/twinfoundation/federated-catalogue/commit/e36f096aa4fdc61eb5b929a0fc4403247dbd41ce))
+
 ## [0.0.3-next.4](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-models-v0.0.3-next.3...federated-catalogue-models-v0.0.3-next.4) (2026-01-06)
 
 
