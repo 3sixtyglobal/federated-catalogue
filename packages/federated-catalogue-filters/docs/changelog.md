@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.0.3-next.6](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-filters-v0.0.3-next.5...federated-catalogue-filters-v0.0.3-next.6) (2026-01-20)
+
+
+### Miscellaneous Chores
+
+* **federated-catalogue-filters:** Synchronize repo versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.0.3-next.5 to 0.0.3-next.6
+    * @twin.org/federated-catalogue-service bumped from 0.0.3-next.5 to 0.0.3-next.6
+
 ## [0.0.3-next.5](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-filters-v0.0.3-next.4...federated-catalogue-filters-v0.0.3-next.5) (2026-01-15)
 
 

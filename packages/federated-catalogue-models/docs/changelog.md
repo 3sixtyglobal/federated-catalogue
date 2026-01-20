@@ -1,5 +1,12 @@
 # @twin.org/federated-catalogue-models - Changelog
 
+## [0.0.3-next.6](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-models-v0.0.3-next.5...federated-catalogue-models-v0.0.3-next.6) (2026-01-20)
+
+
+### Bug Fixes
+
+* transform GuardError to CatalogError for DS Protocol compliance ([#49](https://github.com/twinfoundation/federated-catalogue/issues/49)) ([d0f1090](https://github.com/twinfoundation/federated-catalogue/commit/d0f10900c251b9abc18e58c90562c393c3265727))
+
 ## [0.0.3-next.5](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-models-v0.0.3-next.4...federated-catalogue-models-v0.0.3-next.5) (2026-01-15)
 
 
