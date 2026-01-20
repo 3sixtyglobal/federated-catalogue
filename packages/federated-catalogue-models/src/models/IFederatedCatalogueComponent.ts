@@ -43,14 +43,13 @@ export interface IFederatedCatalogueComponent extends IComponent {
 	 * @param limit Optional limit for pagination.
 	 * @returns Complete IDataspaceProtocolCatalog with @context, @id, @type, participantId, dataset/catalog,
 	 * or IDataspaceProtocolCatalogError if no datasets found.
-	 * @throws NotFoundError if the @type field is missing or if the filter type is not registered.
 	 */
 	query(
 		filter?: unknown[],
 		cursor?: string,
 		limit?: number
 	): Promise<{
-		catalog: IDataspaceProtocolCatalog | IDataspaceProtocolCatalogError;
+		result: IDataspaceProtocolCatalog | IDataspaceProtocolCatalogError;
 		cursor?: string;
 	}>;
 

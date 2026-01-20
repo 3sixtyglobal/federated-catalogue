@@ -7,6 +7,7 @@
 			"datasetMissingPublisher": "Dataset \"{dataSetId}\" is missing required dcterms:publisher property (needed for participant identification)",
 			"filterIndexCreationFailed": "Failed to create filter index for dataset \"{dataSetId}\" using filter \"{filterType}\"",
 			"multipleFiltersNotSupported": "Multiple filters are not supported in a single query",
+			"filterMustBeArray": "Filter must be an array per DS Protocol specification",
 			"noDatasetsFound": "No datasets found in the catalogue"
 		}
 	},

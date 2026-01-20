@@ -18,5 +18,7 @@
 
 - [generateRestRoutesFederatedCatalogue](functions/generateRestRoutesFederatedCatalogue.md)
 - [initSchema](functions/initSchema.md)
+- [transformToCatalogError](functions/transformToCatalogError.md)
+- [transformErrorToStatusCode](functions/transformErrorToStatusCode.md)
 - [datasetEntityToModel](functions/datasetEntityToModel.md)
 - [datasetModelToEntity](functions/datasetModelToEntity.md)

@@ -60,7 +60,7 @@ export class FederatedCatalogueRestClient
 		cursor?: string,
 		limit?: number
 	): Promise<{
-		catalog: IDataspaceProtocolCatalog | IDataspaceProtocolCatalogError;
+		result: IDataspaceProtocolCatalog | IDataspaceProtocolCatalogError;
 		cursor?: string;
 	}> {
 		const response = await this.fetch<ICatalogRequestRequest, ICatalogRequestResponse>(
@@ -80,7 +80,7 @@ export class FederatedCatalogueRestClient
 		);
 
 		return {
-			catalog: response.body,
+			result: response.body,
 			cursor: HeaderHelper.extractLinkHeaderRelation(response.headers?.[HeaderTypes.Link], "next")
 				?.urlQueryParams?.cursor
 		};

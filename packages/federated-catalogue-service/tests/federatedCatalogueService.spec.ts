@@ -10,10 +10,8 @@ import {
 } from "@twin.org/federated-catalogue-models";
 import { nameof } from "@twin.org/nameof";
 import {
-	DataspaceProtocolCatalogTypes,
 	DataspaceProtocolDataTypes,
-	type IDataspaceProtocolCatalog,
-	type IDataspaceProtocolCatalogError
+	type IDataspaceProtocolCatalog
 } from "@twin.org/standards-dataspace-protocol";
 import { DublinCoreContexts } from "@twin.org/standards-dublin-core";
 import { addAllContextsToDocumentCache } from "@twin.org/standards-ld-contexts";
@@ -136,10 +134,22 @@ describe("FederatedCatalogueService", () => {
 		const result = await service.get("https://example.com/datasets/non-existent");
 
 		// Verify it's a CatalogError
-		expect(result["@type"]).toBe("CatalogError");
-		expect(result["@context"]).toBe("https://w3id.org/dspace/2025/1/context.jsonld");
-		expect((result as { code?: string }).code).toBe("404");
-		expect((result as { reason?: string[] }).reason).toBeDefined();
+		expect(result).toEqual({
+			"@context": "https://w3id.org/dspace/2025/1/context.jsonld",
+			"@type": "CatalogError",
+			code: "NotFoundError:federatedCatalogueService.datasetNotFound",
+			reason: [
+				{
+					source: "FederatedCatalogueService",
+					message: "federatedCatalogueService.datasetNotFound",
+					name: "NotFoundError",
+					properties: {
+						notFoundId: "https://example.com/datasets/non-existent"
+					},
+					stack: expect.any(String)
+				}
+			]
+		});
 	});
 
 	test("Can query datasets with no filter", async () => {
@@ -208,9 +218,9 @@ describe("FederatedCatalogueService", () => {
 			createIndex: async dataSet => ({})
 		}));
 
-		const result = await service.query([{ "@type": "FilterByExample" }]);
+		const queryResult = await service.query([{ "@type": "FilterByExample" }]);
 		const datasets = ArrayHelper.fromObjectOrArray(
-			(result.catalog as { dataset?: unknown }).dataset ?? []
+			(queryResult.result as { dataset?: unknown }).dataset ?? []
 		);
 
 		expect(datasets.length).toBeGreaterThanOrEqual(2);
@@ -275,14 +285,14 @@ describe("FederatedCatalogueService", () => {
 			createIndex: async dataSet => ({})
 		}));
 
-		const result = await service.query([{ "@type": "FilterByExample" }]);
+		const queryResult = await service.query([{ "@type": "FilterByExample" }]);
 
 		// Verify single participant returns flat catalog with participantId
-		expect(result.catalog).toBeDefined();
-		expect(result.catalog["@type"]).toBe("Catalog");
+		expect(queryResult.result).toBeDefined();
+		expect(queryResult.result["@type"]).toBe("Catalog");
 
 		// Type guard: verify it's a catalog, not an error
-		const catalog = result.catalog as IDataspaceProtocolCatalog;
+		const catalog = queryResult.result as IDataspaceProtocolCatalog;
 		expect(catalog.participantId).toBe(publisherId);
 		// Should have dataset array, not nested catalogs
 		expect(catalog.dataset).toBeDefined();
@@ -358,14 +368,14 @@ describe("FederatedCatalogueService", () => {
 		}));
 
 		// Anonymous request (no context) - first publisher becomes root participantId
-		const result = await service.query([{ "@type": "FilterByExample" }]);
+		const queryResult = await service.query([{ "@type": "FilterByExample" }]);
 
 		// Verify catalog structure for anonymous multi-participant query
-		expect(result.catalog).toBeDefined();
-		expect(result.catalog["@type"]).toBe("Catalog");
+		expect(queryResult.result).toBeDefined();
+		expect(queryResult.result["@type"]).toBe("Catalog");
 
 		// Type guard: verify it's a catalog, not an error
-		const catalog = result.catalog as IDataspaceProtocolCatalog;
+		const catalog = queryResult.result as IDataspaceProtocolCatalog;
 
 		// For anonymous requests, first publisher (publisher1) becomes root participantId
 		// Root catalog gets publisher1's datasets, publisher2's datasets go in nested catalog
@@ -457,14 +467,14 @@ describe("FederatedCatalogueService", () => {
 			createIndex: async dataSet => ({})
 		}));
 
-		const result = await service.query([{ "@type": "FilterByExample" }]);
+		const queryResult = await service.query([{ "@type": "FilterByExample" }]);
 
 		// Verify catalog structure for authenticated request
-		expect(result.catalog).toBeDefined();
-		expect(result.catalog["@type"]).toBe("Catalog");
+		expect(queryResult.result).toBeDefined();
+		expect(queryResult.result["@type"]).toBe("Catalog");
 
 		// Type guard: verify it's a catalog, not an error
-		const catalog = result.catalog as IDataspaceProtocolCatalog;
+		const catalog = queryResult.result as IDataspaceProtocolCatalog;
 
 		// Root catalog should have requesting participant as participantId
 		expect(catalog.participantId).toBe(requestingParticipant);
@@ -529,9 +539,9 @@ describe("FederatedCatalogueService", () => {
 			"dcterms:identifier": "FILTER-TEST-123"
 		};
 
-		const result = await service.query([filter]);
+		const queryResult = await service.query([filter]);
 		const datasets = ArrayHelper.fromObjectOrArray(
-			(result.catalog as { dataset?: unknown }).dataset ?? []
+			(queryResult.result as { dataset?: unknown }).dataset ?? []
 		);
 
 		expect(datasets.length).toBeGreaterThanOrEqual(1);
@@ -551,10 +561,52 @@ describe("FederatedCatalogueService", () => {
 			datasetStorageConnectorType: "dataset"
 		});
 
-		const result = await service.query([{}] as IBaseFilter[]);
+		const queryResult = await service.query([{}] as IBaseFilter[]);
 
-		expect(result.catalog["@type"]).toBe(DataspaceProtocolCatalogTypes.CatalogError);
-		expect((result.catalog as IDataspaceProtocolCatalogError).code).toBe("400");
+		expect(queryResult.result).toEqual({
+			"@context": "https://w3id.org/dspace/2025/1/context.jsonld",
+			"@type": "CatalogError",
+			code: "GuardError:guard.string",
+			reason: [
+				{
+					name: "GuardError",
+					source: "FederatedCatalogueService",
+					message: "guard.string",
+					properties: {
+						property: "filterType",
+						value: "undefined"
+					},
+					stack: expect.any(String)
+				}
+			]
+		});
+	});
+
+	test("Query returns CatalogError 400 when filter is not an array", async () => {
+		const service = new FederatedCatalogueService({
+			datasetStorageConnectorType: "dataset"
+		});
+
+		// Passing a non-array value (e.g., empty string) should return CatalogError
+		const queryResult = await service.query("" as unknown as unknown[]);
+
+		expect(queryResult.result).toEqual({
+			"@context": "https://w3id.org/dspace/2025/1/context.jsonld",
+			"@type": "CatalogError",
+			code: "GuardError:guard.array",
+			reason: [
+				{
+					name: "GuardError",
+					source: "FederatedCatalogueService",
+					message: "guard.array",
+					properties: {
+						property: "filter",
+						value: ""
+					},
+					stack: expect.any(String)
+				}
+			]
+		});
 	});
 
 	test("Query returns CatalogError 404 when no datasets exist", async () => {
@@ -579,17 +631,27 @@ describe("FederatedCatalogueService", () => {
 		FederatedCatalogueFilterFactory.register("MockEmptyFilter", () => mockFilter);
 
 		// Query with the mock filter
-		const result = await service.query([
+		const queryResult = await service.query([
 			{
 				"@type": "MockEmptyFilter"
 			}
 		]);
 
-		// Verify it returns a CatalogError with 404
-		expect(result.catalog).toBeDefined();
-		expect(result.catalog["@type"]).toBe("CatalogError");
-		expect((result.catalog as { code?: string }).code).toBe("404");
-		expect(result.cursor).toBeUndefined();
+		// Verify it returns a CatalogError with Not found
+		expect(queryResult.result).toEqual({
+			"@context": "https://w3id.org/dspace/2025/1/context.jsonld",
+			"@type": "CatalogError",
+			code: "NotFoundError:federatedCatalogueService.noDatasetsFound",
+			reason: [
+				{
+					name: "NotFoundError",
+					source: "FederatedCatalogueService",
+					message: "federatedCatalogueService.noDatasetsFound",
+					properties: {},
+					stack: expect.any(String)
+				}
+			]
+		});
 	});
 
 	test("Cursor is retained when query returns datasets with cursor", async () => {
@@ -666,19 +728,19 @@ describe("FederatedCatalogueService", () => {
 		FederatedCatalogueFilterFactory.register("MockFilterWithCursorAndData", () => mockFilter);
 
 		// Query with the mock filter
-		const result = await service.query([
+		const queryResult = await service.query([
 			{
 				"@type": "MockFilterWithCursorAndData"
 			}
 		]);
 
 		// Verify cursor is present after compaction
-		expect(result.cursor).toBeDefined();
-		expect(result.cursor).toBe("next-page-cursor-456");
+		expect(queryResult.cursor).toBeDefined();
+		expect(queryResult.cursor).toBe("next-page-cursor-456");
 
 		// Verify datasets are also present
 		const datasets = ArrayHelper.fromObjectOrArray(
-			(result.catalog as { dataset?: unknown }).dataset ?? []
+			(queryResult.result as { dataset?: unknown }).dataset ?? []
 		);
 		expect(datasets.length).toBe(1);
 		if (datasets[0] && typeof datasets[0] === "object") {
@@ -730,19 +792,18 @@ describe("FederatedCatalogueService", () => {
 		}));
 
 		// Query without cursor (FilterByExample doesn't return cursor by default)
-		const result = await service.query([
+		const queryResult = await service.query([
 			{
 				"@type": "FilterByExample"
 			}
 		]);
 
 		// Verify cursor is not present when filter doesn't return one
-		expect(result.cursor).toBeUndefined();
+		expect(queryResult.cursor).toBeUndefined();
 		// Verify it's a valid catalog, not an error
-		expect(result.catalog["@type"]).toBe("Catalog");
+		expect(queryResult.result["@type"]).toBe("Catalog");
 	});
 
-	// Issue #43: Dataset Validation Tests
 	test("Set throws GeneralError when dataset is missing @context (handled by conformance checker)", async () => {
 		const service = new FederatedCatalogueService({
 			datasetStorageConnectorType: "dataset"
@@ -904,7 +965,6 @@ describe("FederatedCatalogueService", () => {
 		);
 	});
 
-	// Issue #44: DS Protocol Mandatory Properties Tests
 	test("Set throws GeneralError when dataset is missing distribution (prefixed form)", async () => {
 		const service = new FederatedCatalogueService({
 			datasetStorageConnectorType: "dataset"

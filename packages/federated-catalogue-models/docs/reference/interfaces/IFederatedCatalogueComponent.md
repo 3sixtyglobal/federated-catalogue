@@ -56,7 +56,7 @@ Nothing.
 
 ### query()
 
-> **query**(`filter?`, `cursor?`, `limit?`): `Promise`\<\{ `catalog`: `IDataspaceProtocolCatalog` \| `IDataspaceProtocolCatalogError`; `cursor?`: `string`; \}\>
+> **query**(`filter?`, `cursor?`, `limit?`): `Promise`\<\{ `result`: `IDataspaceProtocolCatalog` \| `IDataspaceProtocolCatalogError`; `cursor?`: `string`; \}\>
 
 Execute a query against the catalogue using registered filter plugins.
 Returns a DS Protocol compliant Catalog object with participantId.
@@ -90,14 +90,10 @@ Optional limit for pagination.
 
 #### Returns
 
-`Promise`\<\{ `catalog`: `IDataspaceProtocolCatalog` \| `IDataspaceProtocolCatalogError`; `cursor?`: `string`; \}\>
+`Promise`\<\{ `result`: `IDataspaceProtocolCatalog` \| `IDataspaceProtocolCatalogError`; `cursor?`: `string`; \}\>
 
 Complete IDataspaceProtocolCatalog with @context, @id, @type, participantId, dataset/catalog,
 or IDataspaceProtocolCatalogError if no datasets found.
-
-#### Throws
-
-NotFoundError if the
 
 ***
 

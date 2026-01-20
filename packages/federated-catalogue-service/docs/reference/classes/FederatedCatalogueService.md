@@ -57,7 +57,7 @@ The class name of the component.
 
 ### get()
 
-> **get**(`dataSetId`): `Promise`\<`IDcatDataset` \| `IDataspaceProtocolCatalogError`\>
+> **get**(`dataSetId`): `Promise`\<`IDataspaceProtocolCatalogError` \| `IDcatDataset`\>
 
 Retrieve a dataset by its unique identifier.
 
@@ -71,7 +71,7 @@ The unique identifier of the dataset.
 
 #### Returns
 
-`Promise`\<`IDcatDataset` \| `IDataspaceProtocolCatalogError`\>
+`Promise`\<`IDataspaceProtocolCatalogError` \| `IDcatDataset`\>
 
 The dataset if found, or a CatalogError if not found or an error occurs.
 
@@ -108,7 +108,7 @@ The dataset to store.
 
 ### query()
 
-> **query**(`filter?`, `cursor?`, `limit?`): `Promise`\<\{ `catalog`: `IDataspaceProtocolCatalogError` \| `IDataspaceProtocolCatalog`; `cursor?`: `string`; \}\>
+> **query**(`filter?`, `cursor?`, `limit?`): `Promise`\<\{ `result`: `IDataspaceProtocolCatalogError` \| `IDataspaceProtocolCatalog`; `cursor?`: `string`; \}\>
 
 Execute a query against the catalogue using registered filter plugins.
 Returns a DS Protocol compliant Catalog object with participantId.
@@ -142,7 +142,7 @@ Optional limit for pagination.
 
 #### Returns
 
-`Promise`\<\{ `catalog`: `IDataspaceProtocolCatalogError` \| `IDataspaceProtocolCatalog`; `cursor?`: `string`; \}\>
+`Promise`\<\{ `result`: `IDataspaceProtocolCatalogError` \| `IDataspaceProtocolCatalog`; `cursor?`: `string`; \}\>
 
 Complete IDataspaceProtocolCatalog with @context, @id, @type, participantId, dataset/catalog,
 or CatalogError if validation fails or an error occurs.

@@ -26,7 +26,6 @@ import { FederatedCatalogueFilterFactory } from "@twin.org/federated-catalogue-m
 import type { ILoggingComponent } from "@twin.org/logging-models";
 import { nameof } from "@twin.org/nameof";
 import {
-	DataspaceProtocolCatalogTypes,
 	DataspaceProtocolContexts,
 	DataspaceProtocolDataTypes,
 	DataspaceProtocolHelper,
@@ -42,9 +41,9 @@ import {
 	type IDcatDataset
 } from "@twin.org/standards-w3c-dcat";
 import { OdrlContexts } from "@twin.org/standards-w3c-odrl";
-import { HttpStatusCode } from "@twin.org/web";
 import type { Dataset } from "../entities/dataset.js";
 import type { IFederatedCatalogueServiceConstructorOptions } from "../models/IFederatedCatalogueServiceConstructorOptions.js";
+import { transformToCatalogError } from "../utils/catalogErrorUtils.js";
 import { datasetEntityToModel, datasetModelToEntity } from "../utils/datasetConverters.js";
 
 /**
@@ -106,24 +105,21 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * @returns The dataset if found, or a CatalogError if not found or an error occurs.
 	 */
 	public async get(dataSetId: string): Promise<IDcatDataset | IDataspaceProtocolCatalogError> {
-		Guards.stringValue(FederatedCatalogueService.CLASS_NAME, nameof(dataSetId), dataSetId);
-
-		await this._logging?.log({
-			level: "info",
-			source: FederatedCatalogueService.CLASS_NAME,
-			ts: Date.now(),
-			message: "datasetRetrieve",
-			data: { dataSetId }
-		});
-
 		try {
+			Guards.stringValue(FederatedCatalogueService.CLASS_NAME, nameof(dataSetId), dataSetId);
+
+			await this._logging?.log({
+				level: "info",
+				source: FederatedCatalogueService.CLASS_NAME,
+				ts: Date.now(),
+				message: "datasetRetrieve",
+				data: { dataSetId }
+			});
+
 			const datasetEntity = await this._datasetStorage.get(dataSetId);
 
 			if (!datasetEntity) {
-				return this.transformToCatalogError(
-					new NotFoundError(FederatedCatalogueService.CLASS_NAME, "datasetNotFound", dataSetId),
-					HttpStatusCode.notFound
-				);
+				throw new NotFoundError(FederatedCatalogueService.CLASS_NAME, "datasetNotFound", dataSetId);
 			}
 
 			const dataset = datasetEntityToModel(datasetEntity);
@@ -134,7 +130,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 
 			return normalizedDataset as IDcatDataset;
 		} catch (error) {
-			return this.transformToCatalogError(error, HttpStatusCode.internalServerError);
+			return transformToCatalogError(error);
 		}
 	}
 
@@ -264,24 +260,24 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		cursor?: string,
 		limit?: number
 	): Promise<{
-		catalog: IDataspaceProtocolCatalog | IDataspaceProtocolCatalogError;
+		result: IDataspaceProtocolCatalog | IDataspaceProtocolCatalogError;
 		cursor?: string;
 	}> {
 		try {
+			Guards.array(FederatedCatalogueService.CLASS_NAME, nameof(filter), filter);
+
 			let datasets: IDcatDataset[];
 			let resultCursor: string | undefined;
 
-			const isArray = Is.array(filter);
-			if (!filter || (isArray && filter.length === 0)) {
+			if (!Is.empty(filter) && !Is.array(filter)) {
+				throw new GeneralError(FederatedCatalogueService.CLASS_NAME, "filterMustBeArray");
+			}
+
+			if (!filter || filter.length === 0) {
 				const result = await this._datasetStorage.query();
 				datasets = result.entities.map(entity => datasetEntityToModel(entity));
-			} else if (isArray && filter.length > 1) {
-				return {
-					catalog: this.transformToCatalogError(
-						new GeneralError(FederatedCatalogueService.CLASS_NAME, "multipleFiltersNotSupported"),
-						HttpStatusCode.badRequest
-					)
-				};
+			} else if (filter.length > 1) {
+				throw new GeneralError(FederatedCatalogueService.CLASS_NAME, "multipleFiltersNotSupported");
 			} else {
 				const singleFilter = filter[0] as { "@type"?: string } | undefined;
 
@@ -316,12 +312,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 
 			// Return CatalogError 404 when no datasets exist
 			if (datasets.length === 0) {
-				return {
-					catalog: this.transformToCatalogError(
-						new NotFoundError(FederatedCatalogueService.CLASS_NAME, "noDatasetsFound"),
-						HttpStatusCode.notFound
-					)
-				};
+				throw new NotFoundError(FederatedCatalogueService.CLASS_NAME, "noDatasetsFound");
 			}
 
 			// Get requesting participant from context (organizationId maps to participantId)
@@ -399,12 +390,12 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			const normalizedCatalog = await DataspaceProtocolHelper.normalize(catalog);
 
 			return {
-				catalog: normalizedCatalog as IDataspaceProtocolCatalog,
+				result: normalizedCatalog as IDataspaceProtocolCatalog,
 				cursor: resultCursor
 			};
 		} catch (error) {
 			return {
-				catalog: this.transformToCatalogError(error, HttpStatusCode.badRequest)
+				result: transformToCatalogError(error)
 			};
 		}
 	}
@@ -467,32 +458,5 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		const canonicalBytes = Converter.utf8ToBytes(canonicalContent);
 		const catalogHash = Converter.bytesToHex(Blake2b.sum256(canonicalBytes));
 		return `urn:x-catalog:${catalogHash}`;
-	}
-
-	/**
-	 * Transform a TWIN Platform error to DS Protocol CatalogError format.
-	 * @param error The error to transform.
-	 * @param statusCode The HTTP status code.
-	 * @returns The CatalogError.
-	 */
-	private transformToCatalogError(
-		error: unknown,
-		statusCode: HttpStatusCode
-	): IDataspaceProtocolCatalogError {
-		const baseError = BaseError.fromError(error);
-
-		const reason: string[] = [baseError.message];
-
-		// Include properties for debugging if present
-		if (baseError.properties && Object.keys(baseError.properties).length > 0) {
-			reason.push(JSON.stringify(baseError.properties));
-		}
-
-		return {
-			"@context": DataspaceProtocolContexts.JsonLdContext,
-			"@type": DataspaceProtocolCatalogTypes.CatalogError,
-			code: statusCode.toString(),
-			reason
-		} as unknown as IDataspaceProtocolCatalogError;
 	}
 }

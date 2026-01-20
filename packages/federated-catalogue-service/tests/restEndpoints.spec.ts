@@ -17,8 +17,7 @@ import {
 import { nameof } from "@twin.org/nameof";
 import {
 	DataspaceProtocolCatalogTypes,
-	DataspaceProtocolContexts,
-	type IDataspaceProtocolCatalogError
+	DataspaceProtocolContexts
 } from "@twin.org/standards-dataspace-protocol";
 import { DublinCoreContexts } from "@twin.org/standards-dublin-core";
 import { addAllContextsToDocumentCache } from "@twin.org/standards-ld-contexts";
@@ -167,7 +166,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			}
 		});
 
-		test("Validates request structure", async () => {
+		test("Validates request structure and returns CatalogError for invalid request", async () => {
 			// Generate routes
 			const routes = generateRestRoutesFederatedCatalogue("/catalog", "federated-catalogue");
 			const catalogRequestRoute = routes.find(r => r.operationId === "catalogRequest");
@@ -176,10 +175,17 @@ describe("Federated Catalogue REST Endpoints", () => {
 				throw new Error("catalogRequest route not found");
 			}
 
-			// Test with invalid request (missing body)
+			// Test with invalid request (missing body) - should return CatalogError, not throw
 			const invalidRequest = {} as ICatalogRequestRequest;
 
-			await expect(catalogRequestRoute.handler({} as never, invalidRequest)).rejects.toThrow();
+			const response = (await catalogRequestRoute.handler(
+				{} as never,
+				invalidRequest
+			)) as ICatalogRequestResponse;
+
+			// Should return CatalogError with 400 status
+			expect(response.statusCode).toBe(400);
+			expect(response.body["@type"]).toBe(DataspaceProtocolCatalogTypes.CatalogError);
 		});
 
 		test("Route configuration is correct", () => {
@@ -282,7 +288,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			expect(response.body["@type"]).toBe(DataspaceProtocolCatalogTypes.CatalogError);
 		});
 
-		test("Validates request path parameters", async () => {
+		test("Validates request path parameters and returns CatalogError for invalid request", async () => {
 			// Generate routes
 			const routes = generateRestRoutesFederatedCatalogue("/catalog", "federated-catalogue");
 			const getDatasetRoute = routes.find(r => r.operationId === "getDataset");
@@ -291,17 +297,29 @@ describe("Federated Catalogue REST Endpoints", () => {
 				throw new Error("getDataset route not found");
 			}
 
-			// Test with missing pathParams
+			// Test with missing pathParams - should return CatalogError, not throw
 			const invalidRequest1 = {} as IGetDatasetRequest;
-			await expect(getDatasetRoute.handler({} as never, invalidRequest1)).rejects.toThrow();
+			const response1 = (await getDatasetRoute.handler(
+				{} as never,
+				invalidRequest1
+			)) as IGetDatasetResponse;
 
-			// Test with empty datasetId
+			expect(response1.statusCode).toBe(400);
+			expect(response1.body["@type"]).toBe(DataspaceProtocolCatalogTypes.CatalogError);
+
+			// Test with empty datasetId - should return CatalogError, not throw
 			const invalidRequest2 = {
 				pathParams: {
 					datasetId: ""
 				}
 			} as IGetDatasetRequest;
-			await expect(getDatasetRoute.handler({} as never, invalidRequest2)).rejects.toThrow();
+			const response2 = (await getDatasetRoute.handler(
+				{} as never,
+				invalidRequest2
+			)) as IGetDatasetResponse;
+
+			expect(response2.statusCode).toBe(400);
+			expect(response2.body["@type"]).toBe(DataspaceProtocolCatalogTypes.CatalogError);
 		});
 
 		test("Route configuration is correct", () => {
@@ -451,7 +469,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 					const hasCursor = cursor === "page2-cursor";
 
 					return {
-						catalog: {
+						result: {
 							"@context": [DataspaceProtocolContexts.JsonLdContext],
 							"@id": "urn:x-catalog:test",
 							"@type": DcatClasses.Catalog,
@@ -644,14 +662,26 @@ describe("Federated Catalogue REST Endpoints", () => {
 			expect(response.body["@context"]).toBe(DataspaceProtocolContexts.JsonLdContext);
 			expect(response.statusCode).toBe(404);
 
-			const catalogError = response.body as IDataspaceProtocolCatalogError;
-			expect(catalogError.code).toBe("404");
-			expect(catalogError.reason).toBeDefined();
-			expect(Is.array(catalogError.reason)).toBe(true);
+			expect(response.body).toEqual({
+				"@context": "https://w3id.org/dspace/2025/1/context.jsonld",
+				"@type": "CatalogError",
+				code: "NotFoundError:federatedCatalogueService.datasetNotFound",
+				reason: [
+					{
+						name: "NotFoundError",
+						source: "FederatedCatalogueService",
+						message: "federatedCatalogueService.datasetNotFound",
+						properties: {
+							notFoundId: "urn:uuid:non-existent-dataset"
+						},
+						stack: expect.any(String)
+					}
+				]
+			});
 		});
 
 		test("POST /request with missing @context throws GuardError", async () => {
-			// This tests Issue #43 validation - missing @context should throw GuardError
+			// Missing @context should throw GuardError
 			const invalidDataset = {
 				// Missing @context
 				"@id": "urn:uuid:invalid-dataset",
@@ -664,7 +694,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			await expect(service.set(invalidDataset)).rejects.toThrow();
 		});
 
-		test("POST /request with empty body throws GuardError", async () => {
+		test("POST /request with empty body returns CatalogError", async () => {
 			// Generate routes
 			const routes = generateRestRoutesFederatedCatalogue("/catalog", "federated-catalogue");
 			const catalogRequestRoute = routes.find(r => r.operationId === "catalogRequest");
@@ -673,10 +703,16 @@ describe("Federated Catalogue REST Endpoints", () => {
 				throw new Error("catalogRequest route not found");
 			}
 
-			// Test with missing body
+			// Test with missing body - should return CatalogError, not throw
 			const invalidRequest = {} as ICatalogRequestRequest;
 
-			await expect(catalogRequestRoute.handler({} as never, invalidRequest)).rejects.toThrow();
+			const response = (await catalogRequestRoute.handler(
+				{} as never,
+				invalidRequest
+			)) as ICatalogRequestResponse;
+
+			expect(response.statusCode).toBe(400);
+			expect(response.body["@type"]).toBe(DataspaceProtocolCatalogTypes.CatalogError);
 		});
 
 		test("Service transforms errors to CatalogError format", async () => {
@@ -687,10 +723,22 @@ describe("Federated Catalogue REST Endpoints", () => {
 			expect(result["@context"]).toBe(DataspaceProtocolContexts.JsonLdContext);
 			expect(result["@type"]).toBe(DataspaceProtocolCatalogTypes.CatalogError);
 
-			const catalogError = result as IDataspaceProtocolCatalogError;
-			expect(catalogError.code).toBe("404");
-			expect(catalogError.reason).toBeDefined();
-			expect(Is.array(catalogError.reason)).toBe(true);
+			expect(result).toEqual({
+				"@context": "https://w3id.org/dspace/2025/1/context.jsonld",
+				"@type": "CatalogError",
+				code: "NotFoundError:federatedCatalogueService.datasetNotFound",
+				reason: [
+					{
+						name: "NotFoundError",
+						source: "FederatedCatalogueService",
+						message: "federatedCatalogueService.datasetNotFound",
+						properties: {
+							notFoundId: "urn:uuid:test-123"
+						},
+						stack: expect.any(String)
+					}
+				]
+			});
 		});
 
 		test("Service returns dataset for successful get", async () => {
@@ -730,8 +778,8 @@ describe("Federated Catalogue REST Endpoints", () => {
 		});
 	});
 
-	describe("Request Validation (Issue #40)", () => {
-		test("POST /request with empty body throws GuardError", async () => {
+	describe("Request Validation", () => {
+		test("POST /request with empty body returns CatalogError with 400 status", async () => {
 			const routes = generateRestRoutesFederatedCatalogue("/test-catalogue", "test-component");
 			ComponentFactory.register("test-component", () => service);
 
@@ -742,10 +790,33 @@ describe("Federated Catalogue REST Endpoints", () => {
 				body: {} as ICatalogRequestRequest["body"]
 			};
 
-			await expect(catalogRoute?.handler({} as IHttpRequestContext, request)).rejects.toThrow();
+			const result = (await catalogRoute?.handler(
+				{} as IHttpRequestContext,
+				request
+			)) as ICatalogRequestResponse;
+
+			// Should return CatalogError, not throw GuardError
+			expect(result.statusCode).toBe(400);
+			expect(result.body).toEqual({
+				"@context": "https://w3id.org/dspace/2025/1/context.jsonld",
+				"@type": "CatalogError",
+				code: "GuardError:guard.string",
+				reason: [
+					{
+						name: "GuardError",
+						source: "federatedCatalogueRoutes",
+						message: "guard.string",
+						properties: {
+							property: "@type",
+							value: "undefined"
+						},
+						stack: expect.any(String)
+					}
+				]
+			});
 		});
 
-		test("POST /request with missing @type throws GuardError", async () => {
+		test("POST /request with missing @type returns CatalogError with 400 status", async () => {
 			const routes = generateRestRoutesFederatedCatalogue("/test-catalogue", "test-component");
 			ComponentFactory.register("test-component", () => service);
 
@@ -758,7 +829,110 @@ describe("Federated Catalogue REST Endpoints", () => {
 				} as unknown as ICatalogRequestRequest["body"]
 			};
 
-			await expect(catalogRoute?.handler({} as IHttpRequestContext, request)).rejects.toThrow();
+			const result = (await catalogRoute?.handler(
+				{} as IHttpRequestContext,
+				request
+			)) as ICatalogRequestResponse;
+
+			// Should return CatalogError, not throw GuardError
+			expect(result.statusCode).toBe(400);
+			expect(result.body).toEqual({
+				"@context": "https://w3id.org/dspace/2025/1/context.jsonld",
+				"@type": "CatalogError",
+				code: "GuardError:guard.string",
+				reason: [
+					{
+						name: "GuardError",
+						source: "federatedCatalogueRoutes",
+						message: "guard.string",
+						properties: {
+							property: "@type",
+							value: "undefined"
+						},
+						stack: expect.any(String)
+					}
+				]
+			});
+		});
+
+		test("POST /request with only @context (missing @type) returns CatalogError", async () => {
+			// Empty Catalog Request Payload Leads to Uncontrolled GuardError
+			const routes = generateRestRoutesFederatedCatalogue("/test-catalogue", "test-component");
+			ComponentFactory.register("test-component", () => service);
+
+			const catalogRoute = routes.find(r => r.operationId === "catalogRequest");
+			expect(catalogRoute).toBeDefined();
+
+			// Request with only @context (missing @type)
+			const request: ICatalogRequestRequest = {
+				body: {
+					"@context": [DataspaceProtocolContexts.JsonLdContext]
+				} as unknown as ICatalogRequestRequest["body"]
+			};
+
+			const result = (await catalogRoute?.handler(
+				{} as IHttpRequestContext,
+				request
+			)) as ICatalogRequestResponse;
+
+			// Should return CatalogError, not throw GuardError
+			expect(result.statusCode).toBe(400);
+			expect(result.body).toEqual({
+				"@context": "https://w3id.org/dspace/2025/1/context.jsonld",
+				"@type": "CatalogError",
+				code: "GuardError:guard.string",
+				reason: [
+					{
+						name: "GuardError",
+						source: "federatedCatalogueRoutes",
+						message: "guard.string",
+						properties: {
+							property: "@type",
+							value: "undefined"
+						},
+						stack: expect.any(String)
+					}
+				]
+			});
+		});
+
+		test("GET /datasets/:datasetId with empty datasetId returns CatalogError", async () => {
+			const routes = generateRestRoutesFederatedCatalogue("/test-catalogue", "test-component");
+			ComponentFactory.register("test-component", () => service);
+
+			const getDatasetRoute = routes.find(r => r.operationId === "getDataset");
+			expect(getDatasetRoute).toBeDefined();
+
+			const request: IGetDatasetRequest = {
+				pathParams: {
+					datasetId: ""
+				}
+			};
+
+			const result = (await getDatasetRoute?.handler(
+				{} as IHttpRequestContext,
+				request
+			)) as IGetDatasetResponse;
+
+			// Should return CatalogError, not throw GuardError
+			expect(result.statusCode).toBe(400);
+			expect(result.body).toEqual({
+				"@context": "https://w3id.org/dspace/2025/1/context.jsonld",
+				"@type": "CatalogError",
+				code: "GuardError:guard.stringEmpty",
+				reason: [
+					{
+						name: "GuardError",
+						source: "federatedCatalogueRoutes",
+						message: "guard.stringEmpty",
+						properties: {
+							property: "request.pathParams.datasetId",
+							value: ""
+						},
+						stack: expect.any(String)
+					}
+				]
+			});
 		});
 
 		test("POST /request returns HTTP 404 status when no datasets found", async () => {
@@ -791,8 +965,20 @@ describe("Federated Catalogue REST Endpoints", () => {
 
 			// Return appropriate HTTP code when returning CatalogError
 			expect(result.statusCode).toBe(404);
-			expect(result.body["@type"]).toBe(DataspaceProtocolCatalogTypes.CatalogError);
-			expect((result.body as IDataspaceProtocolCatalogError).code).toBe("404");
+			expect(result.body).toEqual({
+				"@context": "https://w3id.org/dspace/2025/1/context.jsonld",
+				"@type": "CatalogError",
+				code: "NotFoundError:federatedCatalogueService.noDatasetsFound",
+				reason: [
+					{
+						name: "NotFoundError",
+						source: "FederatedCatalogueService",
+						message: "federatedCatalogueService.noDatasetsFound",
+						properties: {},
+						stack: expect.any(String)
+					}
+				]
+			});
 		});
 
 		test("POST /request returns HTTP 400 status for invalid filter (missing @type)", async () => {
@@ -818,8 +1004,23 @@ describe("Federated Catalogue REST Endpoints", () => {
 
 			// Guard errors should return CatalogError, not throw
 			expect(result.statusCode).toBe(400);
-			expect(result.body["@type"]).toBe(DataspaceProtocolCatalogTypes.CatalogError);
-			expect((result.body as IDataspaceProtocolCatalogError).code).toBe("400");
+			expect(result.body).toEqual({
+				"@context": "https://w3id.org/dspace/2025/1/context.jsonld",
+				"@type": "CatalogError",
+				code: "GuardError:guard.string",
+				reason: [
+					{
+						name: "GuardError",
+						source: "FederatedCatalogueService",
+						message: "guard.string",
+						properties: {
+							property: "filterType",
+							value: "undefined"
+						},
+						stack: expect.any(String)
+					}
+				]
+			});
 		});
 
 		test("POST /request with valid CatalogRequestMessage succeeds", async () => {

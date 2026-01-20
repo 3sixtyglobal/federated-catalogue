@@ -12,12 +12,11 @@ import type {
 import { nameof } from "@twin.org/nameof";
 import {
 	DataspaceProtocolCatalogTypes,
-	DataspaceProtocolContexts,
-	type IDataspaceProtocolCatalog,
-	type IDataspaceProtocolCatalogError
+	DataspaceProtocolContexts
 } from "@twin.org/standards-dataspace-protocol";
-import { DcatClasses, type DcatContextType, type IDcatDataset } from "@twin.org/standards-w3c-dcat";
+import { DcatClasses, type DcatContextType } from "@twin.org/standards-w3c-dcat";
 import { HeaderHelper, HeaderTypes, HttpStatusCode } from "@twin.org/web";
+import { transformErrorToStatusCode, transformToCatalogError } from "./utils/catalogErrorUtils.js";
 
 /**
  * The source used when communicating about these routes.
@@ -157,21 +156,6 @@ export function generateRestRoutesFederatedCatalogue(
 }
 
 /**
- * Map the DS Protocol result to an HTTP status code.
- * @param result The result to map.
- * @returns The mapped status code or undefined if no mapping was found or not an error.
- */
-function mapCatalogError(
-	result: IDataspaceProtocolCatalog | IDcatDataset | IDataspaceProtocolCatalogError | undefined
-): HttpStatusCode | undefined {
-	if (result?.["@type"] === DataspaceProtocolCatalogTypes.CatalogError && Is.objectValue(result)) {
-		return (Coerce.integer(result.code) as HttpStatusCode) ?? HttpStatusCode.badRequest;
-	}
-
-	return undefined;
-}
-
-/**
  * Handle the catalog request operation.
  * @param httpRequestContext The request context for the operation.
  * @param componentName The name of the component to use.
@@ -183,32 +167,40 @@ async function catalogRequest(
 	componentName: string,
 	request: ICatalogRequestRequest
 ): Promise<ICatalogRequestResponse> {
-	Guards.object<ICatalogRequestRequest>(ROUTES_SOURCE, nameof(request), request);
-	Guards.object(ROUTES_SOURCE, nameof(request.body), request.body);
-	Guards.stringValue(ROUTES_SOURCE, "@type", request.body["@type"]);
+	try {
+		Guards.object<ICatalogRequestRequest>(ROUTES_SOURCE, nameof(request), request);
+		Guards.object(ROUTES_SOURCE, nameof(request.body), request.body);
+		Guards.stringValue(ROUTES_SOURCE, "@type", request.body["@type"]);
 
-	const component: IFederatedCatalogueComponent = ComponentFactory.get(componentName);
+		const component: IFederatedCatalogueComponent = ComponentFactory.get(componentName);
 
-	const result = await component.query(
-		request.body.filter as unknown[],
-		request.query?.cursor,
-		Coerce.integer(request.query?.limit)
-	);
+		const queryResult = await component.query(
+			request.body.filter as unknown[],
+			request.query?.cursor,
+			Coerce.integer(request.query?.limit)
+		);
 
-	return {
-		statusCode: mapCatalogError(result.catalog),
-		body: result.catalog,
-		headers:
-			Is.stringValue(result.cursor) && Is.stringValue(httpRequestContext.serverRequest?.url)
-				? {
-						[HeaderTypes.Link]: HeaderHelper.createLinkHeader(
-							httpRequestContext.serverRequest.url,
-							{ cursor: result.cursor },
-							"next"
-						)
-					}
-				: undefined
-	};
+		return {
+			statusCode: transformErrorToStatusCode(queryResult.result),
+			body: queryResult.result,
+			headers:
+				Is.stringValue(queryResult.cursor) && Is.stringValue(httpRequestContext.serverRequest?.url)
+					? {
+							[HeaderTypes.Link]: HeaderHelper.createLinkHeader(
+								httpRequestContext.serverRequest.url,
+								{ cursor: queryResult.cursor },
+								"next"
+							)
+						}
+					: undefined
+		};
+	} catch (error) {
+		const catalogError = transformToCatalogError(error);
+		return {
+			statusCode: transformErrorToStatusCode(catalogError) ?? HttpStatusCode.badRequest,
+			body: catalogError
+		};
+	}
 }
 
 /**
@@ -223,20 +215,28 @@ async function getDataset(
 	componentName: string,
 	request: IGetDatasetRequest
 ): Promise<IGetDatasetResponse> {
-	Guards.object<IGetDatasetRequest>(ROUTES_SOURCE, nameof(request), request);
-	Guards.object(ROUTES_SOURCE, nameof(request.pathParams), request.pathParams);
-	Guards.stringValue(
-		ROUTES_SOURCE,
-		nameof(request.pathParams.datasetId),
-		request.pathParams.datasetId
-	);
+	try {
+		Guards.object<IGetDatasetRequest>(ROUTES_SOURCE, nameof(request), request);
+		Guards.object(ROUTES_SOURCE, nameof(request.pathParams), request.pathParams);
+		Guards.stringValue(
+			ROUTES_SOURCE,
+			nameof(request.pathParams.datasetId),
+			request.pathParams.datasetId
+		);
 
-	const component: IFederatedCatalogueComponent = ComponentFactory.get(componentName);
+		const component: IFederatedCatalogueComponent = ComponentFactory.get(componentName);
 
-	const result = await component.get(request.pathParams.datasetId);
+		const result = await component.get(request.pathParams.datasetId);
 
-	return {
-		statusCode: mapCatalogError(result),
-		body: result
-	};
+		return {
+			statusCode: transformErrorToStatusCode(result),
+			body: result
+		};
+	} catch (error) {
+		const catalogError = transformToCatalogError(error);
+		return {
+			statusCode: transformErrorToStatusCode(catalogError) ?? HttpStatusCode.badRequest,
+			body: catalogError
+		};
+	}
 }
