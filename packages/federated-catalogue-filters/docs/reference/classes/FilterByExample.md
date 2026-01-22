@@ -68,7 +68,7 @@ Uses database-level filtering with query conditions.
 
 `unknown`
 
-The filter criteria (Partial<IDataset> with example values).
+The filter criteria (Partial IDataset with example values).
 
 ##### cursor?
 

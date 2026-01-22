@@ -48,7 +48,7 @@ export class FilterByExample implements IFederatedCatalogueFilter {
 	/**
 	 * Execute a filter-specific query over the catalogue.
 	 * Uses database-level filtering with query conditions.
-	 * @param filter The filter criteria (Partial<IDataset> with example values).
+	 * @param filter The filter criteria (Partial IDataset with example values).
 	 * @param cursor The pagination cursor from the previous query, if any.
 	 * @param limit The maximum number of results to return.
 	 * @returns Object containing datasets matching the filter criteria and optional cursor for next page.
