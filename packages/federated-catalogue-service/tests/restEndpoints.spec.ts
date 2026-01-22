@@ -118,7 +118,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 					"dcat:accessService": "https://example.com/services/test-service"
 				},
 				"odrl:hasPolicy": {
-					"@context": OdrlContexts.JsonLdContext,
+					"@context": OdrlContexts.Context,
 					"@type": "Offer",
 					uid: "urn:uuid:policy-context-test",
 					permission: [{ action: "use" }]
@@ -138,7 +138,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			// Prepare request
 			const request: ICatalogRequestRequest = {
 				body: {
-					"@context": [DataspaceProtocolContexts.JsonLdContext],
+					"@context": [DataspaceProtocolContexts.Context],
 					"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage,
 					filter: [
 						{
@@ -159,7 +159,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			const context = response.body["@context"];
 			expect(context).toBeDefined();
 			if (Is.array(context)) {
-				expect(context).toContain(DataspaceProtocolContexts.JsonLdContext);
+				expect(context).toContain(DataspaceProtocolContexts.Context);
 			} else if (Is.object(context)) {
 				// After compaction, context might be an object
 				expect(context).toBeDefined();
@@ -221,7 +221,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 					"dcat:accessService": "https://example.com/services/test-service"
 				},
 				"odrl:hasPolicy": {
-					"@context": OdrlContexts.JsonLdContext,
+					"@context": OdrlContexts.Context,
 					"@type": "Offer",
 					uid: "urn:uuid:policy-123",
 					permission: [{ action: "use" }]
@@ -347,7 +347,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			// Prepare request
 			const request: ICatalogRequestRequest = {
 				body: {
-					"@context": [DataspaceProtocolContexts.JsonLdContext],
+					"@context": [DataspaceProtocolContexts.Context],
 					"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage
 				}
 			};
@@ -373,7 +373,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			for (let i = 0; i < 5; i++) {
 				const dataset = {
 					"@context": [
-						DataspaceProtocolContexts.JsonLdContext,
+						DataspaceProtocolContexts.Context,
 						{
 							dcat: DcatContexts.Namespace,
 							dcterms: DublinCoreContexts.NamespaceTerms,
@@ -391,7 +391,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 						"dcat:accessService": "https://example.com/services/test-service"
 					},
 					"odrl:hasPolicy": {
-						"@context": OdrlContexts.JsonLdContext,
+						"@context": OdrlContexts.Context,
 						"@type": "Offer",
 						uid: `urn:uuid:policy-link-${i}`,
 						permission: [{ action: "use" }]
@@ -425,7 +425,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 
 			const request: ICatalogRequestRequest = {
 				body: {
-					"@context": [DataspaceProtocolContexts.JsonLdContext],
+					"@context": [DataspaceProtocolContexts.Context],
 					"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage
 				}
 			};
@@ -470,7 +470,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 
 					return {
 						result: {
-							"@context": [DataspaceProtocolContexts.JsonLdContext],
+							"@context": [DataspaceProtocolContexts.Context],
 							"@id": "urn:x-catalog:test",
 							"@type": DcatClasses.Catalog,
 							"dcat:dataset": hasCursor
@@ -507,7 +507,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			// First request
 			const firstRequest: ICatalogRequestRequest = {
 				body: {
-					"@context": [DataspaceProtocolContexts.JsonLdContext],
+					"@context": [DataspaceProtocolContexts.Context],
 					"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage
 				}
 			};
@@ -528,7 +528,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			// Second request using cursor from Link header query parameter
 			const secondRequest: ICatalogRequestRequest = {
 				body: {
-					"@context": [DataspaceProtocolContexts.JsonLdContext],
+					"@context": [DataspaceProtocolContexts.Context],
 					"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage
 				},
 				query: {
@@ -553,7 +553,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			const mockComponent = {
 				className: () => "MockRfcComponent",
 				query: async () => ({
-					"@context": [DataspaceProtocolContexts.JsonLdContext],
+					"@context": [DataspaceProtocolContexts.Context],
 					"@id": "urn:x-catalog:test",
 					"@type": DcatClasses.Catalog,
 					"dcat:dataset": [],
@@ -572,7 +572,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 
 			const request: ICatalogRequestRequest = {
 				body: {
-					"@context": [DataspaceProtocolContexts.JsonLdContext],
+					"@context": [DataspaceProtocolContexts.Context],
 					"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage
 				}
 			};
@@ -659,7 +659,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 
 			// Verify it's a CatalogError
 			expect(response.body["@type"]).toBe(DataspaceProtocolCatalogTypes.CatalogError);
-			expect(response.body["@context"]).toBe(DataspaceProtocolContexts.JsonLdContext);
+			expect(response.body["@context"]).toBe(DataspaceProtocolContexts.Context);
 			expect(response.statusCode).toBe(404);
 
 			expect(response.body).toEqual({
@@ -720,7 +720,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			const result = await service.get("urn:uuid:test-123");
 
 			// Verify transformation to ICatalogError
-			expect(result["@context"]).toBe(DataspaceProtocolContexts.JsonLdContext);
+			expect(result["@context"]).toBe(DataspaceProtocolContexts.Context);
 			expect(result["@type"]).toBe(DataspaceProtocolCatalogTypes.CatalogError);
 
 			expect(result).toEqual({
@@ -760,7 +760,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 					"dcat:accessService": "https://example.com/services/test-service"
 				},
 				"odrl:hasPolicy": {
-					"@context": OdrlContexts.JsonLdContext,
+					"@context": OdrlContexts.Context,
 					"@type": "Offer",
 					uid: "urn:uuid:policy-success",
 					permission: [{ action: "use" }]
@@ -866,7 +866,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			// Request with only @context (missing @type)
 			const request: ICatalogRequestRequest = {
 				body: {
-					"@context": [DataspaceProtocolContexts.JsonLdContext]
+					"@context": [DataspaceProtocolContexts.Context]
 				} as unknown as ICatalogRequestRequest["body"]
 			};
 
@@ -952,7 +952,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 
 			const request: ICatalogRequestRequest = {
 				body: {
-					"@context": [DataspaceProtocolContexts.JsonLdContext],
+					"@context": [DataspaceProtocolContexts.Context],
 					"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage,
 					filter: []
 				}
@@ -991,7 +991,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			// Valid CatalogRequestMessage but with filter missing @type
 			const request: ICatalogRequestRequest = {
 				body: {
-					"@context": [DataspaceProtocolContexts.JsonLdContext],
+					"@context": [DataspaceProtocolContexts.Context],
 					"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage,
 					filter: [{ "dcterms:title": "Test" }] // Missing @type in filter
 				}
@@ -1045,7 +1045,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 					"dcat:accessService": "https://example.com/services/test-service"
 				},
 				"odrl:hasPolicy": {
-					"@context": OdrlContexts.JsonLdContext,
+					"@context": OdrlContexts.Context,
 					"@type": "Offer",
 					uid: "urn:uuid:policy-catalog-request",
 					permission: [{ action: "use" }]
@@ -1058,7 +1058,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 
 			const request: ICatalogRequestRequest = {
 				body: {
-					"@context": [DataspaceProtocolContexts.JsonLdContext],
+					"@context": [DataspaceProtocolContexts.Context],
 					"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage,
 					filter: []
 				}

@@ -111,7 +111,7 @@ describe("FederatedCatalogueService", () => {
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
-				"@context": OdrlContexts.JsonLdContext,
+				"@context": OdrlContexts.Context,
 				"@type": PolicyType.Offer,
 				uid: "https://example.com/policies/test-policy-1",
 				permission: [{ action: "use" }]
@@ -175,7 +175,7 @@ describe("FederatedCatalogueService", () => {
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
-				"@context": OdrlContexts.JsonLdContext,
+				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/query-policy-1",
 				permission: [{ action: "use" }]
@@ -199,7 +199,7 @@ describe("FederatedCatalogueService", () => {
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
-				"@context": OdrlContexts.JsonLdContext,
+				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/query-policy-2",
 				permission: [{ action: "use" }]
@@ -267,7 +267,7 @@ describe("FederatedCatalogueService", () => {
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
-				"@context": OdrlContexts.JsonLdContext,
+				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/part-policy-1",
 				permission: [{ action: "use" }]
@@ -324,7 +324,7 @@ describe("FederatedCatalogueService", () => {
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
-				"@context": OdrlContexts.JsonLdContext,
+				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/mp-policy-1",
 				permission: [{ action: "use" }]
@@ -348,7 +348,7 @@ describe("FederatedCatalogueService", () => {
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
-				"@context": OdrlContexts.JsonLdContext,
+				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/mp-policy-2",
 				permission: [{ action: "use" }]
@@ -424,7 +424,7 @@ describe("FederatedCatalogueService", () => {
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
-				"@context": OdrlContexts.JsonLdContext,
+				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/own-policy",
 				permission: [{ action: "use" }]
@@ -448,7 +448,7 @@ describe("FederatedCatalogueService", () => {
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
-				"@context": OdrlContexts.JsonLdContext,
+				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/other-policy",
 				permission: [{ action: "use" }]
@@ -515,7 +515,7 @@ describe("FederatedCatalogueService", () => {
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
-				"@context": OdrlContexts.JsonLdContext,
+				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/filter-policy",
 				permission: [{ action: "use" }]
@@ -677,7 +677,7 @@ describe("FederatedCatalogueService", () => {
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
-				"@context": OdrlContexts.JsonLdContext,
+				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/cursor-policy-1",
 				permission: [{ action: "use" }]
@@ -701,7 +701,7 @@ describe("FederatedCatalogueService", () => {
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
-				"@context": OdrlContexts.JsonLdContext,
+				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/cursor-policy-2",
 				permission: [{ action: "use" }]
@@ -772,7 +772,7 @@ describe("FederatedCatalogueService", () => {
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
-				"@context": OdrlContexts.JsonLdContext,
+				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/no-cursor-policy",
 				permission: [{ action: "use" }]
@@ -876,7 +876,7 @@ describe("FederatedCatalogueService", () => {
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
-				"@context": OdrlContexts.JsonLdContext,
+				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/policy-1",
 				permission: [{ action: "use" }]
@@ -910,7 +910,7 @@ describe("FederatedCatalogueService", () => {
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
-				"@context": OdrlContexts.JsonLdContext,
+				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/minimal-policy",
 				permission: [{ action: "use" }]
@@ -949,7 +949,7 @@ describe("FederatedCatalogueService", () => {
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
-				"@context": OdrlContexts.JsonLdContext,
+				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/ds-protocol-policy",
 				permission: [{ action: "use" }]
@@ -981,7 +981,7 @@ describe("FederatedCatalogueService", () => {
 			"dcterms:title": "Dataset without distribution",
 			"dcterms:publisher": "https://example.com/participants/test-publisher",
 			"odrl:hasPolicy": {
-				"@context": OdrlContexts.JsonLdContext,
+				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/policy-1",
 				permission: [{ action: "use" }]
@@ -1034,7 +1034,7 @@ describe("FederatedCatalogueService", () => {
 			"dcterms:title": "Dataset without distribution (unprefixed)",
 			"dcterms:publisher": "https://example.com/participants/test-publisher",
 			"odrl:hasPolicy": {
-				"@context": OdrlContexts.JsonLdContext,
+				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/policy-2",
 				permission: [{ action: "use" }]
@@ -1093,7 +1093,7 @@ describe("FederatedCatalogueService", () => {
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
-				"@context": OdrlContexts.JsonLdContext,
+				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/policy-3",
 				permission: [{ action: "use" }]
@@ -1129,7 +1129,7 @@ describe("FederatedCatalogueService", () => {
 				accessService: "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
-				"@context": OdrlContexts.JsonLdContext,
+				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/policy-4",
 				permission: [{ action: "use" }]
@@ -1167,7 +1167,7 @@ describe("FederatedCatalogueService", () => {
 				}
 			],
 			"odrl:hasPolicy": {
-				"@context": OdrlContexts.JsonLdContext,
+				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/policy-1",
 				permission: [{ action: "use" }]
@@ -1200,7 +1200,7 @@ describe("FederatedCatalogueService", () => {
 				}
 			],
 			"odrl:hasPolicy": {
-				"@context": OdrlContexts.JsonLdContext,
+				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/policy-1",
 				permission: [{ action: "use" }]
@@ -1228,7 +1228,7 @@ describe("FederatedCatalogueService", () => {
 			"dcterms:publisher": "https://example.com/participants/test-publisher",
 			"dcat:distribution": [],
 			"odrl:hasPolicy": {
-				"@context": OdrlContexts.JsonLdContext,
+				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/policy-1",
 				permission: [{ action: "use" }]

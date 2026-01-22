@@ -25,7 +25,7 @@ export function transformToCatalogError(error: unknown): IDataspaceProtocolCatal
 	// and is not limited to just strings or specific error formats
 	// https://github.com/eclipse-dataspace-protocol-base/DataspaceProtocol/blob/main/artifacts/src/main/resources/catalog/catalog-error-schema.json
 	return {
-		"@context": DataspaceProtocolContexts.JsonLdContext,
+		"@context": DataspaceProtocolContexts.Context,
 		"@type": DataspaceProtocolCatalogTypes.CatalogError,
 		code: `${flattened[0].name}:${flattened[0].message}`,
 		reason: flattened

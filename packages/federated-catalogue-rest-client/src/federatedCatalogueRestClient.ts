@@ -72,7 +72,7 @@ export class FederatedCatalogueRestClient
 					limit: Coerce.string(limit)
 				},
 				body: {
-					"@context": [DataspaceProtocolContexts.JsonLdContext],
+					"@context": [DataspaceProtocolContexts.Context],
 					"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage,
 					filter
 				}

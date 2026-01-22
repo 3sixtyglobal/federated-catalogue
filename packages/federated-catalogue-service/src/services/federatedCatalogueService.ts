@@ -347,7 +347,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 				const catalogId = this.generateCatalogId(ownDatasets, requestingParticipantId);
 
 				catalog = {
-					"@context": [DataspaceProtocolContexts.JsonLdContext],
+					"@context": [DataspaceProtocolContexts.Context],
 					"@id": catalogId,
 					"@type": "Catalog",
 					participantId: requestingParticipantId,
@@ -362,7 +362,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 					const subCatalogId = this.generateCatalogId(participantDatasets, participantId);
 
 					const subCatalog: IDataspaceProtocolCatalog = {
-						"@context": [DataspaceProtocolContexts.JsonLdContext],
+						"@context": [DataspaceProtocolContexts.Context],
 						"@id": subCatalogId,
 						"@type": "Catalog",
 						participantId,
@@ -376,7 +376,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 				const rootCatalogId = this.generateCatalogId(datasets, requestingParticipantId);
 
 				catalog = {
-					"@context": [DataspaceProtocolContexts.JsonLdContext],
+					"@context": [DataspaceProtocolContexts.Context],
 					"@id": rootCatalogId,
 					"@type": "Catalog",
 					participantId: requestingParticipantId,

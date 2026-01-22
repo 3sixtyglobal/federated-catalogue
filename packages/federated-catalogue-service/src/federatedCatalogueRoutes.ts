@@ -59,7 +59,7 @@ export function generateRestRoutesFederatedCatalogue(
 					id: "catalogRequestExample",
 					request: {
 						body: {
-							"@context": [DataspaceProtocolContexts.JsonLdContext],
+							"@context": [DataspaceProtocolContexts.Context],
 							"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage,
 							filter: [
 								{
@@ -73,7 +73,7 @@ export function generateRestRoutesFederatedCatalogue(
 					id: "catalogRequestNoFilterExample",
 					request: {
 						body: {
-							"@context": [DataspaceProtocolContexts.JsonLdContext],
+							"@context": [DataspaceProtocolContexts.Context],
 							"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage
 						}
 					}
@@ -88,14 +88,14 @@ export function generateRestRoutesFederatedCatalogue(
 						id: "catalogRequestResponseExample",
 						response: {
 							body: {
-								"@context": [DataspaceProtocolContexts.JsonLdContext],
+								"@context": [DataspaceProtocolContexts.Context],
 								"@id":
 									"urn:x-catalog:a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2",
 								"@type": "Catalog",
 								participantId: "did:example:node-identity-123",
 								dataset: [
 									{
-										"@context": [DataspaceProtocolContexts.JsonLdContext],
+										"@context": [DataspaceProtocolContexts.Context],
 										"@id": "urn:uuid:dataset-123",
 										"@type": "Dataset",
 										title: "Energy Consumption Data",
@@ -139,7 +139,7 @@ export function generateRestRoutesFederatedCatalogue(
 						id: "getDatasetResponseExample",
 						response: {
 							body: {
-								"@context": DataspaceProtocolContexts.JsonLdContext as unknown as DcatContextType,
+								"@context": DataspaceProtocolContexts.Context as unknown as DcatContextType,
 								"@id": "urn:uuid:dataset-123",
 								"@type": DcatClasses.Dataset,
 								"dcterms:title": "Energy Consumption Data",
