@@ -56,6 +56,11 @@ describe("Federated Catalogue REST Endpoints", () => {
 
 		// Mock ContextIdStore.getContextIds to return undefined (anonymous) by default
 		ContextIdStore.getContextIds = vi.fn().mockResolvedValue(undefined);
+
+		ComponentFactory.register("hosting", () => ({
+			className: () => "HostingComponent",
+			buildPublicUrl: async (url: string) => url
+		}));
 	});
 
 	beforeEach(async () => {
@@ -361,7 +366,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			const response = await catalogRequestRoute.handler(mockContext, request);
 
 			// Verify no Link header when no pagination needed
-			expect(response.headers).toBeUndefined();
+			expect(response.headers).toEqual({});
 		});
 
 		test("Link header includes cursor as query parameter when cursor exists", async () => {
@@ -545,7 +550,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 
 			// Verify second page has no cursor (last page)
 			expect((secondResponse.body as { cursor?: string }).cursor).toBeUndefined();
-			expect(secondResponse.headers).toBeUndefined();
+			expect(secondResponse.headers).toEqual({});
 		});
 
 		test("Link header format is RFC 5988 compliant", async () => {

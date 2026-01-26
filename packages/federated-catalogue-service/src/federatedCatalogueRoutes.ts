@@ -1,6 +1,11 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { IHttpRequestContext, IRestRoute, ITag } from "@twin.org/api-models";
+import type {
+	IHostingComponent,
+	IHttpRequestContext,
+	IRestRoute,
+	ITag
+} from "@twin.org/api-models";
 import { Coerce, ComponentFactory, Guards, Is } from "@twin.org/core";
 import type {
 	ICatalogRequestRequest,
@@ -172,27 +177,32 @@ async function catalogRequest(
 		Guards.object(ROUTES_SOURCE, nameof(request.body), request.body);
 		Guards.stringValue(ROUTES_SOURCE, "@type", request.body["@type"]);
 
+		const hostingComponent = ComponentFactory.get<IHostingComponent>(
+			httpRequestContext.hostingComponentType ?? "hosting"
+		);
+
 		const component: IFederatedCatalogueComponent = ComponentFactory.get(componentName);
 
-		const queryResult = await component.query(
+		const result = await component.query(
 			request.body.filter as unknown[],
 			request.query?.cursor,
 			Coerce.integer(request.query?.limit)
 		);
 
+		const headers: ICatalogRequestResponse["headers"] = {};
+
+		if (Is.stringValue(result.cursor)) {
+			headers[HeaderTypes.Link] = HeaderHelper.createLinkHeader(
+				await hostingComponent.buildPublicUrl(httpRequestContext.serverRequest.url),
+				{ cursor: result.cursor },
+				"next"
+			);
+		}
+
 		return {
-			statusCode: transformErrorToStatusCode(queryResult.result),
-			body: queryResult.result,
-			headers:
-				Is.stringValue(queryResult.cursor) && Is.stringValue(httpRequestContext.serverRequest?.url)
-					? {
-							[HeaderTypes.Link]: HeaderHelper.createLinkHeader(
-								httpRequestContext.serverRequest.url,
-								{ cursor: queryResult.cursor },
-								"next"
-							)
-						}
-					: undefined
+			headers,
+			statusCode: transformErrorToStatusCode(result.result),
+			body: result.result
 		};
 	} catch (error) {
 		const catalogError = transformToCatalogError(error);

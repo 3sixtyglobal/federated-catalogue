@@ -12,6 +12,13 @@ import type { HeaderTypes, HttpStatusCode } from "@twin.org/web";
  */
 export interface ICatalogRequestResponse {
 	/**
+	 * Optional headers including RFC 8288 Link header for pagination.
+	 */
+	headers?: {
+		[HeaderTypes.Link]?: string | string[];
+	};
+
+	/**
 	 * Response status code.
 	 * Per DS Protocol: Returns appropriate HTTP code (e.g., 404) when returning CatalogError.
 	 */
@@ -23,11 +30,4 @@ export interface ICatalogRequestResponse {
 	 * Per DS Protocol: Single participant returns flat catalog, multiple participants return nested catalogs.
 	 */
 	body: IDataspaceProtocolCatalog | IDataspaceProtocolCatalogError;
-
-	/**
-	 * Optional headers including RFC 8288 Link header for pagination.
-	 */
-	headers?: {
-		[HeaderTypes.Link]?: string | string[];
-	};
 }
