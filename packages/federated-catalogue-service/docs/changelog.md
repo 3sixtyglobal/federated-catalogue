@@ -1,5 +1,19 @@
 # @twin.org/federated-catalogue-service - Changelog
 
+## [0.0.3-next.8](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.7...federated-catalogue-service-v0.0.3-next.8) (2026-01-26)
+
+
+### Features
+
+* use new hosting url for cursor links ([e42c934](https://github.com/twinfoundation/federated-catalogue/commit/e42c934b9c8748ec5bdd4803c1cdc05c82ccace8))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.0.3-next.7 to 0.0.3-next.8
+
 ## [0.0.3-next.7](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.6...federated-catalogue-service-v0.0.3-next.7) (2026-01-22)
 
 
