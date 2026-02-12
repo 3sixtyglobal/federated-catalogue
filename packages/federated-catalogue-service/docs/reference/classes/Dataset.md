@@ -16,11 +16,27 @@ the full IDcatDataset JSON-LD structure.
 
 ## Properties
 
-### @id
+### id
 
-> **@id**: `string`
+> **id**: `string`
 
-The unique identifier for the dataset (@id from JSON-LD).
+The unique identifier for the dataset (mapped from JSON-LD identifier).
+
+***
+
+### nodeIdentity
+
+> **nodeIdentity**: `string`
+
+The identity of the node that owns this entity (required for sync).
+
+***
+
+### dateModified
+
+> **dateModified**: `string`
+
+The date the entity was last modified (required for sync).
 
 ***
 

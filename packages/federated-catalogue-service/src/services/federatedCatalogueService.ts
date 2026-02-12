@@ -1,6 +1,6 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import { ContextIdKeys, ContextIdStore } from "@twin.org/context";
+import { ContextIdHelper, ContextIdKeys, ContextIdStore } from "@twin.org/context";
 import {
 	BaseError,
 	ComponentFactory,
@@ -69,6 +69,12 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	private readonly _datasetStorage: IEntityStorageConnector<Dataset>;
 
 	/**
+	 * The node identity.
+	 * @internal
+	 */
+	private _nodeId?: string;
+
+	/**
 	 * Create a new instance of FederatedCatalogueService.
 	 * @param options The options for the service.
 	 */
@@ -97,6 +103,16 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 */
 	public className(): string {
 		return FederatedCatalogueService.CLASS_NAME;
+	}
+
+	/**
+	 * Start the federated catalogue service.
+	 * @returns Nothing.
+	 */
+	public async start(): Promise<void> {
+		const contextIds = await ContextIdStore.getContextIds();
+		ContextIdHelper.guard(contextIds, ContextIdKeys.Node);
+		this._nodeId = contextIds[ContextIdKeys.Node];
 	}
 
 	/**
@@ -197,6 +213,23 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		};
 		const normalizedDataset = await JsonLdProcessor.compact(dataSet, storageContext);
 
+		const datasetEntity = datasetModelToEntity(
+			normalizedDataset,
+			this._nodeId ?? "",
+			new Date().toISOString()
+		);
+
+		// Skip update if entity content hasn't changed to avoid unnecessary sync
+		const existingEntity = await this._datasetStorage.get(dataSetId);
+		if (existingEntity) {
+			const existingContent = ObjectHelper.omit(existingEntity, ["nodeIdentity", "dateModified"]);
+			const newContent = ObjectHelper.omit(datasetEntity, ["nodeIdentity", "dateModified"]);
+
+			if (ObjectHelper.equal(existingContent, newContent, false)) {
+				return;
+			}
+		}
+
 		await this._logging?.log({
 			level: "info",
 			source: FederatedCatalogueService.CLASS_NAME,
@@ -204,8 +237,6 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			message: "datasetSet",
 			data: { dataSetId }
 		});
-
-		const datasetEntity = datasetModelToEntity(normalizedDataset);
 
 		const allIndexes: { [key: string]: unknown } = {};
 		const filterNames = FederatedCatalogueFilterFactory.names();
@@ -298,7 +329,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 				ObjectHelper.propertyDelete(filter, "@type");
 				const result = await selectedFilter.query(filter, cursor, limit);
 
-				datasets = result.datasets;
+				datasets = result.datasets.map(d => datasetEntityToModel(d as unknown as Dataset));
 				resultCursor = result.cursor;
 			}
 

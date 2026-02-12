@@ -70,8 +70,8 @@ describe("Federated Catalogue REST Endpoints", () => {
 		// Clear dataset storage
 		const allDatasets = await datasetEntityStorage.query();
 		for (const dataset of allDatasets.entities) {
-			if (dataset["@id"]) {
-				await datasetEntityStorage.remove(dataset["@id"]);
+			if (dataset.id) {
+				await datasetEntityStorage.remove(dataset.id);
 			}
 		}
 
@@ -944,8 +944,8 @@ describe("Federated Catalogue REST Endpoints", () => {
 			// Clear any existing datasets to ensure empty result
 			const allDatasets = await datasetEntityStorage.query();
 			for (const dataset of allDatasets.entities) {
-				if (dataset["@id"]) {
-					await datasetEntityStorage.remove(dataset["@id"]);
+				if (dataset.id) {
+					await datasetEntityStorage.remove(dataset.id);
 				}
 			}
 

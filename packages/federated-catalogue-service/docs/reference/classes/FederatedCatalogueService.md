@@ -55,6 +55,24 @@ The class name of the component.
 
 ***
 
+### start()
+
+> **start**(): `Promise`\<`void`\>
+
+Start the federated catalogue service.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+Nothing.
+
+#### Implementation of
+
+`IFederatedCatalogueComponent.start`
+
+***
+
 ### get()
 
 > **get**(`dataSetId`): `Promise`\<`IDataspaceProtocolCatalogError` \| `IDcatDataset`\>

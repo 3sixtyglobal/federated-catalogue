@@ -3,7 +3,7 @@
 > **datasetEntityToModel**(`entity`): `IDcatDataset`
 
 Convert a Dataset entity to an IDcatDataset model.
-Removes internal entity properties that should not be exposed in API responses.
+Maps entity.id back to model["@id"] and strips sync-only fields.
 
 ## Parameters
 

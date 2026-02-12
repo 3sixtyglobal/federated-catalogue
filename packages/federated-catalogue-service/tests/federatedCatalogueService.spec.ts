@@ -21,6 +21,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, test, vi } from "vit
 import type { Dataset } from "../src/entities/dataset.js";
 import { initSchema } from "../src/schema.js";
 import { FederatedCatalogueService } from "../src/services/federatedCatalogueService.js";
+import { datasetModelToEntity } from "../src/utils/datasetConverters.js";
 
 let datasetEntityStorage: MemoryEntityStorageConnector<Dataset>;
 
@@ -50,8 +51,8 @@ describe("FederatedCatalogueService", () => {
 		// Clear dataset storage
 		const allDatasets = await datasetEntityStorage.query();
 		for (const dataset of allDatasets.entities) {
-			if (dataset["@id"]) {
-				await datasetEntityStorage.remove(dataset["@id"]);
+			if (dataset.id) {
+				await datasetEntityStorage.remove(dataset.id);
 			}
 		}
 	});
@@ -212,7 +213,9 @@ describe("FederatedCatalogueService", () => {
 		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
 			className: () => "FilterByExample",
 			query: async filter => ({
-				datasets: [dataset1, dataset2],
+				datasets: [dataset1, dataset2].map(
+					d => datasetModelToEntity(d, "", new Date().toISOString()) as unknown as IDcatDataset
+				),
 				cursor: undefined
 			}),
 			createIndex: async dataSet => ({})
@@ -279,7 +282,9 @@ describe("FederatedCatalogueService", () => {
 		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
 			className: () => "FilterByExample",
 			query: async filter => ({
-				datasets: [dataset],
+				datasets: [
+					datasetModelToEntity(dataset, "", new Date().toISOString()) as unknown as IDcatDataset
+				],
 				cursor: undefined
 			}),
 			createIndex: async dataSet => ({})
@@ -361,7 +366,9 @@ describe("FederatedCatalogueService", () => {
 		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
 			className: () => "FilterByExample",
 			query: async filter => ({
-				datasets: [dataset1, dataset2],
+				datasets: [dataset1, dataset2].map(
+					d => datasetModelToEntity(d, "", new Date().toISOString()) as unknown as IDcatDataset
+				),
 				cursor: undefined
 			}),
 			createIndex: async dataSet => ({})
@@ -461,7 +468,9 @@ describe("FederatedCatalogueService", () => {
 		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
 			className: () => "FilterByExample",
 			query: async filter => ({
-				datasets: [ownDataset, otherDataset],
+				datasets: [ownDataset, otherDataset].map(
+					d => datasetModelToEntity(d, "", new Date().toISOString()) as unknown as IDcatDataset
+				),
 				cursor: undefined
 			}),
 			createIndex: async dataSet => ({})
@@ -527,7 +536,9 @@ describe("FederatedCatalogueService", () => {
 		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
 			className: () => "FilterByExample",
 			query: async filter => ({
-				datasets: [dataset],
+				datasets: [
+					datasetModelToEntity(dataset, "", new Date().toISOString()) as unknown as IDcatDataset
+				],
 				cursor: undefined
 			}),
 			createIndex: async dataSet => ({})
@@ -716,7 +727,9 @@ describe("FederatedCatalogueService", () => {
 			className: () => "MockFilterWithCursorAndData",
 			async query() {
 				return {
-					datasets: [dataset1],
+					datasets: [
+						datasetModelToEntity(dataset1, "", new Date().toISOString()) as unknown as IDcatDataset
+					],
 					cursor: "next-page-cursor-456"
 				};
 			},
@@ -785,7 +798,9 @@ describe("FederatedCatalogueService", () => {
 		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
 			className: () => "FilterByExample",
 			query: async filter => ({
-				datasets: [dataset],
+				datasets: [
+					datasetModelToEntity(dataset, "", new Date().toISOString()) as unknown as IDcatDataset
+				],
 				cursor: undefined
 			}),
 			createIndex: async dataSet => ({})
@@ -1237,6 +1252,206 @@ describe("FederatedCatalogueService", () => {
 
 		await expect(service.set(datasetEmptyDistribution)).rejects.toThrow(GeneralError);
 		await expect(service.set(datasetEmptyDistribution)).rejects.toThrow("datasetNotConformant");
+	});
+
+	test("start() captures nodeIdentity from context and sets it on stored entities", async () => {
+		vi.mocked(ContextIdStore.getContextIds).mockResolvedValue({
+			node: "did:example:test-node"
+		});
+
+		const service = new FederatedCatalogueService({
+			datasetStorageConnectorType: "dataset"
+		});
+		await service.start();
+
+		const dataset = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": "https://example.com/datasets/node-identity-test",
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "Node Identity Test",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/ni-dist",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.Context,
+				"@type": "Offer",
+				uid: "https://example.com/policies/ni-policy",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		await service.set(dataset);
+
+		const entity = await datasetEntityStorage.get(
+			"https://example.com/datasets/node-identity-test"
+		);
+		expect(entity?.nodeIdentity).toBe("did:example:test-node");
+	});
+
+	test("Set preserves dateModified when entity content is unchanged", async () => {
+		const service = new FederatedCatalogueService({
+			datasetStorageConnectorType: "dataset"
+		});
+
+		const dataset = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": "https://example.com/datasets/unchanged-test",
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "Unchanged Dataset",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/unch-dist",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.Context,
+				"@type": "Offer",
+				uid: "https://example.com/policies/unch-policy",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		await service.set(dataset);
+
+		const entityAfterFirstSet = await datasetEntityStorage.get(
+			"https://example.com/datasets/unchanged-test"
+		);
+		const initialDateModified = entityAfterFirstSet?.dateModified;
+		expect(initialDateModified).toBeDefined();
+
+		await new Promise(resolve => setTimeout(resolve, 10));
+
+		await service.set(dataset);
+
+		const entityAfterSecondSet = await datasetEntityStorage.get(
+			"https://example.com/datasets/unchanged-test"
+		);
+		expect(entityAfterSecondSet?.dateModified).toBe(initialDateModified);
+	});
+
+	test("Set updates dateModified when entity content changes", async () => {
+		const service = new FederatedCatalogueService({
+			datasetStorageConnectorType: "dataset"
+		});
+
+		const dataset = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": "https://example.com/datasets/changed-test",
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "Original Title",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/ch-dist",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.Context,
+				"@type": "Offer",
+				uid: "https://example.com/policies/ch-policy",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		await service.set(dataset);
+
+		const entityAfterFirstSet = await datasetEntityStorage.get(
+			"https://example.com/datasets/changed-test"
+		);
+		const initialDateModified = entityAfterFirstSet?.dateModified;
+
+		await new Promise(resolve => setTimeout(resolve, 10));
+
+		const updatedDataset = {
+			...dataset,
+			"dcterms:title": "Updated Title"
+		} as unknown as IDcatDataset;
+
+		await service.set(updatedDataset);
+
+		const entityAfterSecondSet = await datasetEntityStorage.get(
+			"https://example.com/datasets/changed-test"
+		);
+		expect(entityAfterSecondSet?.dateModified).not.toBe(initialDateModified);
+	});
+
+	test("start() throws when node context ID is missing", async () => {
+		vi.mocked(ContextIdStore.getContextIds).mockResolvedValue(undefined);
+
+		const service = new FederatedCatalogueService({
+			datasetStorageConnectorType: "dataset"
+		});
+
+		await expect(service.start()).rejects.toThrow(GeneralError);
+		await expect(service.start()).rejects.toThrow("contextIdMissing");
+	});
+
+	test("Multiple sequential unchanged sets preserve the same dateModified", async () => {
+		const service = new FederatedCatalogueService({
+			datasetStorageConnectorType: "dataset"
+		});
+
+		const dataset = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": "https://example.com/datasets/multi-unchanged-test",
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "Multi Unchanged Test",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/mu-dist",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.Context,
+				"@type": "Offer",
+				uid: "https://example.com/policies/mu-policy",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		await service.set(dataset);
+
+		const entityAfterFirst = await datasetEntityStorage.get(
+			"https://example.com/datasets/multi-unchanged-test"
+		);
+		const initialDateModified = entityAfterFirst?.dateModified;
+		expect(initialDateModified).toBeDefined();
+
+		await new Promise(resolve => setTimeout(resolve, 10));
+		await service.set(dataset);
+
+		await new Promise(resolve => setTimeout(resolve, 10));
+		await service.set(dataset);
+
+		const entityAfterThird = await datasetEntityStorage.get(
+			"https://example.com/datasets/multi-unchanged-test"
+		);
+		expect(entityAfterThird?.dateModified).toBe(initialDateModified);
 	});
 
 	afterAll(() => {

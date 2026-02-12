@@ -28,8 +28,8 @@ describe("FilterByExample", () => {
 		// Clear dataset storage
 		const allDatasets = await datasetEntityStorage.query();
 		for (const dataset of allDatasets.entities) {
-			if (dataset["@id"]) {
-				await datasetEntityStorage.remove(dataset["@id"]);
+			if (dataset.id) {
+				await datasetEntityStorage.remove(dataset.id);
 			}
 		}
 
@@ -44,23 +44,27 @@ describe("FilterByExample", () => {
 	});
 
 	test("Query with empty filter returns all datasets", async () => {
-		// Add test datasets
+		// Add test datasets (entity shape: id, nodeIdentity, dateModified)
 		const dataset1 = {
+			id: "https://example.com/datasets/test-1",
+			nodeIdentity: "",
+			dateModified: new Date().toISOString(),
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
 			},
-			"@id": "https://example.com/datasets/test-1",
 			"@type": DcatClasses.Dataset,
 			"dcterms:title": "Dataset 1"
 		};
 
 		const dataset2 = {
+			id: "https://example.com/datasets/test-2",
+			nodeIdentity: "",
+			dateModified: new Date().toISOString(),
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
 			},
-			"@id": "https://example.com/datasets/test-2",
 			"@type": DcatClasses.Dataset,
 			"dcterms:title": "Dataset 2"
 		};
@@ -71,28 +75,34 @@ describe("FilterByExample", () => {
 		const result = await filter.query({});
 
 		expect(result.datasets).toHaveLength(2);
-		expect(result.datasets.some(d => d["@id"] === dataset1["@id"])).toBe(true);
-		expect(result.datasets.some(d => d["@id"] === dataset2["@id"])).toBe(true);
+		// Filter returns raw entities; id is the entity primary key
+		const ids = result.datasets.map(d => (d as unknown as { id: string }).id);
+		expect(ids).toContain(dataset1.id);
+		expect(ids).toContain(dataset2.id);
 	});
 
 	test("Query with exact string match", async () => {
 		const dataset1 = {
+			id: "https://example.com/datasets/exact-match-1",
+			nodeIdentity: "",
+			dateModified: new Date().toISOString(),
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
 			},
-			"@id": "https://example.com/datasets/exact-match-1",
 			"@type": DcatClasses.Dataset,
 			"dcterms:title": "Weather Data",
 			"dcterms:identifier": "WEATHER-001"
 		};
 
 		const dataset2 = {
+			id: "https://example.com/datasets/exact-match-2",
+			nodeIdentity: "",
+			dateModified: new Date().toISOString(),
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
 			},
-			"@id": "https://example.com/datasets/exact-match-2",
 			"@type": DcatClasses.Dataset,
 			"dcterms:title": "Traffic Data",
 			"dcterms:identifier": "TRAFFIC-001"
@@ -106,17 +116,19 @@ describe("FilterByExample", () => {
 		});
 
 		expect(result.datasets).toHaveLength(1);
-		expect(result.datasets[0]["@id"]).toBe(dataset1["@id"]);
+		expect((result.datasets[0] as unknown as { id: string }).id).toBe(dataset1.id);
 		expect(result.datasets[0]["dcterms:identifier"]).toBe("WEATHER-001");
 	});
 
 	test("Query with multiple criteria (AND logic)", async () => {
 		const dataset1 = {
+			id: "https://example.com/datasets/multi-criteria-1",
+			nodeIdentity: "",
+			dateModified: new Date().toISOString(),
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
 			},
-			"@id": "https://example.com/datasets/multi-criteria-1",
 			"@type": DcatClasses.Dataset,
 			"dcterms:title": "Weather Data",
 			"dcterms:identifier": "WEATHER-001",
@@ -124,11 +136,13 @@ describe("FilterByExample", () => {
 		};
 
 		const dataset2 = {
+			id: "https://example.com/datasets/multi-criteria-2",
+			nodeIdentity: "",
+			dateModified: new Date().toISOString(),
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
 			},
-			"@id": "https://example.com/datasets/multi-criteria-2",
 			"@type": DcatClasses.Dataset,
 			"dcterms:title": "Weather Data",
 			"dcterms:identifier": "WEATHER-002",
@@ -144,16 +158,18 @@ describe("FilterByExample", () => {
 		});
 
 		expect(result.datasets).toHaveLength(1);
-		expect(result.datasets[0]["@id"]).toBe(dataset1["@id"]);
+		expect((result.datasets[0] as unknown as { id: string }).id).toBe(dataset1.id);
 	});
 
 	test("Query with nested object properties", async () => {
 		const dataset1 = {
+			id: "https://example.com/datasets/nested-1",
+			nodeIdentity: "",
+			dateModified: new Date().toISOString(),
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
 			},
-			"@id": "https://example.com/datasets/nested-1",
 			"@type": DcatClasses.Dataset,
 			"dcterms:title": "Dataset with Publisher",
 			"dcterms:publisher": {
@@ -163,11 +179,13 @@ describe("FilterByExample", () => {
 		};
 
 		const dataset2 = {
+			id: "https://example.com/datasets/nested-2",
+			nodeIdentity: "",
+			dateModified: new Date().toISOString(),
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
 			},
-			"@id": "https://example.com/datasets/nested-2",
 			"@type": DcatClasses.Dataset,
 			"dcterms:title": "Dataset with Different Publisher",
 			"dcterms:publisher": {
@@ -200,22 +218,26 @@ describe("FilterByExample", () => {
 
 	test("Query with array property matching", async () => {
 		const dataset1 = {
+			id: "https://example.com/datasets/array-1",
+			nodeIdentity: "",
+			dateModified: new Date().toISOString(),
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
 			},
-			"@id": "https://example.com/datasets/array-1",
 			"@type": DcatClasses.Dataset,
 			"dcterms:title": "Dataset with Keywords",
 			"dcat:keyword": ["weather", "temperature", "forecast"]
 		};
 
 		const dataset2 = {
+			id: "https://example.com/datasets/array-2",
+			nodeIdentity: "",
+			dateModified: new Date().toISOString(),
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
 			},
-			"@id": "https://example.com/datasets/array-2",
 			"@type": DcatClasses.Dataset,
 			"dcterms:title": "Dataset with Different Keywords",
 			"dcat:keyword": ["traffic", "congestion", "roads"]
@@ -242,11 +264,13 @@ describe("FilterByExample", () => {
 
 	test("Query returns empty array when no matches", async () => {
 		const dataset = {
+			id: "https://example.com/datasets/no-match",
+			nodeIdentity: "",
+			dateModified: new Date().toISOString(),
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
 			},
-			"@id": "https://example.com/datasets/no-match",
 			"@type": DcatClasses.Dataset,
 			"dcterms:title": "Some Dataset",
 			"dcterms:identifier": "DATASET-001"
@@ -263,11 +287,13 @@ describe("FilterByExample", () => {
 
 	test("Query handles null and undefined filter values gracefully", async () => {
 		const dataset = {
+			id: "https://example.com/datasets/null-test",
+			nodeIdentity: "",
+			dateModified: new Date().toISOString(),
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
 			},
-			"@id": "https://example.com/datasets/null-test",
 			"@type": DcatClasses.Dataset,
 			"dcterms:title": "Test Dataset"
 		};
@@ -285,21 +311,25 @@ describe("FilterByExample", () => {
 
 	test("Query with @type filter", async () => {
 		const catalogDataset = {
+			id: "https://example.com/datasets/catalog",
+			nodeIdentity: "",
+			dateModified: new Date().toISOString(),
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
 			},
-			"@id": "https://example.com/datasets/catalog",
 			"@type": DcatClasses.Catalog,
 			"dcterms:title": "Test Catalog"
 		};
 
 		const regularDataset = {
+			id: "https://example.com/datasets/regular",
+			nodeIdentity: "",
+			dateModified: new Date().toISOString(),
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
 			},
-			"@id": "https://example.com/datasets/regular",
 			"@type": DcatClasses.Dataset,
 			"dcterms:title": "Regular Dataset"
 		};
@@ -312,26 +342,30 @@ describe("FilterByExample", () => {
 		});
 
 		expect(result.datasets).toHaveLength(1);
-		expect(result.datasets[0]["@id"]).toBe(regularDataset["@id"]);
+		expect((result.datasets[0] as unknown as { id: string }).id).toBe(regularDataset.id);
 	});
 
 	test("Query with partial string match in title", async () => {
 		const dataset1 = {
+			id: "https://example.com/datasets/partial-1",
+			nodeIdentity: "",
+			dateModified: new Date().toISOString(),
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
 			},
-			"@id": "https://example.com/datasets/partial-1",
 			"@type": DcatClasses.Dataset,
 			"dcterms:title": "Weather Forecast Data 2024"
 		};
 
 		const dataset2 = {
+			id: "https://example.com/datasets/partial-2",
+			nodeIdentity: "",
+			dateModified: new Date().toISOString(),
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
 			},
-			"@id": "https://example.com/datasets/partial-2",
 			"@type": DcatClasses.Dataset,
 			"dcterms:title": "Traffic Analysis Data"
 		};
@@ -345,6 +379,6 @@ describe("FilterByExample", () => {
 		});
 
 		expect(result.datasets).toHaveLength(1);
-		expect(result.datasets[0]["@id"]).toBe(dataset1["@id"]);
+		expect((result.datasets[0] as unknown as { id: string }).id).toBe(dataset1.id);
 	});
 });

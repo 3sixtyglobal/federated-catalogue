@@ -11,10 +11,22 @@ import type { IDcatDataset } from "@twin.org/standards-w3c-dcat";
 @entity()
 export class Dataset {
 	/**
-	 * The unique identifier for the dataset (@id from JSON-LD).
+	 * The unique identifier for the dataset (mapped from JSON-LD identifier).
 	 */
 	@property({ type: "string", isPrimary: true })
-	public "@id"!: string;
+	public id!: string;
+
+	/**
+	 * The identity of the node that owns this entity (required for sync).
+	 */
+	@property({ type: "string", isSecondary: true })
+	public nodeIdentity!: string;
+
+	/**
+	 * The date the entity was last modified (required for sync).
+	 */
+	@property({ type: "string", isSecondary: true })
+	public dateModified!: string;
 
 	/**
 	 * The JSON-LD context for the dataset.

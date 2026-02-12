@@ -43,7 +43,13 @@
 		"@twin.org/web": "next"
 	},
 	"devDependencies": {
+		"@twin.org/context": "next",
 		"@twin.org/entity-storage-connector-memory": "next",
+		"@twin.org/entity-storage-connector-synchronised": "next",
+		"@twin.org/event-bus-connector-local": "next",
+		"@twin.org/event-bus-models": "next",
+		"@twin.org/event-bus-service": "next",
+		"@twin.org/synchronised-storage-models": "next",
 		"@twin.org/modules": "next",
 		"@twin.org/nameof-transformer": "next",
 		"@twin.org/nameof-vitest-plugin": "next",
