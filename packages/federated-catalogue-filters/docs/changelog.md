@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.0.3-next.9](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-filters-v0.0.3-next.8...federated-catalogue-filters-v0.0.3-next.9) (2026-02-12)
+
+
+### Features
+
+* integrate synchronised storage with federated catalogue ([#53](https://github.com/twinfoundation/federated-catalogue/issues/53)) ([d1cdf06](https://github.com/twinfoundation/federated-catalogue/commit/d1cdf066adff8fb2266ccaaebcf57da391e03d3f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.0.3-next.8 to 0.0.3-next.9
+    * @twin.org/federated-catalogue-service bumped from 0.0.3-next.8 to 0.0.3-next.9
+
 ## [0.0.3-next.8](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-filters-v0.0.3-next.7...federated-catalogue-filters-v0.0.3-next.8) (2026-01-26)
 
 
