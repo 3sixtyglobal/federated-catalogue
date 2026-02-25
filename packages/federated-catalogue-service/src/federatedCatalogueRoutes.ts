@@ -20,6 +20,7 @@ import {
 	DataspaceProtocolContexts
 } from "@twin.org/standards-dataspace-protocol";
 import { DcatClasses, type DcatContextType } from "@twin.org/standards-w3c-dcat";
+import { PolicyType } from "@twin.org/standards-w3c-odrl";
 import { HeaderHelper, HeaderTypes, HttpStatusCode } from "@twin.org/web";
 import { transformErrorToStatusCode, transformToCatalogError } from "./utils/catalogErrorUtils.js";
 
@@ -100,15 +101,29 @@ export function generateRestRoutesFederatedCatalogue(
 								participantId: "did:example:node-identity-123",
 								dataset: [
 									{
-										"@context": [DataspaceProtocolContexts.Context],
 										"@id": "urn:uuid:dataset-123",
 										"@type": "Dataset",
-										title: "Energy Consumption Data",
-										description: "Historical energy consumption data"
+										"dcterms:title": "Energy Consumption Data",
+										"dcterms:description": "Historical energy consumption data",
+										hasPolicy: {
+											"@type": PolicyType.Offer,
+											uid: "urn:uuid:policy-456",
+											assigner: "did:example:data-provider-789"
+										},
+										distribution: {
+											"@id": "urn:uuid:distribution-789",
+											"@type": "Distribution",
+											format: "application/json",
+											accessService: {
+												"@id": "urn:uuid:access-service-321",
+												"@type": "DataService",
+												endpointURL: "https://example.com/data-access"
+											}
+										}
 									}
 								]
 							}
-						} as unknown as ICatalogRequestResponse
+						}
 					}
 				]
 			}
@@ -184,7 +199,7 @@ async function catalogRequest(
 		const component: IFederatedCatalogueComponent = ComponentFactory.get(componentName);
 
 		const result = await component.query(
-			request.body.filter as unknown[],
+			request.body.filter,
 			request.query?.cursor,
 			Coerce.integer(request.query?.limit)
 		);

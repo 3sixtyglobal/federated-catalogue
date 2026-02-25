@@ -16,7 +16,7 @@ import {
 	type IValidationFailure
 } from "@twin.org/core";
 import { Blake2b } from "@twin.org/crypto";
-import { JsonLdProcessor } from "@twin.org/data-json-ld";
+import { JsonLdHelper, JsonLdProcessor } from "@twin.org/data-json-ld";
 import {
 	EntityStorageConnectorFactory,
 	type IEntityStorageConnector
@@ -142,9 +142,12 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 
 			// Normalize to DS Protocol compliant format
 			// This ensures the payload matches exactly what the DS Protocol mandates
-			const normalizedDataset = await DataspaceProtocolHelper.normalize(dataset);
+			const normalizedDataset = await DataspaceProtocolHelper.normalize(
+				JsonLdHelper.toNodeObject(dataset)
+			);
 
-			return normalizedDataset as IDcatDataset;
+			const structured = JsonLdHelper.toStructuredObject<IDcatDataset>(normalizedDataset);
+			return structured;
 		} catch (error) {
 			return transformToCatalogError(error);
 		}
@@ -191,7 +194,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		// DS Protocol compliance validation
 		const validationFailures: IValidationFailure[] = [];
 		const isConformant = await DataspaceProtocolHelper.checkConformance(
-			dataSet,
+			JsonLdHelper.toNodeObject(dataSet),
 			validationFailures
 		);
 
@@ -329,7 +332,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 				ObjectHelper.propertyDelete(filter, "@type");
 				const result = await selectedFilter.query(filter, cursor, limit);
 
-				datasets = result.datasets.map(d => datasetEntityToModel(d as unknown as Dataset));
+				datasets = result.datasets.map(d => datasetEntityToModel(d));
 				resultCursor = result.cursor;
 			}
 
@@ -418,10 +421,12 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 
 			// Normalize to DS Protocol compliant format
 			// This ensures the payload matches exactly what the DS Protocol mandates
-			const normalizedCatalog = await DataspaceProtocolHelper.normalize(catalog);
+			const normalizedCatalog = await DataspaceProtocolHelper.normalize(
+				JsonLdHelper.toNodeObject(catalog)
+			);
 
 			return {
-				result: normalizedCatalog as IDataspaceProtocolCatalog,
+				result: JsonLdHelper.toStructuredObject(normalizedCatalog),
 				cursor: resultCursor
 			};
 		} catch (error) {

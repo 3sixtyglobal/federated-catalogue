@@ -8,7 +8,6 @@
 - [ICatalogRequestResponse](interfaces/ICatalogRequestResponse.md)
 - [IGetDatasetRequest](interfaces/IGetDatasetRequest.md)
 - [IGetDatasetResponse](interfaces/IGetDatasetResponse.md)
-- [IBaseFilter](interfaces/IBaseFilter.md)
 
 ## Variables
 

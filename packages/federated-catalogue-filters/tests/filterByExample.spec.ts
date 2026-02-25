@@ -76,7 +76,7 @@ describe("FilterByExample", () => {
 
 		expect(result.datasets).toHaveLength(2);
 		// Filter returns raw entities; id is the entity primary key
-		const ids = result.datasets.map(d => (d as unknown as { id: string }).id);
+		const ids = result.datasets.map(d => d["@id"]);
 		expect(ids).toContain(dataset1.id);
 		expect(ids).toContain(dataset2.id);
 	});
@@ -116,7 +116,7 @@ describe("FilterByExample", () => {
 		});
 
 		expect(result.datasets).toHaveLength(1);
-		expect((result.datasets[0] as unknown as { id: string }).id).toBe(dataset1.id);
+		expect(result.datasets[0]["@id"]).toBe(dataset1.id);
 		expect(result.datasets[0]["dcterms:identifier"]).toBe("WEATHER-001");
 	});
 
@@ -158,7 +158,7 @@ describe("FilterByExample", () => {
 		});
 
 		expect(result.datasets).toHaveLength(1);
-		expect((result.datasets[0] as unknown as { id: string }).id).toBe(dataset1.id);
+		expect(result.datasets[0]["@id"]).toBe(dataset1.id);
 	});
 
 	test("Query with nested object properties", async () => {
@@ -342,7 +342,7 @@ describe("FilterByExample", () => {
 		});
 
 		expect(result.datasets).toHaveLength(1);
-		expect((result.datasets[0] as unknown as { id: string }).id).toBe(regularDataset.id);
+		expect(result.datasets[0]["@id"]).toBe(regularDataset.id);
 	});
 
 	test("Query with partial string match in title", async () => {
@@ -379,6 +379,6 @@ describe("FilterByExample", () => {
 		});
 
 		expect(result.datasets).toHaveLength(1);
-		expect((result.datasets[0] as unknown as { id: string }).id).toBe(dataset1.id);
+		expect(result.datasets[0]["@id"]).toBe(dataset1.id);
 	});
 });

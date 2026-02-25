@@ -3,7 +3,7 @@
 import type { IHttpRequestContext } from "@twin.org/api-models";
 import { ContextIdStore } from "@twin.org/context";
 import { ComponentFactory, Is } from "@twin.org/core";
-import type { IJsonLdContextDefinitionRoot } from "@twin.org/data-json-ld";
+import { JsonLdHelper, type IJsonLdContextDefinitionRoot } from "@twin.org/data-json-ld";
 import { MemoryEntityStorageConnector } from "@twin.org/entity-storage-connector-memory";
 import { EntityStorageConnectorFactory } from "@twin.org/entity-storage-models";
 import {
@@ -265,8 +265,12 @@ describe("Federated Catalogue REST Endpoints", () => {
 			const retrievedDataset = response.body as unknown as IDcatDataset;
 			expect(retrievedDataset["@id"]).toBe("urn:uuid:dataset-123");
 			// DS Protocol context compacts dcterms: to dct:
-			expect(retrievedDataset["dct:title"]).toBe("Energy Consumption Data");
-			expect(retrievedDataset["dct:description"]).toBe("Historical energy consumption data");
+			expect(JsonLdHelper.toNodeObject(retrievedDataset)["dct:title"]).toBe(
+				"Energy Consumption Data"
+			);
+			expect(JsonLdHelper.toNodeObject(retrievedDataset)["dct:description"]).toBe(
+				"Historical energy consumption data"
+			);
 		});
 
 		test("Returns CatalogError with 404 status when dataset ID does not exist", async () => {

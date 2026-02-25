@@ -1,12 +1,13 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import { ArrayHelper, Guards, Is } from "@twin.org/core";
+import { ArrayHelper, Guards, Is, ObjectHelper } from "@twin.org/core";
 import { ComparisonOperator } from "@twin.org/entity";
 import {
 	EntityStorageConnectorFactory,
 	type IEntityStorageConnector
 } from "@twin.org/entity-storage-models";
 import type { IFederatedCatalogueFilter } from "@twin.org/federated-catalogue-models";
+import { type Dataset, datasetEntityToModel } from "@twin.org/federated-catalogue-service";
 import { nameof } from "@twin.org/nameof";
 import type { IDcatDataset } from "@twin.org/standards-w3c-dcat";
 import type { IFilterByExampleConstructorOptions } from "./models/IFilterByExampleConstructorOptions.js";
@@ -25,7 +26,7 @@ export class FilterByExample implements IFederatedCatalogueFilter {
 	 * The entity storage connector for datasets.
 	 * @internal
 	 */
-	private readonly _datasetStorage: IEntityStorageConnector<IDcatDataset>;
+	private readonly _datasetStorage: IEntityStorageConnector<Dataset>;
 
 	/**
 	 * Create a new instance of FilterByExample.
@@ -66,7 +67,7 @@ export class FilterByExample implements IFederatedCatalogueFilter {
 				cursor,
 				limit
 			);
-			const datasets = result.entities.map(entity => entity as unknown as IDcatDataset);
+			const datasets = result.entities.map(entity => datasetEntityToModel(entity));
 			return { datasets, cursor: result.cursor };
 		}
 
@@ -86,7 +87,7 @@ export class FilterByExample implements IFederatedCatalogueFilter {
 		);
 
 		return {
-			datasets: results.entities.map(entity => entity as unknown as IDcatDataset),
+			datasets: results.entities.map(entity => datasetEntityToModel(entity)),
 			cursor: results.cursor
 		};
 	}
@@ -139,7 +140,7 @@ export class FilterByExample implements IFederatedCatalogueFilter {
 		}[] = [];
 
 		for (const key of Object.keys(filter)) {
-			const value = filter[key];
+			const value = ObjectHelper.propertyGet(filter, key);
 			if (value !== undefined) {
 				if (Is.array(value)) {
 					const processedArray = value.map(item => {

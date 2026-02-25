@@ -10,16 +10,17 @@ import type { Dataset } from "../entities/dataset.js";
  * @returns The IDcatDataset model for API responses.
  */
 export function datasetEntityToModel(entity: Dataset | Partial<Dataset>): IDcatDataset {
-	const raw = { ...entity } as { [key: string]: unknown };
-	const id = raw.id;
+	const model = { ...entity };
+	const { id } = model;
 
-	delete raw.id;
-	delete raw.nodeIdentity;
-	delete raw.dateModified;
+	delete model.id;
+	delete model.nodeIdentity;
+	delete model.dateModified;
 
-	raw["@id"] = id as string;
-
-	return raw as unknown as IDcatDataset;
+	return {
+		...model,
+		"@id": id
+	} as IDcatDataset;
 }
 
 /**
@@ -35,12 +36,12 @@ export function datasetModelToEntity(
 	nodeIdentity: string,
 	dateModified: string
 ): Dataset {
-	const { "@id": atId, ...rest } = model as { [key: string]: unknown };
+	const { "@id": atId, ...datasetModel } = model;
 
 	return {
+		...datasetModel,
 		id: atId,
 		nodeIdentity,
-		dateModified,
-		...rest
-	} as unknown as Dataset;
+		dateModified
+	} as Dataset;
 }

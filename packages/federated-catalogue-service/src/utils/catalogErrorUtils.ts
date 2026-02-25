@@ -29,7 +29,7 @@ export function transformToCatalogError(error: unknown): IDataspaceProtocolCatal
 		"@type": DataspaceProtocolCatalogTypes.CatalogError,
 		code: `${flattened[0].name}:${flattened[0].message}`,
 		reason: flattened
-	} as unknown as IDataspaceProtocolCatalogError;
+	};
 }
 
 /**

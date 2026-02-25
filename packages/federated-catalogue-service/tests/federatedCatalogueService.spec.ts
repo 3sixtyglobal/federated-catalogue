@@ -4,10 +4,7 @@ import { ContextIdKeys, ContextIdStore } from "@twin.org/context";
 import { ArrayHelper, GeneralError, GuardError, Is } from "@twin.org/core";
 import { MemoryEntityStorageConnector } from "@twin.org/entity-storage-connector-memory";
 import { EntityStorageConnectorFactory } from "@twin.org/entity-storage-models";
-import {
-	FederatedCatalogueFilterFactory,
-	type IBaseFilter
-} from "@twin.org/federated-catalogue-models";
+import { FederatedCatalogueFilterFactory } from "@twin.org/federated-catalogue-models";
 import { nameof } from "@twin.org/nameof";
 import {
 	DataspaceProtocolDataTypes,
@@ -106,7 +103,7 @@ describe("FederatedCatalogueService", () => {
 			"dcterms:description": "A test dataset for unit testing",
 			"dcterms:publisher": "https://example.com/participants/test-publisher",
 			"dcat:distribution": {
-				"@type": "dcat:Distribution",
+				"@type": DcatClasses.Distribution,
 				"@id": "https://example.com/distributions/test-dist-1",
 				"dcterms:format": "application/json",
 				"dcat:accessService": "https://example.com/services/test-service"
@@ -572,7 +569,7 @@ describe("FederatedCatalogueService", () => {
 			datasetStorageConnectorType: "dataset"
 		});
 
-		const queryResult = await service.query([{}] as IBaseFilter[]);
+		const queryResult = await service.query([{}]);
 
 		expect(queryResult.result).toEqual({
 			"@context": "https://w3id.org/dspace/2025/1/context.jsonld",

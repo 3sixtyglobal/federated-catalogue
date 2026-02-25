@@ -106,7 +106,7 @@ A language of the resource.
 
 ### dcterms:publisher?
 
-> `optional` **dcterms:publisher**: `string` \| `IFoafAgent`
+> `optional` **dcterms:publisher**: `string` \| `IFoafAgentWithAliases`
 
 An entity responsible for making the resource available.
 
@@ -114,7 +114,7 @@ An entity responsible for making the resource available.
 
 ### dcterms:creator?
 
-> `optional` **dcterms:creator**: `IFoafAgent`
+> `optional` **dcterms:creator**: `string` \| `IFoafAgentWithAliases`
 
 An entity responsible for producing the resource.
 
@@ -234,7 +234,7 @@ A dataset series of which the dataset is part.
 
 ### dcterms:spatial?
 
-> `optional` **dcterms:spatial**: `IJsonLdNodeObject` \| `ObjectOrArray`\<`string`\>
+> `optional` **dcterms:spatial**: `ObjectOrArray`\<`string`\> \| `IJsonLdNodeObject`
 
 The geographical area covered by the dataset.
 
