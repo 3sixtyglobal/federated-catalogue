@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.0.3-next.10](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-filters-v0.0.3-next.9...federated-catalogue-filters-v0.0.3-next.10) (2026-02-25)
+
+
+### Features
+
+* update json-ld patterns ([172aff0](https://github.com/twinfoundation/federated-catalogue/commit/172aff07d0f0b780f72d1be3a4896bbf12f6173a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.0.3-next.9 to 0.0.3-next.10
+    * @twin.org/federated-catalogue-service bumped from 0.0.3-next.9 to 0.0.3-next.10
+
 ## [0.0.3-next.9](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-filters-v0.0.3-next.8...federated-catalogue-filters-v0.0.3-next.9) (2026-02-12)
 
 
