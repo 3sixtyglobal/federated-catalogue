@@ -346,7 +346,6 @@
 					"name",
 					"message"
 				],
-				"additionalProperties": false,
 				"description": "Model to describe serialized error."
 			},
 			"GetDatasetResponse": {
