@@ -1,5 +1,19 @@
 # @twin.org/federated-catalogue-service - Changelog
 
+## [0.0.3-next.11](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.10...federated-catalogue-service-v0.0.3-next.11) (2026-03-05)
+
+
+### Bug Fixes
+
+* consistent naming of entity storage component in config ([1c1cb27](https://github.com/twinfoundation/federated-catalogue/commit/1c1cb274c5bca8cbe5f1da71b3dd4ddf52487001))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.0.3-next.10 to 0.0.3-next.11
+
 ## [0.0.3-next.10](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.9...federated-catalogue-service-v0.0.3-next.10) (2026-02-25)
 
 
