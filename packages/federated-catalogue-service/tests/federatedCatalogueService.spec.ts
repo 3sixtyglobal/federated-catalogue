@@ -56,7 +56,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Can create federated catalogue service", () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		expect(service).toBeDefined();
@@ -74,7 +74,7 @@ describe("FederatedCatalogueService", () => {
 		}));
 
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		// Verify the filter is accessible by the service (won't throw NotFoundError)
@@ -88,7 +88,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Can set and get a dataset", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		const testDataset = {
@@ -126,7 +126,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Get returns CatalogError for non-existent dataset", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		const result = await service.get("https://example.com/datasets/non-existent");
@@ -152,7 +152,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Can query datasets with no filter", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		// Add test datasets
@@ -246,7 +246,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Query returns catalog with participantId derived from dcterms:publisher (single participant)", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		const publisherId = "https://example.com/participants/participant-1";
@@ -303,7 +303,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Query returns nested catalogs for other participants (anonymous request)", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		const publisher1 = "https://example.com/participants/participant-1";
@@ -400,7 +400,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Query returns own datasets at root level when authenticated", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		const requestingParticipant = "https://example.com/participants/requesting-org";
@@ -499,7 +499,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Can query datasets with filter", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		// Add a dataset with specific properties
@@ -566,7 +566,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Query returns CatalogError 400 when filter type is missing", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		const queryResult = await service.query([{}]);
@@ -592,7 +592,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Query returns CatalogError 400 when filter is not an array", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		// Passing a non-array value (e.g., empty string) should return CatalogError
@@ -619,7 +619,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Query returns CatalogError 404 when no datasets exist", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		// Create a mock filter that returns empty datasets
@@ -664,7 +664,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Cursor is retained when query returns datasets with cursor", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		// Add test datasets
@@ -761,7 +761,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Catalog without cursor does not include cursor property after compaction", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		// Add a dataset
@@ -818,7 +818,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Set throws GeneralError when dataset is missing @context (handled by conformance checker)", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		const invalidDataset = {
@@ -836,7 +836,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Set throws GuardError when dataset is missing @type", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		const invalidDataset = {
@@ -852,7 +852,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Set throws GuardError when dataset is missing @id", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		const invalidDataset = {
@@ -869,7 +869,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Set throws GeneralError when dataset is missing dcterms:publisher", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		const datasetMissingPublisher = {
@@ -903,7 +903,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Set succeeds with valid minimal dataset (all required fields)", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		const validMinimalDataset = {
@@ -938,7 +938,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Set succeeds with valid DS Protocol compliant dataset", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		const validDsProtocolDataset = {
@@ -979,7 +979,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Set throws GeneralError when dataset is missing distribution (prefixed form)", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		const datasetMissingDistribution = {
@@ -1006,7 +1006,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Set throws GeneralError when dataset is missing hasPolicy (prefixed form)", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		const datasetMissingPolicy = {
@@ -1032,7 +1032,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Set throws GeneralError when dataset is missing distribution (unprefixed form)", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		const datasetMissingDistribution = {
@@ -1059,7 +1059,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Set throws GeneralError when dataset is missing hasPolicy (unprefixed form)", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		const datasetMissingPolicy = {
@@ -1085,7 +1085,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Set succeeds with valid DS Protocol dataset (prefixed properties)", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		const validDataset = {
@@ -1121,7 +1121,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Set succeeds with valid DS Protocol dataset (unprefixed properties)", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		const validDataset = {
@@ -1159,7 +1159,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Set throws GeneralError when distribution is missing dcterms:format", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		const datasetMissingFormat = {
@@ -1192,7 +1192,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Set throws GeneralError when distribution is missing dcat:accessService", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		const datasetMissingAccessService = {
@@ -1225,7 +1225,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Set throws GeneralError when distribution array is empty", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		const datasetEmptyDistribution = {
@@ -1257,7 +1257,7 @@ describe("FederatedCatalogueService", () => {
 		});
 
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 		await service.start();
 
@@ -1295,7 +1295,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Set preserves dateModified when entity content is unchanged", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		const dataset = {
@@ -1342,7 +1342,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Set updates dateModified when entity content changes", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		const dataset = {
@@ -1395,7 +1395,7 @@ describe("FederatedCatalogueService", () => {
 		vi.mocked(ContextIdStore.getContextIds).mockResolvedValue(undefined);
 
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		await expect(service.start()).rejects.toThrow(GeneralError);
@@ -1404,7 +1404,7 @@ describe("FederatedCatalogueService", () => {
 
 	test("Multiple sequential unchanged sets preserve the same dateModified", async () => {
 		const service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		const dataset = {

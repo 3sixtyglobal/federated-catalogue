@@ -6,9 +6,10 @@
  */
 export interface IFederatedCatalogueServiceConstructorOptions {
 	/**
-	 * The type of the entity storage connector for datasets.
+	 * The entity storage for datasets.
+	 * @default dataset
 	 */
-	datasetStorageConnectorType?: string;
+	datasetEntityStorageType?: string;
 
 	/**
 	 * The logging component for the service.

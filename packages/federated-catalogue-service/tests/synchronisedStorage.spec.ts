@@ -128,13 +128,13 @@ describe("Synchronised Storage Integration", () => {
 
 		// Create FC services and start with node identities
 		fcServiceA = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset-a"
+			datasetEntityStorageType: "dataset-a"
 		});
 		vi.mocked(ContextIdStore.getContextIds).mockResolvedValue({ node: NODE_A_ID });
 		await fcServiceA.start();
 
 		fcServiceB = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset-b"
+			datasetEntityStorageType: "dataset-b"
 		});
 		vi.mocked(ContextIdStore.getContextIds).mockResolvedValue({ node: NODE_B_ID });
 		await fcServiceB.start();

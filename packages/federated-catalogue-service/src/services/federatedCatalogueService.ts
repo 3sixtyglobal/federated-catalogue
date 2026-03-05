@@ -84,7 +84,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		);
 
 		this._datasetStorage = EntityStorageConnectorFactory.get(
-			options?.datasetStorageConnectorType ?? "dataset"
+			options?.datasetEntityStorageType ?? "dataset"
 		);
 
 		// Register JSON-LD redirects for offline processing

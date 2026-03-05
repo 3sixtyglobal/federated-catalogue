@@ -90,7 +90,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 
 		// Create fresh service instance
 		service = new FederatedCatalogueService({
-			datasetStorageConnectorType: "dataset"
+			datasetEntityStorageType: "dataset"
 		});
 
 		// Register service in ComponentFactory
