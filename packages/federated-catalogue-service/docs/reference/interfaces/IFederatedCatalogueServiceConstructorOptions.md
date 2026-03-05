@@ -4,11 +4,17 @@ Options for the FederatedCatalogueService constructor.
 
 ## Properties
 
-### datasetStorageConnectorType?
+### datasetEntityStorageType?
 
-> `optional` **datasetStorageConnectorType**: `string`
+> `optional` **datasetEntityStorageType**: `string`
 
-The type of the entity storage connector for datasets.
+The entity storage for datasets.
+
+#### Default
+
+```ts
+dataset
+```
 
 ***
 

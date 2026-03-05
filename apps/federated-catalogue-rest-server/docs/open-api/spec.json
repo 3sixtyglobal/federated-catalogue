@@ -813,7 +813,6 @@
 					"name",
 					"message"
 				],
-				"additionalProperties": false,
 				"description": "Model to describe serialized error."
 			},
 			"GetDatasetResponse": {
@@ -846,7 +845,6 @@
 					"name",
 					"status"
 				],
-				"additionalProperties": false,
 				"description": "The health component information."
 			},
 			"HealthInfo": {
@@ -866,7 +864,6 @@
 				"required": [
 					"status"
 				],
-				"additionalProperties": false,
 				"description": "The status of the server."
 			},
 			"HealthStatus": {
@@ -905,7 +902,6 @@
 					"name",
 					"version"
 				],
-				"additionalProperties": false,
 				"description": "The information about the server."
 			},
 			"ServerLivezResponse": {
