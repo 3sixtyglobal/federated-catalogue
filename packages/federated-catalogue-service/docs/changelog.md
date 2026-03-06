@@ -1,5 +1,19 @@
 # @twin.org/federated-catalogue-service - Changelog
 
+## [0.0.3-next.12](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.11...federated-catalogue-service-v0.0.3-next.12) (2026-03-06)
+
+
+### Features
+
+* add [@id](https://github.com/id) to policy example in federated catalogue route definition ([#58](https://github.com/twinfoundation/federated-catalogue/issues/58)) ([c854f16](https://github.com/twinfoundation/federated-catalogue/commit/c854f16eac91d23468134bb46e8a2c7a74e854af))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.0.3-next.11 to 0.0.3-next.12
+
 ## [0.0.3-next.11](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.10...federated-catalogue-service-v0.0.3-next.11) (2026-03-05)
 
 
