@@ -106,8 +106,8 @@ export function generateRestRoutesFederatedCatalogue(
 										"dcterms:title": "Energy Consumption Data",
 										"dcterms:description": "Historical energy consumption data",
 										hasPolicy: {
+											"@id": "urn:uuid:policy-456",
 											"@type": PolicyType.Offer,
-											uid: "urn:uuid:policy-456",
 											assigner: "did:example:data-provider-789"
 										},
 										distribution: {
