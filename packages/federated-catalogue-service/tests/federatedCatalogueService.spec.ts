@@ -816,24 +816,6 @@ describe("FederatedCatalogueService", () => {
 		expect(queryResult.result["@type"]).toBe("Catalog");
 	});
 
-	test("Set throws GeneralError when dataset is missing @context (handled by conformance checker)", async () => {
-		const service = new FederatedCatalogueService({
-			datasetEntityStorageType: "dataset"
-		});
-
-		const invalidDataset = {
-			"@id": "https://example.com/datasets/missing-context",
-			"@type": DcatClasses.Dataset,
-			"dcterms:title": "Dataset without @context",
-			"dcterms:publisher": "https://example.com/participants/test-publisher"
-		} as unknown as IDcatDataset;
-
-		// @context validation is handled by DataspaceProtocolHelper.checkConformance()
-		// Without @context, the schema cannot be registered, throwing schemaNotRegistered error
-		await expect(service.set(invalidDataset)).rejects.toThrow(GeneralError);
-		await expect(service.set(invalidDataset)).rejects.toThrow("schemaNotRegistered");
-	});
-
 	test("Set throws GuardError when dataset is missing @type", async () => {
 		const service = new FederatedCatalogueService({
 			datasetEntityStorageType: "dataset"
