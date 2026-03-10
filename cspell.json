@@ -48,6 +48,7 @@
 	"ignoreRegExpList": [
 		"/from\\s+(['\"]).*\\1/",
 		"/eslint-disable.*/",
+		"/^```(?:typescript|ts)[\\s\\S]*?```$/gm",
 		"/^```shell[\\s\\S]*?```$/gm",
 		"/^```json[\\s\\S]*?```$/gm",
 		"/tst1.*/"

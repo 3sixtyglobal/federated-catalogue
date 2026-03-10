@@ -1,6 +1,6 @@
 # Federated Catalogue Models
 
-Models which define the structure of the Federated Catalogue.
+This package defines shared data contracts for catalogue interactions, including request and response models used by service and client components. It provides a stable schema layer so integrations can exchange catalogue data in a consistent format.
 
 ## Installation
 

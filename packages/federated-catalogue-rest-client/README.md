@@ -1,6 +1,6 @@
-# TWIN Federated Catalogue REST Client
+# Federated Catalogue REST Client
 
-Federated Catalogue contract implementation which can connect to REST endpoints.
+This package provides a client interface for calling catalogue REST endpoints and handling paged query and dataset retrieval workflows. It simplifies remote catalogue integration by encapsulating endpoint requests and response parsing.
 
 ## Installation
 
