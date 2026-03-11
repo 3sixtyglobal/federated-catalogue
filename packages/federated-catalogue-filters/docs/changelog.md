@@ -165,4 +165,4 @@
     * @twin.org/federated-catalogue-models bumped from 0.0.3-next.1 to 0.0.3-next.2
     * @twin.org/federated-catalogue-service bumped from 0.0.3-next.1 to 0.0.3-next.2
 
-## @twin.org/federated-catalogue-filters - Changelog
+## Changelog

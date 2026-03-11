@@ -1,4 +1,4 @@
-# @twin.org/federated-catalogue-models - Changelog
+# Changelog
 
 ## [0.0.3-next.12](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-models-v0.0.3-next.11...federated-catalogue-models-v0.0.3-next.12) (2026-03-06)
 
