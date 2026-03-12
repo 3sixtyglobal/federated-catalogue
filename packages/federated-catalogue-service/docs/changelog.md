@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.0.3-next.13](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.12...federated-catalogue-service-v0.0.3-next.13) (2026-03-12)
+
+
+### Features
+
+* update DataspaceProtocolHelper.validate usage ([49eda69](https://github.com/twinfoundation/federated-catalogue/commit/49eda69073d0ef4cd88c0e01f5eee8a78e4195e4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.0.3-next.12 to 0.0.3-next.13
+
 ## [0.0.3-next.12](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.11...federated-catalogue-service-v0.0.3-next.12) (2026-03-06)
 
 
