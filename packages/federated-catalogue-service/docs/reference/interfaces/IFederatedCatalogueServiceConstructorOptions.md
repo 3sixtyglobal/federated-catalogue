@@ -10,12 +10,6 @@ Options for the FederatedCatalogueService constructor.
 
 The entity storage for datasets.
 
-#### Default
-
-```ts
-dataset
-```
-
 ***
 
 ### loggingComponentType?

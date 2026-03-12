@@ -98,7 +98,7 @@ Most recent date on which the resource was changed, updated or modified.
 
 ### dcterms:language?
 
-> `optional` **dcterms:language**: `ObjectOrArray`\<`string`\>
+> `optional` **dcterms:language**: `string` \| `string`[]
 
 A language of the resource.
 
@@ -146,7 +146,7 @@ Information about rights held in and over the resource.
 
 ### dcterms:conformsTo?
 
-> `optional` **dcterms:conformsTo**: `ObjectOrArray`\<`string`\>
+> `optional` **dcterms:conformsTo**: `string` \| `string`[]
 
 An established standard to which the resource conforms.
 
@@ -178,7 +178,7 @@ A keyword or tag describing the resource.
 
 ### dcat:theme?
 
-> `optional` **dcat:theme**: `ObjectOrArray`\<`string`\>
+> `optional` **dcat:theme**: `string` \| `string`[]
 
 A main category of the resource. A resource can have multiple themes.
 
@@ -186,7 +186,7 @@ A main category of the resource. A resource can have multiple themes.
 
 ### dcat:landingPage?
 
-> `optional` **dcat:landingPage**: `ObjectOrArray`\<`string`\>
+> `optional` **dcat:landingPage**: `string` \| `string`[]
 
 A Web page that can be navigated to gain access to the resource.
 
@@ -210,7 +210,7 @@ An ODRL conformant policy expressing the rights associated with the resource.
 
 ### dcat:distribution?
 
-> `optional` **dcat:distribution**: `ObjectOrArray`\<`DistributionOptionalContext`\>
+> `optional` **dcat:distribution**: `DistributionOptionalContext` \| `DistributionOptionalContext`[]
 
 An available distribution of the dataset.
 
@@ -234,7 +234,7 @@ A dataset series of which the dataset is part.
 
 ### dcterms:spatial?
 
-> `optional` **dcterms:spatial**: `ObjectOrArray`\<`string`\> \| `IJsonLdNodeObject`
+> `optional` **dcterms:spatial**: `string` \| `string`[] \| `IJsonLdNodeObject`
 
 The geographical area covered by the dataset.
 
