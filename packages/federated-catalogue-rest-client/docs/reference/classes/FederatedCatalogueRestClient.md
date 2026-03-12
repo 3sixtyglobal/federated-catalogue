@@ -36,7 +36,7 @@ The configuration for the client.
 
 ## Properties
 
-### CLASS\_NAME
+### CLASS\_NAME {#class_name}
 
 > `readonly` `static` **CLASS\_NAME**: `string`
 
@@ -44,7 +44,7 @@ Runtime name for the class.
 
 ## Methods
 
-### className()
+### className() {#classname}
 
 > **className**(): `string`
 
@@ -62,7 +62,7 @@ The class name of the component.
 
 ***
 
-### query()
+### query() {#query}
 
 > **query**(`filter?`, `cursor?`, `limit?`): `Promise`\<\{ `result`: `IDataspaceProtocolCatalogError` \| `IDataspaceProtocolCatalog`; `cursor?`: `string`; \}\>
 
@@ -100,7 +100,7 @@ The catalog containing matching datasets (or CatalogError if none found), with c
 
 ***
 
-### get()
+### get() {#get}
 
 > **get**(`datasetId`): `Promise`\<`IDcatDataset` \| `IDataspaceProtocolCatalogError`\>
 
@@ -126,7 +126,7 @@ The dataset if found, or a CatalogError if not found or an error occurs.
 
 ***
 
-### set()
+### set() {#set}
 
 > **set**(`dataSet`): `Promise`\<`void`\>
 
@@ -153,7 +153,7 @@ Nothing.
 
 ***
 
-### remove()
+### remove() {#remove}
 
 > **remove**(`dataSetId`): `Promise`\<`void`\>
 

@@ -4,7 +4,7 @@ Options for the FederatedCatalogueService constructor.
 
 ## Properties
 
-### datasetEntityStorageType?
+### datasetEntityStorageType? {#datasetentitystoragetype}
 
 > `optional` **datasetEntityStorageType**: `string`
 
@@ -12,7 +12,7 @@ The entity storage for datasets.
 
 ***
 
-### loggingComponentType?
+### loggingComponentType? {#loggingcomponenttype}
 
 > `optional` **loggingComponentType**: `string`
 

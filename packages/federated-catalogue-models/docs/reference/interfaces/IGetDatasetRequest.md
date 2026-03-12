@@ -4,7 +4,7 @@ The request parameters for the get dataset method.
 
 ## Properties
 
-### pathParams
+### pathParams {#pathparams}
 
 > **pathParams**: `object`
 

@@ -4,7 +4,7 @@ The response payload for the get dataset method.
 
 ## Properties
 
-### statusCode?
+### statusCode? {#statuscode}
 
 > `optional` **statusCode**: `HttpStatusCode`
 
@@ -12,7 +12,7 @@ Response status code.
 
 ***
 
-### body
+### body {#body}
 
 > **body**: `IDcatDataset` \| `IDataspaceProtocolCatalogError`
 

@@ -29,7 +29,7 @@ The options for the service.
 
 ## Properties
 
-### CLASS\_NAME
+### CLASS\_NAME {#class_name}
 
 > `readonly` `static` **CLASS\_NAME**: `string`
 
@@ -37,7 +37,7 @@ Runtime name for the class.
 
 ## Methods
 
-### className()
+### className() {#classname}
 
 > **className**(): `string`
 
@@ -55,7 +55,7 @@ The class name of the component.
 
 ***
 
-### start()
+### start() {#start}
 
 > **start**(): `Promise`\<`void`\>
 
@@ -73,7 +73,7 @@ Nothing.
 
 ***
 
-### get()
+### get() {#get}
 
 > **get**(`dataSetId`): `Promise`\<`IDataspaceProtocolCatalogError` \| `IDcatDataset`\>
 
@@ -99,7 +99,7 @@ The dataset if found, or a CatalogError if not found or an error occurs.
 
 ***
 
-### set()
+### set() {#set}
 
 > **set**(`dataSet`): `Promise`\<`void`\>
 
@@ -124,7 +124,7 @@ The dataset to store.
 
 ***
 
-### query()
+### query() {#query}
 
 > **query**(`filter?`, `cursor?`, `limit?`): `Promise`\<\{ `result`: `IDataspaceProtocolCatalogError` \| `IDataspaceProtocolCatalog`; `cursor?`: `string`; \}\>
 
@@ -171,7 +171,7 @@ or CatalogError if validation fails or an error occurs.
 
 ***
 
-### remove()
+### remove() {#remove}
 
 > **remove**(`dataSetId`): `Promise`\<`void`\>
 

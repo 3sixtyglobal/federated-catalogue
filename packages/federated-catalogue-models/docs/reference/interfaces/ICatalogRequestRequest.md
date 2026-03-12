@@ -4,7 +4,7 @@ The request parameters for the catalog request method.
 
 ## Properties
 
-### body
+### body {#body}
 
 > **body**: `IDataspaceProtocolCatalogRequestMessage`
 
@@ -12,7 +12,7 @@ The request body containing the catalog query.
 
 ***
 
-### query?
+### query? {#query}
 
 > `optional` **query**: `object`
 

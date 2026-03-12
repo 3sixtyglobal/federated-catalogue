@@ -29,7 +29,7 @@ The options for the filter.
 
 ## Properties
 
-### CLASS\_NAME
+### CLASS\_NAME {#class_name}
 
 > `readonly` `static` **CLASS\_NAME**: `string`
 
@@ -37,7 +37,7 @@ Runtime name for the class.
 
 ## Methods
 
-### className()
+### className() {#classname}
 
 > **className**(): `string`
 
@@ -55,7 +55,7 @@ The class name of the component.
 
 ***
 
-### query()
+### query() {#query}
 
 > **query**(`filter`, `cursor?`, `limit?`): `Promise`\<\{ `datasets`: `IDcatDataset`[]; `cursor?`: `string`; \}\>
 
@@ -94,7 +94,7 @@ Object containing datasets matching the filter criteria and optional cursor for 
 
 ***
 
-### createIndex()
+### createIndex() {#createindex}
 
 > **createIndex**(`dataSet`): `Promise`\<\{\[`key`: `string`\]: `unknown`; \}\>
 

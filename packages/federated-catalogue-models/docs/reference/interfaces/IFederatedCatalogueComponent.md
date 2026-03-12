@@ -9,7 +9,7 @@ Provides Dataspace Protocol-compliant catalog endpoints for dataset registry and
 
 ## Methods
 
-### get()
+### get() {#get}
 
 > **get**(`dataSetId`): `Promise`\<`IDcatDataset` \| `IDataspaceProtocolCatalogError`\>
 
@@ -31,7 +31,7 @@ The dataset if found, or a CatalogError if not found or an error occurs.
 
 ***
 
-### set()
+### set() {#set}
 
 > **set**(`dataSet`): `Promise`\<`void`\>
 
@@ -54,7 +54,7 @@ Nothing.
 
 ***
 
-### query()
+### query() {#query}
 
 > **query**(`filter?`, `cursor?`, `limit?`): `Promise`\<\{ `result`: `IDataspaceProtocolCatalog` \| `IDataspaceProtocolCatalogError`; `cursor?`: `string`; \}\>
 
@@ -97,7 +97,7 @@ or IDataspaceProtocolCatalogError if no datasets found.
 
 ***
 
-### remove()
+### remove() {#remove}
 
 > **remove**(`dataSetId`): `Promise`\<`void`\>
 

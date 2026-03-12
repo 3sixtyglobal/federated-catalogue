@@ -5,7 +5,7 @@ Returns a DS Protocol compliant Catalog with participantId, or CatalogError if n
 
 ## Properties
 
-### headers?
+### headers? {#headers}
 
 > `optional` **headers**: `object`
 
@@ -17,7 +17,7 @@ Optional headers including RFC 8288 Link header for pagination.
 
 ***
 
-### statusCode?
+### statusCode? {#statuscode}
 
 > `optional` **statusCode**: `HttpStatusCode`
 
@@ -26,7 +26,7 @@ Per DS Protocol: Returns appropriate HTTP code (e.g., 404) when returning Catalo
 
 ***
 
-### body
+### body {#body}
 
 > **body**: `IDataspaceProtocolCatalog` \| `IDataspaceProtocolCatalogError`
 

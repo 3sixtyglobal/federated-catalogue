@@ -10,7 +10,7 @@ Filters are registered by name in the FilterFactory and do not need to self-iden
 
 ## Methods
 
-### query()
+### query() {#query}
 
 > **query**(`filter`, `cursor?`, `limit?`): `Promise`\<\{ `datasets`: `IDcatDataset`[]; `cursor?`: `string`; \}\>
 
@@ -45,7 +45,7 @@ Object containing datasets matching the filter criteria and optional cursor for 
 
 ***
 
-### createIndex()
+### createIndex() {#createindex}
 
 > **createIndex**(`dataSet`): `Promise`\<\{\[`key`: `string`\]: `unknown`; \}\>
 

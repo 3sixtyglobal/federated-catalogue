@@ -4,7 +4,7 @@ Options for the FilterByExample constructor.
 
 ## Properties
 
-### datasetStorageConnectorType?
+### datasetStorageConnectorType? {#datasetstorageconnectortype}
 
 > `optional` **datasetStorageConnectorType**: `string`
 
