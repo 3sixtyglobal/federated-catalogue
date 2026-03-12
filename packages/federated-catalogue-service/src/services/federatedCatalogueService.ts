@@ -13,7 +13,7 @@ import {
 	ObjectHelper,
 	Url,
 	Urn,
-	type IValidationFailure
+	Validation
 } from "@twin.org/core";
 import { Blake2b } from "@twin.org/crypto";
 import { JsonLdHelper, JsonLdProcessor } from "@twin.org/data-json-ld";
@@ -36,8 +36,8 @@ import { DublinCoreContexts, DublinCoreDataTypes } from "@twin.org/standards-dub
 import { FoafDataTypes } from "@twin.org/standards-foaf";
 import {
 	DcatContexts,
-	type DcatContextType,
 	DcatDataTypes,
+	type DcatContextType,
 	type IDcatDataset
 } from "@twin.org/standards-w3c-dcat";
 import { OdrlContexts } from "@twin.org/standards-w3c-odrl";
@@ -192,18 +192,15 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		}
 
 		// DS Protocol compliance validation
-		const validationFailures: IValidationFailure[] = [];
-		const isConformant = await DataspaceProtocolHelper.checkConformance(
-			JsonLdHelper.toNodeObject(dataSet),
-			validationFailures
+		const validationFailures = await DataspaceProtocolHelper.validate(
+			JsonLdHelper.toNodeObject(dataSet)
 		);
 
-		if (!isConformant) {
-			throw new GeneralError(FederatedCatalogueService.CLASS_NAME, "datasetNotConformant", {
-				dataSetId,
-				validationFailures
-			});
-		}
+		Validation.asValidationError(
+			FederatedCatalogueService.CLASS_NAME,
+			"dataSet",
+			validationFailures
+		);
 
 		// Normalize dataset for storage using JSON-LD compaction
 		// This ensures the dataset uses prefixed properties that entity storage expects

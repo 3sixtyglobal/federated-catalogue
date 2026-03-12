@@ -959,7 +959,7 @@ describe("FederatedCatalogueService", () => {
 		);
 	});
 
-	test("Set throws GeneralError when dataset is missing distribution (prefixed form)", async () => {
+	test("Set throws validation error when dataset is missing distribution (prefixed form)", async () => {
 		const service = new FederatedCatalogueService({
 			datasetEntityStorageType: "dataset"
 		});
@@ -982,11 +982,10 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await expect(service.set(datasetMissingDistribution)).rejects.toThrow(GeneralError);
-		await expect(service.set(datasetMissingDistribution)).rejects.toThrow("datasetNotConformant");
+		await expect(service.set(datasetMissingDistribution)).rejects.toThrow("common.validation");
 	});
 
-	test("Set throws GeneralError when dataset is missing hasPolicy (prefixed form)", async () => {
+	test("Set throws validation error when dataset is missing hasPolicy (prefixed form)", async () => {
 		const service = new FederatedCatalogueService({
 			datasetEntityStorageType: "dataset"
 		});
@@ -1008,11 +1007,10 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await expect(service.set(datasetMissingPolicy)).rejects.toThrow(GeneralError);
-		await expect(service.set(datasetMissingPolicy)).rejects.toThrow("datasetNotConformant");
+		await expect(service.set(datasetMissingPolicy)).rejects.toThrow("common.validation");
 	});
 
-	test("Set throws GeneralError when dataset is missing distribution (unprefixed form)", async () => {
+	test("Set throws validation error when dataset is missing distribution (unprefixed form)", async () => {
 		const service = new FederatedCatalogueService({
 			datasetEntityStorageType: "dataset"
 		});
@@ -1035,11 +1033,10 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await expect(service.set(datasetMissingDistribution)).rejects.toThrow(GeneralError);
-		await expect(service.set(datasetMissingDistribution)).rejects.toThrow("datasetNotConformant");
+		await expect(service.set(datasetMissingDistribution)).rejects.toThrow("common.validation");
 	});
 
-	test("Set throws GeneralError when dataset is missing hasPolicy (unprefixed form)", async () => {
+	test("Set throws validation error when dataset is missing hasPolicy (unprefixed form)", async () => {
 		const service = new FederatedCatalogueService({
 			datasetEntityStorageType: "dataset"
 		});
@@ -1061,8 +1058,7 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await expect(service.set(datasetMissingPolicy)).rejects.toThrow(GeneralError);
-		await expect(service.set(datasetMissingPolicy)).rejects.toThrow("datasetNotConformant");
+		await expect(service.set(datasetMissingPolicy)).rejects.toThrow("common.validation");
 	});
 
 	test("Set succeeds with valid DS Protocol dataset (prefixed properties)", async () => {
@@ -1139,7 +1135,7 @@ describe("FederatedCatalogueService", () => {
 		);
 	});
 
-	test("Set throws GeneralError when distribution is missing dcterms:format", async () => {
+	test("Set throws validation error when distribution is missing dcterms:format", async () => {
 		const service = new FederatedCatalogueService({
 			datasetEntityStorageType: "dataset"
 		});
@@ -1168,11 +1164,10 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await expect(service.set(datasetMissingFormat)).rejects.toThrow(GeneralError);
-		await expect(service.set(datasetMissingFormat)).rejects.toThrow("datasetNotConformant");
+		await expect(service.set(datasetMissingFormat)).rejects.toThrow("common.validation");
 	});
 
-	test("Set throws GeneralError when distribution is missing dcat:accessService", async () => {
+	test("Set throws validation error when distribution is missing dcat:accessService", async () => {
 		const service = new FederatedCatalogueService({
 			datasetEntityStorageType: "dataset"
 		});
@@ -1201,11 +1196,10 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await expect(service.set(datasetMissingAccessService)).rejects.toThrow(GeneralError);
-		await expect(service.set(datasetMissingAccessService)).rejects.toThrow("datasetNotConformant");
+		await expect(service.set(datasetMissingAccessService)).rejects.toThrow("common.validation");
 	});
 
-	test("Set throws GeneralError when distribution array is empty", async () => {
+	test("Set throws validation error when distribution array is empty", async () => {
 		const service = new FederatedCatalogueService({
 			datasetEntityStorageType: "dataset"
 		});
@@ -1229,8 +1223,7 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await expect(service.set(datasetEmptyDistribution)).rejects.toThrow(GeneralError);
-		await expect(service.set(datasetEmptyDistribution)).rejects.toThrow("datasetNotConformant");
+		await expect(service.set(datasetEmptyDistribution)).rejects.toThrow("common.validation");
 	});
 
 	test("start() captures nodeIdentity from context and sets it on stored entities", async () => {
