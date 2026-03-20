@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0.
 import { ContextIdStore } from "@twin.org/context";
 import { ArrayHelper, ComponentFactory } from "@twin.org/core";
+import { JsonLdDataTypes } from "@twin.org/data-json-ld";
 import { MemoryEntityStorageConnector } from "@twin.org/entity-storage-connector-memory";
 import { SynchronisedEntityStorageConnector } from "@twin.org/entity-storage-connector-synchronised";
 import { EntityStorageConnectorFactory } from "@twin.org/entity-storage-models";
@@ -17,7 +18,7 @@ import {
 import { DublinCoreContexts } from "@twin.org/standards-dublin-core";
 import { addAllContextsToDocumentCache } from "@twin.org/standards-ld-contexts";
 import { DcatClasses, DcatContexts, type IDcatDataset } from "@twin.org/standards-w3c-dcat";
-import { OdrlContexts } from "@twin.org/standards-w3c-odrl";
+import { OdrlContexts, OdrlDataTypes } from "@twin.org/standards-w3c-odrl";
 import {
 	SynchronisedStorageTopics,
 	type ISyncItemSet,
@@ -58,12 +59,15 @@ function createTestDataset(id: string, publisher: string, title?: string): IDcat
 			"dcterms:format": "application/json",
 			"dcat:accessService": "https://example.com/services/test"
 		},
-		"odrl:hasPolicy": {
-			"@context": OdrlContexts.Context,
-			"@type": "Offer",
-			uid: `${id}:policy`,
-			permission: [{ action: "use" }]
-		}
+		"odrl:hasPolicy": [
+			{
+				"@context": OdrlContexts.Context,
+				"@type": "Offer",
+				uid: `${id}:policy`,
+				assigner: "https://example.com/participants/test-publisher",
+				permission: [{ action: "use" }]
+			}
+		]
 	} as unknown as IDcatDataset;
 }
 
@@ -71,6 +75,9 @@ describe("Synchronised Storage Integration", () => {
 	beforeAll(async () => {
 		initSchema();
 		DataspaceProtocolDataTypes.registerTypes();
+		JsonLdDataTypes.registerTypes();
+		OdrlDataTypes.registerTypes();
+
 		await addAllContextsToDocumentCache();
 	});
 

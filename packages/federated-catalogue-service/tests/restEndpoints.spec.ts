@@ -3,7 +3,11 @@
 import type { IHttpRequestContext } from "@twin.org/api-models";
 import { ContextIdStore } from "@twin.org/context";
 import { ComponentFactory, Is } from "@twin.org/core";
-import { JsonLdHelper, type IJsonLdContextDefinitionRoot } from "@twin.org/data-json-ld";
+import {
+	JsonLdDataTypes,
+	JsonLdHelper,
+	type IJsonLdContextDefinitionRoot
+} from "@twin.org/data-json-ld";
 import { MemoryEntityStorageConnector } from "@twin.org/entity-storage-connector-memory";
 import { EntityStorageConnectorFactory } from "@twin.org/entity-storage-models";
 import {
@@ -17,7 +21,8 @@ import {
 import { nameof } from "@twin.org/nameof";
 import {
 	DataspaceProtocolCatalogTypes,
-	DataspaceProtocolContexts
+	DataspaceProtocolContexts,
+	DataspaceProtocolDataTypes
 } from "@twin.org/standards-dataspace-protocol";
 import { DublinCoreContexts } from "@twin.org/standards-dublin-core";
 import { addAllContextsToDocumentCache } from "@twin.org/standards-ld-contexts";
@@ -27,7 +32,7 @@ import {
 	type DcatContextType,
 	type IDcatDataset
 } from "@twin.org/standards-w3c-dcat";
-import { OdrlContexts } from "@twin.org/standards-w3c-odrl";
+import { OdrlContexts, OdrlDataTypes } from "@twin.org/standards-w3c-odrl";
 import { HeaderTypes } from "@twin.org/web";
 import { afterAll, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import type { Dataset } from "../src/entities/dataset.js";
@@ -44,6 +49,9 @@ let service: FederatedCatalogueService;
 describe("Federated Catalogue REST Endpoints", () => {
 	beforeAll(async () => {
 		initSchema();
+		DataspaceProtocolDataTypes.registerTypes();
+		JsonLdDataTypes.registerTypes();
+		OdrlDataTypes.registerTypes();
 
 		// Register all JSON-LD contexts in document cache
 		await addAllContextsToDocumentCache();
@@ -126,6 +134,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 					"@context": OdrlContexts.Context,
 					"@type": "Offer",
 					uid: "urn:uuid:policy-context-test",
+					assigner: "https://example.com/participants/test-publisher",
 					permission: [{ action: "use" }]
 				}
 			} as unknown as IDcatDataset;
@@ -229,6 +238,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 					"@context": OdrlContexts.Context,
 					"@type": "Offer",
 					uid: "urn:uuid:policy-123",
+					assigner: "https://example.com/participants/test-publisher",
 					permission: [{ action: "use" }]
 				}
 			} as unknown as IDcatDataset;
@@ -403,6 +413,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 						"@context": OdrlContexts.Context,
 						"@type": "Offer",
 						uid: `urn:uuid:policy-link-${i}`,
+						assigner: "https://example.com/participants/test-publisher",
 						permission: [{ action: "use" }]
 					}
 				} as unknown as IDcatDataset;
@@ -772,6 +783,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 					"@context": OdrlContexts.Context,
 					"@type": "Offer",
 					uid: "urn:uuid:policy-success",
+					assigner: "https://example.com/participants/test-publisher",
 					permission: [{ action: "use" }]
 				}
 			} as unknown as IDcatDataset;
@@ -1057,6 +1069,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 					"@context": OdrlContexts.Context,
 					"@type": "Offer",
 					uid: "urn:uuid:policy-catalog-request",
+					assigner: "https://example.com/participants/test-publisher",
 					permission: [{ action: "use" }]
 				}
 			};

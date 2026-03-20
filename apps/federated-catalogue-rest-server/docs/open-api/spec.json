@@ -577,21 +577,25 @@
 													"@type": "Dataset",
 													"dcterms:title": "Energy Consumption Data",
 													"dcterms:description": "Historical energy consumption data",
-													"hasPolicy": {
-														"@id": "urn:uuid:policy-456",
-														"@type": "Offer",
-														"assigner": "did:example:data-provider-789"
-													},
-													"distribution": {
-														"@id": "urn:uuid:distribution-789",
-														"@type": "Distribution",
-														"format": "application/json",
-														"accessService": {
-															"@id": "urn:uuid:access-service-321",
-															"@type": "DataService",
-															"endpointURL": "https://example.com/data-access"
+													"hasPolicy": [
+														{
+															"@id": "urn:uuid:policy-456",
+															"@type": "Offer",
+															"assigner": "did:example:data-provider-789"
 														}
-													}
+													],
+													"distribution": [
+														{
+															"@id": "urn:uuid:distribution-789",
+															"@type": "Distribution",
+															"format": "application/json",
+															"accessService": {
+																"@id": "urn:uuid:access-service-321",
+																"@type": "DataService",
+																"endpointURL": "https://example.com/data-access"
+															}
+														}
+													]
 												}
 											]
 										}

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0.
 import { ContextIdKeys, ContextIdStore } from "@twin.org/context";
 import { ArrayHelper, GeneralError, GuardError, Is } from "@twin.org/core";
+import { JsonLdDataTypes } from "@twin.org/data-json-ld";
 import { MemoryEntityStorageConnector } from "@twin.org/entity-storage-connector-memory";
 import { EntityStorageConnectorFactory } from "@twin.org/entity-storage-models";
 import { FederatedCatalogueFilterFactory } from "@twin.org/federated-catalogue-models";
@@ -13,7 +14,7 @@ import {
 import { DublinCoreContexts } from "@twin.org/standards-dublin-core";
 import { addAllContextsToDocumentCache } from "@twin.org/standards-ld-contexts";
 import { DcatClasses, DcatContexts, type IDcatDataset } from "@twin.org/standards-w3c-dcat";
-import { OdrlContexts, PolicyType } from "@twin.org/standards-w3c-odrl";
+import { OdrlContexts, OdrlDataTypes, OdrlPolicyType } from "@twin.org/standards-w3c-odrl";
 import { afterAll, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import type { Dataset } from "../src/entities/dataset.js";
 import { initSchema } from "../src/schema.js";
@@ -26,6 +27,8 @@ describe("FederatedCatalogueService", () => {
 	beforeAll(async () => {
 		initSchema();
 		DataspaceProtocolDataTypes.registerTypes();
+		JsonLdDataTypes.registerTypes();
+		OdrlDataTypes.registerTypes();
 		await addAllContextsToDocumentCache();
 
 		datasetEntityStorage = new MemoryEntityStorageConnector<Dataset>({
@@ -110,8 +113,9 @@ describe("FederatedCatalogueService", () => {
 			},
 			"odrl:hasPolicy": {
 				"@context": OdrlContexts.Context,
-				"@type": PolicyType.Offer,
+				"@type": OdrlPolicyType.Offer,
 				uid: "https://example.com/policies/test-policy-1",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		};
@@ -176,6 +180,7 @@ describe("FederatedCatalogueService", () => {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/query-policy-1",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;
@@ -200,6 +205,7 @@ describe("FederatedCatalogueService", () => {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/query-policy-2",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;
@@ -270,6 +276,7 @@ describe("FederatedCatalogueService", () => {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/part-policy-1",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;
@@ -329,6 +336,7 @@ describe("FederatedCatalogueService", () => {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/mp-policy-1",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;
@@ -353,6 +361,7 @@ describe("FederatedCatalogueService", () => {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/mp-policy-2",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;
@@ -431,6 +440,7 @@ describe("FederatedCatalogueService", () => {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/own-policy",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;
@@ -455,6 +465,7 @@ describe("FederatedCatalogueService", () => {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/other-policy",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;
@@ -524,6 +535,7 @@ describe("FederatedCatalogueService", () => {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/filter-policy",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;
@@ -688,6 +700,7 @@ describe("FederatedCatalogueService", () => {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/cursor-policy-1",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;
@@ -712,6 +725,7 @@ describe("FederatedCatalogueService", () => {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/cursor-policy-2",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;
@@ -785,6 +799,7 @@ describe("FederatedCatalogueService", () => {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/no-cursor-policy",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;
@@ -873,6 +888,7 @@ describe("FederatedCatalogueService", () => {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/policy-1",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;
@@ -907,6 +923,7 @@ describe("FederatedCatalogueService", () => {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/minimal-policy",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;
@@ -946,6 +963,7 @@ describe("FederatedCatalogueService", () => {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/ds-protocol-policy",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;
@@ -978,6 +996,7 @@ describe("FederatedCatalogueService", () => {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/policy-1",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;
@@ -1029,6 +1048,7 @@ describe("FederatedCatalogueService", () => {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/policy-2",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;
@@ -1086,6 +1106,7 @@ describe("FederatedCatalogueService", () => {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/policy-3",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;
@@ -1122,6 +1143,7 @@ describe("FederatedCatalogueService", () => {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/policy-4",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;
@@ -1160,6 +1182,7 @@ describe("FederatedCatalogueService", () => {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/policy-1",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;
@@ -1192,6 +1215,7 @@ describe("FederatedCatalogueService", () => {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/policy-1",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;
@@ -1219,6 +1243,7 @@ describe("FederatedCatalogueService", () => {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/policy-1",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;
@@ -1256,6 +1281,7 @@ describe("FederatedCatalogueService", () => {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/ni-policy",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;
@@ -1293,6 +1319,7 @@ describe("FederatedCatalogueService", () => {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/unch-policy",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;
@@ -1340,6 +1367,7 @@ describe("FederatedCatalogueService", () => {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/ch-policy",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;
@@ -1402,6 +1430,7 @@ describe("FederatedCatalogueService", () => {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
 				uid: "https://example.com/policies/mu-policy",
+				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;

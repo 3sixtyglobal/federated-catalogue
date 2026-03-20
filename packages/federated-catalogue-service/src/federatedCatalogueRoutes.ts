@@ -20,7 +20,7 @@ import {
 	DataspaceProtocolContexts
 } from "@twin.org/standards-dataspace-protocol";
 import { DcatClasses, type DcatContextType } from "@twin.org/standards-w3c-dcat";
-import { PolicyType } from "@twin.org/standards-w3c-odrl";
+import { OdrlPolicyType } from "@twin.org/standards-w3c-odrl";
 import { HeaderHelper, HeaderTypes, HttpStatusCode } from "@twin.org/web";
 import { transformErrorToStatusCode, transformToCatalogError } from "./utils/catalogErrorUtils.js";
 
@@ -105,21 +105,25 @@ export function generateRestRoutesFederatedCatalogue(
 										"@type": "Dataset",
 										"dcterms:title": "Energy Consumption Data",
 										"dcterms:description": "Historical energy consumption data",
-										hasPolicy: {
-											"@id": "urn:uuid:policy-456",
-											"@type": PolicyType.Offer,
-											assigner: "did:example:data-provider-789"
-										},
-										distribution: {
-											"@id": "urn:uuid:distribution-789",
-											"@type": "Distribution",
-											format: "application/json",
-											accessService: {
-												"@id": "urn:uuid:access-service-321",
-												"@type": "DataService",
-												endpointURL: "https://example.com/data-access"
+										hasPolicy: [
+											{
+												"@id": "urn:uuid:policy-456",
+												"@type": OdrlPolicyType.Offer,
+												assigner: "did:example:data-provider-789"
 											}
-										}
+										],
+										distribution: [
+											{
+												"@id": "urn:uuid:distribution-789",
+												"@type": "Distribution",
+												format: "application/json",
+												accessService: {
+													"@id": "urn:uuid:access-service-321",
+													"@type": "DataService",
+													endpointURL: "https://example.com/data-access"
+												}
+											}
+										]
 									}
 								]
 							}
