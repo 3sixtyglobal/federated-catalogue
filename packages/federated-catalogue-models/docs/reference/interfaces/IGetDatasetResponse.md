@@ -6,7 +6,7 @@ The response payload for the get dataset method.
 
 ### statusCode? {#statuscode}
 
-> `optional` **statusCode**: `HttpStatusCode`
+> `optional` **statusCode?**: `HttpStatusCode`
 
 Response status code.
 

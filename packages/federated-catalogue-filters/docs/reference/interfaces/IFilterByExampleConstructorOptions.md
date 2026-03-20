@@ -6,6 +6,6 @@ Options for the FilterByExample constructor.
 
 ### datasetStorageConnectorType? {#datasetstorageconnectortype}
 
-> `optional` **datasetStorageConnectorType**: `string`
+> `optional` **datasetStorageConnectorType?**: `string`
 
 The type of the entity storage connector for datasets.

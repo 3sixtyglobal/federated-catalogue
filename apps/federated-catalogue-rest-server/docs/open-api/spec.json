@@ -112,7 +112,7 @@
 						"content": {
 							"image/x-icon": {
 								"schema": {
-									"$ref": "#/components/schemas/Uint8Array"
+									"$ref": "#/components/schemas/ServerFavIconResponse"
 								}
 							}
 						}
@@ -556,7 +556,7 @@
 				},
 				"responses": {
 					"200": {
-						"description": "The response payload for the catalog request method. Returns a DS Protocol compliant Catalog with participantId, or CatalogError if no datasets found.",
+						"description": "The response payload for the catalog request method.\nReturns a DS Protocol compliant Catalog with participantId, or CatalogError if no datasets found.",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -779,9 +779,10 @@
 						"$ref": "https://schema.twindev.org/dataspace-protocol/DataspaceProtocolCatalogError"
 					}
 				],
-				"description": "The response payload containing the DS Protocol compliant catalog with participantId, or a CatalogError if no datasets are found (404). Per DS Protocol: Single participant returns flat catalog, multiple participants return nested catalogs."
+				"description": "The response payload containing the DS Protocol compliant catalog with participantId,\nor a CatalogError if no datasets are found (404).\nPer DS Protocol: Single participant returns flat catalog, multiple participants return nested catalogs."
 			},
 			"Error": {
+				"description": "Model to describe serialized error.",
 				"type": "object",
 				"properties": {
 					"name": {
@@ -812,8 +813,7 @@
 				"required": [
 					"name",
 					"message"
-				],
-				"description": "Model to describe serialized error."
+				]
 			},
 			"GetDatasetResponse": {
 				"anyOf": [
@@ -827,6 +827,7 @@
 				"description": "The response payload containing the dataset or error."
 			},
 			"HealthComponentInfo": {
+				"description": "The health component information.",
 				"type": "object",
 				"properties": {
 					"name": {
@@ -844,10 +845,10 @@
 				"required": [
 					"name",
 					"status"
-				],
-				"description": "The health component information."
+				]
 			},
 			"HealthInfo": {
+				"description": "The status of the server.",
 				"type": "object",
 				"properties": {
 					"status": {
@@ -863,30 +864,34 @@
 				},
 				"required": [
 					"status"
-				],
-				"description": "The status of the server."
+				]
 			},
 			"HealthStatus": {
+				"description": "The health status of the component.",
 				"anyOf": [
 					{
-						"type": "string",
 						"const": "ok",
 						"description": "OK."
 					},
 					{
-						"type": "string",
 						"const": "warning",
 						"description": "Warning."
 					},
 					{
-						"type": "string",
 						"const": "error",
 						"description": "Error."
 					}
-				],
-				"description": "The health status of the component."
+				]
+			},
+			"ServerFavIconResponse": {
+				"type": "array",
+				"items": {
+					"type": "number"
+				},
+				"description": "The favicon for the server."
 			},
 			"ServerInfo": {
+				"description": "The information about the server.",
 				"type": "object",
 				"properties": {
 					"name": {
@@ -901,14 +906,16 @@
 				"required": [
 					"name",
 					"version"
-				],
-				"description": "The information about the server."
+				]
 			},
 			"ServerLivezResponse": {
-				"type": "string",
-				"enum": [
-					"ok",
-					"failed"
+				"anyOf": [
+					{
+						"const": "ok"
+					},
+					{
+						"const": "failed"
+					}
 				],
 				"description": "The livez information for the server."
 			},

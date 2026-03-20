@@ -89,7 +89,7 @@
 				},
 				"responses": {
 					"200": {
-						"description": "The response payload for the catalog request method. Returns a DS Protocol compliant Catalog with participantId, or CatalogError if no datasets found.",
+						"description": "The response payload for the catalog request method.\nReturns a DS Protocol compliant Catalog with participantId, or CatalogError if no datasets found.",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -312,9 +312,10 @@
 						"$ref": "https://schema.twindev.org/dataspace-protocol/DataspaceProtocolCatalogError"
 					}
 				],
-				"description": "The response payload containing the DS Protocol compliant catalog with participantId, or a CatalogError if no datasets are found (404). Per DS Protocol: Single participant returns flat catalog, multiple participants return nested catalogs."
+				"description": "The response payload containing the DS Protocol compliant catalog with participantId,\nor a CatalogError if no datasets are found (404).\nPer DS Protocol: Single participant returns flat catalog, multiple participants return nested catalogs."
 			},
 			"Error": {
+				"description": "Model to describe serialized error.",
 				"type": "object",
 				"properties": {
 					"name": {
@@ -345,8 +346,7 @@
 				"required": [
 					"name",
 					"message"
-				],
-				"description": "Model to describe serialized error."
+				]
 			},
 			"GetDatasetResponse": {
 				"anyOf": [

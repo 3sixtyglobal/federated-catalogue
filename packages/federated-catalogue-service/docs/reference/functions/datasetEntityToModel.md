@@ -9,9 +9,9 @@ Maps entity.id back to model["@id"] and strips sync-only fields.
 
 ### entity
 
-The dataset entity from storage (may be partial from query results).
+[`Dataset`](../classes/Dataset.md) \| `Partial`\<[`Dataset`](../classes/Dataset.md)\>
 
-[`Dataset`](../classes/Dataset.md) | `Partial`\<[`Dataset`](../classes/Dataset.md)\>
+The dataset entity from storage (may be partial from query results).
 
 ## Returns
 

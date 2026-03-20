@@ -7,19 +7,19 @@ Returns a DS Protocol compliant Catalog with participantId, or CatalogError if n
 
 ### headers? {#headers}
 
-> `optional` **headers**: `object`
+> `optional` **headers?**: `object`
 
 Optional headers including RFC 8288 Link header for pagination.
 
 #### link?
 
-> `optional` **link**: `string` \| `string`[]
+> `optional` **link?**: `string` \| `string`[]
 
 ***
 
 ### statusCode? {#statuscode}
 
-> `optional` **statusCode**: `HttpStatusCode`
+> `optional` **statusCode?**: `HttpStatusCode`
 
 Response status code.
 Per DS Protocol: Returns appropriate HTTP code (e.g., 404) when returning CatalogError.
