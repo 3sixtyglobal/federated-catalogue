@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.0.3-next.14](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-rest-server-v0.0.3-next.13...federated-catalogue-rest-server-v0.0.3-next.14) (2026-03-20)
+
+
+### Features
+
+* update to use new schemas ([41dae8d](https://github.com/twinfoundation/federated-catalogue/commit/41dae8d401dcea830b435aa35590e9c90a11eb1f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.0.3-next.13 to 0.0.3-next.14
+    * @twin.org/federated-catalogue-service bumped from 0.0.3-next.13 to 0.0.3-next.14
+
 ## [0.0.3-next.13](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-rest-server-v0.0.3-next.12...federated-catalogue-rest-server-v0.0.3-next.13) (2026-03-12)
 
 
