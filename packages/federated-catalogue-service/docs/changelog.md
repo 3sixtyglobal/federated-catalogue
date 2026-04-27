@@ -1,11 +1,11 @@
 # Changelog
 
-## [0.0.3-next.14](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.13...federated-catalogue-service-v0.0.3-next.14) (2026-03-20)
+## [0.0.3-next.14](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.13...federated-catalogue-service-v0.0.3-next.14) (2026-03-20)
 
 
 ### Features
 
-* update to use new schemas ([41dae8d](https://github.com/twinfoundation/federated-catalogue/commit/41dae8d401dcea830b435aa35590e9c90a11eb1f))
+* update to use new schemas ([41dae8d](https://github.com/iotaledger/twin-federated-catalogue/commit/41dae8d401dcea830b435aa35590e9c90a11eb1f))
 
 
 ### Dependencies
@@ -14,12 +14,12 @@
   * dependencies
     * @twin.org/federated-catalogue-models bumped from 0.0.3-next.13 to 0.0.3-next.14
 
-## [0.0.3-next.13](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.12...federated-catalogue-service-v0.0.3-next.13) (2026-03-12)
+## [0.0.3-next.13](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.12...federated-catalogue-service-v0.0.3-next.13) (2026-03-12)
 
 
 ### Features
 
-* update DataspaceProtocolHelper.validate usage ([49eda69](https://github.com/twinfoundation/federated-catalogue/commit/49eda69073d0ef4cd88c0e01f5eee8a78e4195e4))
+* update DataspaceProtocolHelper.validate usage ([49eda69](https://github.com/iotaledger/twin-federated-catalogue/commit/49eda69073d0ef4cd88c0e01f5eee8a78e4195e4))
 
 
 ### Dependencies
@@ -28,12 +28,12 @@
   * dependencies
     * @twin.org/federated-catalogue-models bumped from 0.0.3-next.12 to 0.0.3-next.13
 
-## [0.0.3-next.12](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.11...federated-catalogue-service-v0.0.3-next.12) (2026-03-06)
+## [0.0.3-next.12](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.11...federated-catalogue-service-v0.0.3-next.12) (2026-03-06)
 
 
 ### Features
 
-* add [@id](https://github.com/id) to policy example in federated catalogue route definition ([#58](https://github.com/twinfoundation/federated-catalogue/issues/58)) ([c854f16](https://github.com/twinfoundation/federated-catalogue/commit/c854f16eac91d23468134bb46e8a2c7a74e854af))
+* add [@id](https://github.com/id) to policy example in federated catalogue route definition ([#58](https://github.com/iotaledger/twin-federated-catalogue/issues/58)) ([c854f16](https://github.com/iotaledger/twin-federated-catalogue/commit/c854f16eac91d23468134bb46e8a2c7a74e854af))
 
 
 ### Dependencies
@@ -42,12 +42,12 @@
   * dependencies
     * @twin.org/federated-catalogue-models bumped from 0.0.3-next.11 to 0.0.3-next.12
 
-## [0.0.3-next.11](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.10...federated-catalogue-service-v0.0.3-next.11) (2026-03-05)
+## [0.0.3-next.11](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.10...federated-catalogue-service-v0.0.3-next.11) (2026-03-05)
 
 
 ### Bug Fixes
 
-* consistent naming of entity storage component in config ([1c1cb27](https://github.com/twinfoundation/federated-catalogue/commit/1c1cb274c5bca8cbe5f1da71b3dd4ddf52487001))
+* consistent naming of entity storage component in config ([1c1cb27](https://github.com/iotaledger/twin-federated-catalogue/commit/1c1cb274c5bca8cbe5f1da71b3dd4ddf52487001))
 
 
 ### Dependencies
@@ -56,12 +56,12 @@
   * dependencies
     * @twin.org/federated-catalogue-models bumped from 0.0.3-next.10 to 0.0.3-next.11
 
-## [0.0.3-next.10](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.9...federated-catalogue-service-v0.0.3-next.10) (2026-02-25)
+## [0.0.3-next.10](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.9...federated-catalogue-service-v0.0.3-next.10) (2026-02-25)
 
 
 ### Features
 
-* update json-ld patterns ([172aff0](https://github.com/twinfoundation/federated-catalogue/commit/172aff07d0f0b780f72d1be3a4896bbf12f6173a))
+* update json-ld patterns ([172aff0](https://github.com/iotaledger/twin-federated-catalogue/commit/172aff07d0f0b780f72d1be3a4896bbf12f6173a))
 
 
 ### Dependencies
@@ -70,12 +70,12 @@
   * dependencies
     * @twin.org/federated-catalogue-models bumped from 0.0.3-next.9 to 0.0.3-next.10
 
-## [0.0.3-next.9](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.8...federated-catalogue-service-v0.0.3-next.9) (2026-02-12)
+## [0.0.3-next.9](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.8...federated-catalogue-service-v0.0.3-next.9) (2026-02-12)
 
 
 ### Features
 
-* integrate synchronised storage with federated catalogue ([#53](https://github.com/twinfoundation/federated-catalogue/issues/53)) ([d1cdf06](https://github.com/twinfoundation/federated-catalogue/commit/d1cdf066adff8fb2266ccaaebcf57da391e03d3f))
+* integrate synchronised storage with federated catalogue ([#53](https://github.com/iotaledger/twin-federated-catalogue/issues/53)) ([d1cdf06](https://github.com/iotaledger/twin-federated-catalogue/commit/d1cdf066adff8fb2266ccaaebcf57da391e03d3f))
 
 
 ### Dependencies
@@ -84,12 +84,12 @@
   * dependencies
     * @twin.org/federated-catalogue-models bumped from 0.0.3-next.8 to 0.0.3-next.9
 
-## [0.0.3-next.8](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.7...federated-catalogue-service-v0.0.3-next.8) (2026-01-26)
+## [0.0.3-next.8](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.7...federated-catalogue-service-v0.0.3-next.8) (2026-01-26)
 
 
 ### Features
 
-* use new hosting url for cursor links ([e42c934](https://github.com/twinfoundation/federated-catalogue/commit/e42c934b9c8748ec5bdd4803c1cdc05c82ccace8))
+* use new hosting url for cursor links ([e42c934](https://github.com/iotaledger/twin-federated-catalogue/commit/e42c934b9c8748ec5bdd4803c1cdc05c82ccace8))
 
 
 ### Dependencies
@@ -98,12 +98,12 @@
   * dependencies
     * @twin.org/federated-catalogue-models bumped from 0.0.3-next.7 to 0.0.3-next.8
 
-## [0.0.3-next.7](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.6...federated-catalogue-service-v0.0.3-next.7) (2026-01-22)
+## [0.0.3-next.7](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.6...federated-catalogue-service-v0.0.3-next.7) (2026-01-22)
 
 
 ### Bug Fixes
 
-* context usage ([cd51790](https://github.com/twinfoundation/federated-catalogue/commit/cd51790ef97e14d21e89ef668b98477c163856bb))
+* context usage ([cd51790](https://github.com/iotaledger/twin-federated-catalogue/commit/cd51790ef97e14d21e89ef668b98477c163856bb))
 
 
 ### Dependencies
@@ -112,12 +112,12 @@
   * dependencies
     * @twin.org/federated-catalogue-models bumped from 0.0.3-next.6 to 0.0.3-next.7
 
-## [0.0.3-next.6](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.5...federated-catalogue-service-v0.0.3-next.6) (2026-01-20)
+## [0.0.3-next.6](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.5...federated-catalogue-service-v0.0.3-next.6) (2026-01-20)
 
 
 ### Bug Fixes
 
-* transform GuardError to CatalogError for DS Protocol compliance ([#49](https://github.com/twinfoundation/federated-catalogue/issues/49)) ([d0f1090](https://github.com/twinfoundation/federated-catalogue/commit/d0f10900c251b9abc18e58c90562c393c3265727))
+* transform GuardError to CatalogError for DS Protocol compliance ([#49](https://github.com/iotaledger/twin-federated-catalogue/issues/49)) ([d0f1090](https://github.com/iotaledger/twin-federated-catalogue/commit/d0f10900c251b9abc18e58c90562c393c3265727))
 
 
 ### Dependencies
@@ -126,13 +126,13 @@
   * dependencies
     * @twin.org/federated-catalogue-models bumped from 0.0.3-next.5 to 0.0.3-next.6
 
-## [0.0.3-next.5](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.4...federated-catalogue-service-v0.0.3-next.5) (2026-01-15)
+## [0.0.3-next.5](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.4...federated-catalogue-service-v0.0.3-next.5) (2026-01-15)
 
 
 ### Bug Fixes
 
-* linting ([df034b1](https://github.com/twinfoundation/federated-catalogue/commit/df034b11e78fed68f64dfe9406809d2365acdfb8))
-* pagination and ld context ([#45](https://github.com/twinfoundation/federated-catalogue/issues/45)) ([e36f096](https://github.com/twinfoundation/federated-catalogue/commit/e36f096aa4fdc61eb5b929a0fc4403247dbd41ce))
+* linting ([df034b1](https://github.com/iotaledger/twin-federated-catalogue/commit/df034b11e78fed68f64dfe9406809d2365acdfb8))
+* pagination and ld context ([#45](https://github.com/iotaledger/twin-federated-catalogue/issues/45)) ([e36f096](https://github.com/iotaledger/twin-federated-catalogue/commit/e36f096aa4fdc61eb5b929a0fc4403247dbd41ce))
 
 
 ### Dependencies
@@ -141,12 +141,12 @@
   * dependencies
     * @twin.org/federated-catalogue-models bumped from 0.0.3-next.4 to 0.0.3-next.5
 
-## [0.0.3-next.4](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.3...federated-catalogue-service-v0.0.3-next.4) (2026-01-06)
+## [0.0.3-next.4](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.3...federated-catalogue-service-v0.0.3-next.4) (2026-01-06)
 
 
 ### Features
 
-* updates standards dependencies ([62f5d9c](https://github.com/twinfoundation/federated-catalogue/commit/62f5d9c6180bc27497ac43624ffd714e7ce65ce6))
+* updates standards dependencies ([62f5d9c](https://github.com/iotaledger/twin-federated-catalogue/commit/62f5d9c6180bc27497ac43624ffd714e7ce65ce6))
 
 
 ### Dependencies
@@ -155,12 +155,12 @@
   * dependencies
     * @twin.org/federated-catalogue-models bumped from 0.0.3-next.3 to 0.0.3-next.4
 
-## [0.0.3-next.3](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.2...federated-catalogue-service-v0.0.3-next.3) (2025-11-28)
+## [0.0.3-next.3](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.2...federated-catalogue-service-v0.0.3-next.3) (2025-11-28)
 
 
 ### Bug Fixes
 
-* service logging constructor type ([35e63cc](https://github.com/twinfoundation/federated-catalogue/commit/35e63cc6a46769b32c817f43157233d9f05346da))
+* service logging constructor type ([35e63cc](https://github.com/iotaledger/twin-federated-catalogue/commit/35e63cc6a46769b32c817f43157233d9f05346da))
 
 
 ### Dependencies
@@ -169,12 +169,12 @@
   * dependencies
     * @twin.org/federated-catalogue-models bumped from 0.0.3-next.2 to 0.0.3-next.3
 
-## [0.0.3-next.2](https://github.com/twinfoundation/federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.1...federated-catalogue-service-v0.0.3-next.2) (2025-11-28)
+## [0.0.3-next.2](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.1...federated-catalogue-service-v0.0.3-next.2) (2025-11-28)
 
 
 ### Features
 
-* implement Dataspace Protocol federated catalogue ([#36](https://github.com/twinfoundation/federated-catalogue/issues/36)) ([4765aba](https://github.com/twinfoundation/federated-catalogue/commit/4765aba4485ef8ad61e7ec1affbf0e454d974d36))
+* implement Dataspace Protocol federated catalogue ([#36](https://github.com/iotaledger/twin-federated-catalogue/issues/36)) ([4765aba](https://github.com/iotaledger/twin-federated-catalogue/commit/4765aba4485ef8ad61e7ec1affbf0e454d974d36))
 
 
 ### Dependencies
