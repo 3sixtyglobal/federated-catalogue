@@ -4,7 +4,7 @@
 	"description": "Models which define the structure of the Federated Catalogue Service",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/twinfoundation/federated-catalogue.git",
+		"url": "git+https://github.com/iotaledger/federated-catalogue.git",
 		"directory": "packages/federated-catalogue-models"
 	},
 	"author": "cornel.filip@iota.org",
@@ -79,7 +79,7 @@
 		"schemas"
 	],
 	"bugs": {
-		"url": "git+https://github.com/twinfoundation/federated-catalogue/issues"
+		"url": "git+https://github.com/iotaledger/federated-catalogue/issues"
 	},
 	"homepage": "https://twindev.org"
 }

@@ -4,7 +4,7 @@
 	"description": "Federated Catalogue",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/twinfoundation/federated-catalogue.git"
+		"url": "git+https://github.com/iotaledger/federated-catalogue.git"
 	},
 	"author": "cornel.filip@iota.org",
 	"license": "Apache-2.0",
@@ -62,7 +62,7 @@
 	],
 	"type": "module",
 	"bugs": {
-		"url": "git+https://github.com/twinfoundation/federated-catalogue/issues"
+		"url": "git+https://github.com/iotaledger/federated-catalogue/issues"
 	},
 	"homepage": "https://twindev.org"
 }

@@ -12,7 +12,7 @@ services:
     # Use these properties for testing, otherwise you can comment them out
     network_mode: host
     extra_hosts:
-      - 'twinfoundation.github.io:127.0.0.1'
+      - 'iotaledger.github.io:127.0.0.1'
     volumes:
       - ./.local-data-docker:/usr/src/app/.local-data
       - './rootCA.pem:/usr/local/share/ca-certificates/rootCA.pem'
