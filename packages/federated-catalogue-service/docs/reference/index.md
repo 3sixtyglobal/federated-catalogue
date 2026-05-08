@@ -7,6 +7,7 @@
 
 ## Interfaces
 
+- [IFederatedCatalogueServiceConfig](interfaces/IFederatedCatalogueServiceConfig.md)
 - [IFederatedCatalogueServiceConstructorOptions](interfaces/IFederatedCatalogueServiceConstructorOptions.md)
 
 ## Variables

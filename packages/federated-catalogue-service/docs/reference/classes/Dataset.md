@@ -40,6 +40,14 @@ The date the entity was last modified (required for sync).
 
 ***
 
+### tenantId? {#tenantid}
+
+> `optional` **tenantId?**: `string`
+
+The tenant id of the publisher captured at write time.
+
+***
+
 ### @context {#context}
 
 > **@context**: `DcatContextType`

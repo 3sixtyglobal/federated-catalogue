@@ -20,6 +20,10 @@
 			"description": "Information endpoints for the REST server."
 		},
 		{
+			"name": "Health",
+			"description": "Health endpoints for the REST server."
+		},
+		{
 			"name": "Federated Catalogue",
 			"description": "Service providing Dataspace Protocol-compliant catalogue endpoints for dataset discovery and query."
 		}
@@ -27,33 +31,71 @@
 	"paths": {
 		"/": {
 			"get": {
-				"operationId": "serverRoot",
-				"summary": "Get the root text page",
+				"operationId": "serverHealth",
+				"summary": "Get the health for the server",
 				"tags": [
-					"Info"
+					"Health"
 				],
 				"responses": {
 					"200": {
-						"description": "The root text for the server.",
+						"description": "The health of the server.",
 						"content": {
-							"text/plain": {
+							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ServerRootResponse"
+									"$ref": "#/components/schemas/ServerHealthResponse"
 								},
 								"examples": {
-									"serverRootResponse": {
-										"summary": "The response for the root request.",
-										"value": "API Server - 1.0.0"
+									"healthResponseOK": {
+										"summary": "The response for the health request.",
+										"value": {
+											"status": "ok",
+											"components": [
+												{
+													"source": "Database",
+													"status": "ok"
+												},
+												{
+													"source": "Storage",
+													"status": "ok"
+												}
+											]
+										}
+									},
+									"healthResponseWarning": {
+										"summary": "The response for the health request with warnings.",
+										"value": {
+											"status": "warning",
+											"components": [
+												{
+													"source": "Database",
+													"status": "warning",
+													"description": "slowRunning"
+												},
+												{
+													"source": "Storage",
+													"status": "ok"
+												}
+											]
+										}
+									},
+									"healthResponseError": {
+										"summary": "The response for the health request with errors.",
+										"value": {
+											"status": "error",
+											"components": [
+												{
+													"source": "Database",
+													"status": "ok"
+												},
+												{
+													"source": "Storage",
+													"status": "error",
+													"description": "storageFull"
+												}
+											]
+										}
 									}
 								}
-							}
-						},
-						"headers": {
-							"content-type": {
-								"schema": {
-									"type": "string"
-								},
-								"description": "e.g. text/plain"
 							}
 						}
 					},
@@ -246,11 +288,11 @@
 								"examples": {
 									"livezResponseOK": {
 										"summary": "The response for the liveness request.",
-										"value": "ok"
+										"value": "alive"
 									},
 									"livezResponseFailure": {
 										"summary": "The response for the liveness request with errors.",
-										"value": "failed"
+										"value": "dead"
 									}
 								}
 							}
@@ -306,73 +348,39 @@
 				}
 			}
 		},
-		"/health": {
+		"/readyz": {
 			"get": {
-				"operationId": "serverHealth",
-				"summary": "Get the health for the server",
+				"operationId": "serverReadyz",
+				"summary": "Get the readyz status for the server",
 				"tags": [
 					"Info"
 				],
 				"responses": {
 					"200": {
-						"description": "The health of the server.",
+						"description": "The readyz of the server.",
 						"content": {
-							"application/json": {
+							"text/plain": {
 								"schema": {
-									"$ref": "#/components/schemas/HealthInfo"
+									"$ref": "#/components/schemas/ServerReadyzResponse"
 								},
 								"examples": {
-									"healthResponseOK": {
-										"summary": "The response for the health request.",
-										"value": {
-											"status": "ok",
-											"components": [
-												{
-													"name": "Database",
-													"status": "ok"
-												},
-												{
-													"name": "Storage",
-													"status": "ok"
-												}
-											]
-										}
+									"readyzResponseOK": {
+										"summary": "The response for the readiness request.",
+										"value": "ready"
 									},
-									"healthResponseWarning": {
-										"summary": "The response for the health request with warnings.",
-										"value": {
-											"status": "warning",
-											"components": [
-												{
-													"name": "Database",
-													"status": "warning",
-													"details": "The database is running slow."
-												},
-												{
-													"name": "Storage",
-													"status": "ok"
-												}
-											]
-										}
-									},
-									"healthResponseError": {
-										"summary": "The response for the health request with errors.",
-										"value": {
-											"status": "error",
-											"components": [
-												{
-													"name": "Database",
-													"status": "ok"
-												},
-												{
-													"name": "Storage",
-													"status": "error",
-													"details": "The storage is full."
-												}
-											]
-										}
+									"readyzResponseFailure": {
+										"summary": "The response for the readiness request with errors.",
+										"value": "not ready"
 									}
 								}
+							}
+						},
+						"headers": {
+							"content-type": {
+								"schema": {
+									"type": "string"
+								},
+								"description": "e.g. text/plain"
 							}
 						}
 					},
@@ -795,7 +803,7 @@
 					},
 					"message": {
 						"type": "string",
-						"description": "The message for the error."
+						"description": "The message for the error as an i18n key."
 					},
 					"source": {
 						"type": "string",
@@ -830,43 +838,40 @@
 				],
 				"description": "The response payload containing the dataset or error."
 			},
-			"HealthComponentInfo": {
-				"description": "The health component information.",
+			"Health": {
+				"description": "Provides health information for a component.",
 				"type": "object",
 				"properties": {
-					"name": {
+					"source": {
 						"type": "string",
-						"description": "The name of the component."
+						"description": "The source of the health information."
+					},
+					"description": {
+						"type": "string",
+						"description": "The description of the component as an i18n key."
 					},
 					"status": {
 						"$ref": "#/components/schemas/HealthStatus"
 					},
-					"details": {
+					"message": {
 						"type": "string",
-						"description": "The details for the status."
-					}
-				},
-				"required": [
-					"name",
-					"status"
-				]
-			},
-			"HealthInfo": {
-				"description": "The status of the server.",
-				"type": "object",
-				"properties": {
-					"status": {
-						"$ref": "#/components/schemas/HealthStatus"
+						"description": "The message for the status if there are further details to provide as an i18n key."
 					},
-					"components": {
+					"data": {
+						"type": "object",
+						"additionalProperties": {},
+						"description": "Data to substitute in the i18n key for the message."
+					},
+					"grouped": {
 						"type": "array",
 						"items": {
-							"$ref": "#/components/schemas/HealthComponentInfo"
+							"$ref": "#/components/schemas/Health"
 						},
-						"description": "The status of the components."
+						"description": "The grouped child components, if any."
 					}
 				},
 				"required": [
+					"source",
 					"status"
 				]
 			},
@@ -894,6 +899,25 @@
 				},
 				"description": "The favicon for the server."
 			},
+			"ServerHealthResponse": {
+				"type": "object",
+				"properties": {
+					"status": {
+						"$ref": "#/components/schemas/HealthStatus"
+					},
+					"components": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/Health"
+						}
+					}
+				},
+				"required": [
+					"status",
+					"components"
+				],
+				"description": "The health for the server."
+			},
 			"ServerInfo": {
 				"description": "The information about the server.",
 				"type": "object",
@@ -915,17 +939,24 @@
 			"ServerLivezResponse": {
 				"anyOf": [
 					{
-						"const": "ok"
+						"const": "alive"
 					},
 					{
-						"const": "failed"
+						"const": "dead"
 					}
 				],
 				"description": "The livez information for the server."
 			},
-			"ServerRootResponse": {
-				"type": "string",
-				"description": "The root text for the server."
+			"ServerReadyzResponse": {
+				"anyOf": [
+					{
+						"const": "ready"
+					},
+					{
+						"const": "not ready"
+					}
+				],
+				"description": "The readyz information for the server."
 			},
 			"ServerSpecResponse": {
 				"description": "The spec for the server."
