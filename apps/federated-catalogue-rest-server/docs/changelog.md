@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.0.3-next.15](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-rest-server-v0.0.3-next.14...federated-catalogue-rest-server-v0.0.3-next.15) (2026-05-08)
+
+
+### Features
+
+* publish encrypted `twin:tenantToken` per dataset ([#64](https://github.com/iotaledger/twin-federated-catalogue/issues/64)) ([77e4517](https://github.com/iotaledger/twin-federated-catalogue/commit/77e451782ad8b227b91b4cc8a97bdd6eb90881b6))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.0.3-next.14 to 0.0.3-next.15
+    * @twin.org/federated-catalogue-service bumped from 0.0.3-next.14 to 0.0.3-next.15
+
 ## [0.0.3-next.14](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-rest-server-v0.0.3-next.13...federated-catalogue-rest-server-v0.0.3-next.14) (2026-03-20)
 
 
