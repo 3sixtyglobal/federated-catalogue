@@ -94,6 +94,13 @@ describe("Synchronised Storage Integration", () => {
 		eventBusService = new EventBusService({ eventBusConnectorType: "local" });
 		ComponentFactory.register("event-bus", () => eventBusService);
 
+		// Register a mock IUrlTransformerComponent that the service resolves at construct time.
+		ComponentFactory.register("url-transformer", () => ({
+			className: () => "MockUrlTransformerComponent",
+			addEncryptedQueryParamToUrl: async (url: string, id: string, value: string) =>
+				`${url}${url.includes("?") ? "&" : "?"}x-enc-${id}=${value}`
+		}));
+
 		// Create memory storage connectors for each node
 		memoryStorageA = new MemoryEntityStorageConnector<Dataset>({
 			entitySchema: nameof<Dataset>()

@@ -29,6 +29,12 @@ export class Dataset {
 	public dateModified!: string;
 
 	/**
+	 * The tenant id of the publisher captured at write time.
+	 */
+	@property({ type: "string", optional: true })
+	public tenantId?: string;
+
+	/**
 	 * The JSON-LD context for the dataset.
 	 */
 	@property({ type: "object" })

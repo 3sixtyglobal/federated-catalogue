@@ -69,6 +69,12 @@ describe("Federated Catalogue REST Endpoints", () => {
 			className: () => "HostingComponent",
 			buildPublicUrl: async (url: string) => url
 		}));
+
+		ComponentFactory.register("url-transformer", () => ({
+			className: () => "MockUrlTransformerComponent",
+			addEncryptedQueryParamToUrl: async (url: string, id: string, value: string) =>
+				`${url}${url.includes("?") ? "&" : "?"}x-enc-${id}=${value}`
+		}));
 	});
 
 	beforeEach(async () => {

@@ -1,7 +1,9 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
+import type { IUrlTransformerComponent } from "@twin.org/api-models";
 import { ContextIdHelper, ContextIdKeys, ContextIdStore } from "@twin.org/context";
 import {
+	ArrayHelper,
 	BaseError,
 	ComponentFactory,
 	Converter,
@@ -26,6 +28,7 @@ import { FederatedCatalogueFilterFactory } from "@twin.org/federated-catalogue-m
 import type { ILoggingComponent } from "@twin.org/logging-models";
 import { nameof } from "@twin.org/nameof";
 import {
+	DataspaceProtocolCatalogTypes,
 	DataspaceProtocolContexts,
 	DataspaceProtocolDataTypes,
 	DataspaceProtocolHelper,
@@ -69,6 +72,12 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	private readonly _datasetStorage: IEntityStorageConnector<Dataset>;
 
 	/**
+	 * The URL transformer component for encrypting tenant routing tokens into distribution URLs.
+	 * @internal
+	 */
+	private readonly _urlTransformerComponent: IUrlTransformerComponent;
+
+	/**
 	 * The node identity.
 	 * @internal
 	 */
@@ -85,6 +94,10 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 
 		this._datasetStorage = EntityStorageConnectorFactory.get(
 			options?.datasetEntityStorageType ?? "dataset"
+		);
+
+		this._urlTransformerComponent = ComponentFactory.get<IUrlTransformerComponent>(
+			options?.urlTransformerComponentType ?? "url-transformer"
 		);
 
 		// Register JSON-LD redirects for offline processing
@@ -166,13 +179,13 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		Guards.stringValue(FederatedCatalogueService.CLASS_NAME, nameof(dataSetId), dataSetId);
 
 		// Set @id if it was derived from dcterms:identifier
-		if (!dataSet["@id"] && dataSet["dcterms:identifier"]) {
+		if (Is.empty(dataSet["@id"]) && !Is.empty(dataSet["dcterms:identifier"])) {
 			dataSet["@id"] = dataSetId;
 		}
 
 		// Validate @id is a valid URI (URN or URL) per DS Protocol
-		const isValidUrn = Urn.tryParseExact(dataSetId) !== undefined;
-		const isValidUrl = Url.tryParseExact(dataSetId) !== undefined;
+		const isValidUrn = !Is.empty(Urn.tryParseExact(dataSetId));
+		const isValidUrl = !Is.empty(Url.tryParseExact(dataSetId));
 		if (!isValidUrn && !isValidUrl) {
 			throw new GeneralError(FederatedCatalogueService.CLASS_NAME, "datasetIdInvalidUri", {
 				dataSetId
@@ -185,7 +198,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		// Validate dcterms:publisher exists (required for multi-participant catalog)
 		// The publisher is used to derive participantId when returning catalog query results
 		const publisher = dataSet["dcterms:publisher"];
-		if (!publisher) {
+		if (Is.empty(publisher)) {
 			throw new GeneralError(FederatedCatalogueService.CLASS_NAME, "datasetMissingPublisher", {
 				dataSetId
 			});
@@ -218,6 +231,16 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			this._nodeId ?? "",
 			new Date().toISOString()
 		);
+
+		// Capture the publishing tenant from the current request context.
+		const setContextIds = await ContextIdStore.getContextIds();
+		const setTenantId = setContextIds?.[ContextIdKeys.Tenant];
+		if (Is.stringValue(setTenantId)) {
+			datasetEntity.tenantId = setTenantId;
+
+			// Bake the publishing tenant token into distribution accessService URLs
+			await this.bakeTenantTokenIntoDistributions(datasetEntity, setTenantId);
+		}
 
 		// Skip update if entity content hasn't changed to avoid unnecessary sync
 		const existingEntity = await this._datasetStorage.get(dataSetId);
@@ -304,7 +327,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 				throw new GeneralError(FederatedCatalogueService.CLASS_NAME, "filterMustBeArray");
 			}
 
-			if (!filter || filter.length === 0) {
+			if (!Is.arrayValue(filter)) {
 				const result = await this._datasetStorage.query();
 				datasets = result.entities.map(entity => datasetEntityToModel(entity));
 			} else if (filter.length > 1) {
@@ -342,7 +365,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			});
 
 			// Return CatalogError 404 when no datasets exist
-			if (datasets.length === 0) {
+			if (!Is.arrayValue(datasets)) {
 				throw new NotFoundError(FederatedCatalogueService.CLASS_NAME, "noDatasetsFound");
 			}
 
@@ -373,14 +396,14 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 
 			let catalog: IDataspaceProtocolCatalog;
 
-			if (otherParticipantIds.length === 0) {
+			if (!Is.arrayValue(otherParticipantIds)) {
 				// Only own datasets (or all datasets belong to requesting participant)
 				const catalogId = this.generateCatalogId(ownDatasets, requestingParticipantId);
 
 				catalog = {
 					"@context": [DataspaceProtocolContexts.Context],
 					"@id": catalogId,
-					"@type": "Catalog",
+					"@type": DataspaceProtocolCatalogTypes.Catalog,
 					participantId: requestingParticipantId,
 					dataset: ownDatasets as unknown as IDataspaceProtocolCatalog["dataset"]
 				};
@@ -395,7 +418,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 					const subCatalog: IDataspaceProtocolCatalog = {
 						"@context": [DataspaceProtocolContexts.Context],
 						"@id": subCatalogId,
-						"@type": "Catalog",
+						"@type": DataspaceProtocolCatalogTypes.Catalog,
 						participantId,
 						dataset: participantDatasets as unknown as IDataspaceProtocolCatalog["dataset"]
 					};
@@ -409,7 +432,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 				catalog = {
 					"@context": [DataspaceProtocolContexts.Context],
 					"@id": rootCatalogId,
-					"@type": "Catalog",
+					"@type": DataspaceProtocolCatalogTypes.Catalog,
 					participantId: requestingParticipantId,
 					dataset: ownDatasets as unknown as IDataspaceProtocolCatalog["dataset"],
 					catalog: nestedCatalogs
@@ -422,8 +445,11 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 				JsonLdHelper.toNodeObject(catalog)
 			);
 
+			const structuredResult: IDataspaceProtocolCatalog =
+				JsonLdHelper.toStructuredObject(normalizedCatalog);
+
 			return {
-				result: JsonLdHelper.toStructuredObject(normalizedCatalog),
+				result: structuredResult,
 				cursor: resultCursor
 			};
 		} catch (error) {
@@ -462,8 +488,8 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		const publisher = dataset["dcterms:publisher"];
 
 		// Handle case where publisher is an object with @id (IFoafAgent)
-		if (publisher && typeof publisher === "object") {
-			const publisherId = (publisher as { "@id"?: string })["@id"];
+		if (Is.object<{ "@id"?: string }>(publisher)) {
+			const publisherId = publisher["@id"];
 			return Is.stringValue(publisherId) ? publisherId : undefined;
 		}
 
@@ -471,10 +497,33 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	}
 
 	/**
+	 * Bake the publishing tenant token into each distribution's accessService URL.
+	 * @param entity The dataset entity to modify in place.
+	 * @param tenantId The publishing tenant id to bake.
+	 * @internal
+	 */
+	private async bakeTenantTokenIntoDistributions(entity: Dataset, tenantId: string): Promise<void> {
+		// Storage uses the prefixed JSON-LD key "dcat:accessService" (not the unprefixed
+		// "accessService" that appears in compacted query responses).
+		const distributions = ArrayHelper.fromObjectOrArray(entity["dcat:distribution"]) ?? [];
+		for (const dist of distributions) {
+			if (Is.stringValue(dist?.["dcat:accessService"])) {
+				dist["dcat:accessService"] =
+					await this._urlTransformerComponent.addEncryptedQueryParamToUrl(
+						dist["dcat:accessService"],
+						"tenant",
+						tenantId
+					);
+			}
+		}
+	}
+
+	/**
 	 * Generate a deterministic catalog ID using canonical hash.
 	 * @param datasets The datasets to include in the hash.
 	 * @param participantId The participant ID to include in the hash.
 	 * @returns A URN-formatted catalog ID.
+	 * @internal
 	 */
 	private generateCatalogId(datasets: IDcatDataset[], participantId: string): string {
 		const datasetIds = datasets
@@ -483,7 +532,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			.sort();
 
 		const canonicalContent = JsonHelper.canonicalize({
-			"@type": "Catalog",
+			"@type": DataspaceProtocolCatalogTypes.Catalog,
 			participantId,
 			datasets: datasetIds
 		});

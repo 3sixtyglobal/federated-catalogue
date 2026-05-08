@@ -1,7 +1,7 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 import { ContextIdKeys, ContextIdStore } from "@twin.org/context";
-import { ArrayHelper, GeneralError, GuardError, Is } from "@twin.org/core";
+import { ArrayHelper, ComponentFactory, GeneralError, GuardError, Is } from "@twin.org/core";
 import { JsonLdDataTypes } from "@twin.org/data-json-ld";
 import { MemoryEntityStorageConnector } from "@twin.org/entity-storage-connector-memory";
 import { EntityStorageConnectorFactory } from "@twin.org/entity-storage-models";
@@ -36,6 +36,13 @@ describe("FederatedCatalogueService", () => {
 		});
 
 		EntityStorageConnectorFactory.register("dataset", () => datasetEntityStorage);
+
+		// Register a mock IUrlTransformerComponent that the service resolves at construct time.
+		ComponentFactory.register("url-transformer", () => ({
+			className: () => "MockUrlTransformerComponent",
+			addEncryptedQueryParamToUrl: async (url: string, id: string, value: string) =>
+				`${url}${url.includes("?") ? "&" : "?"}x-enc-${id}=${value}`
+		}));
 
 		// Mock ContextIdStore.getContextIds to return undefined (anonymous) by default
 		ContextIdStore.getContextIds = vi.fn().mockResolvedValue(undefined);
