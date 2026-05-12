@@ -15,7 +15,6 @@ import { DublinCoreContexts } from "@twin.org/standards-dublin-core";
 import { addAllContextsToDocumentCache } from "@twin.org/standards-ld-contexts";
 import { DcatClasses, DcatContexts, type IDcatDataset } from "@twin.org/standards-w3c-dcat";
 import { OdrlContexts, OdrlDataTypes, OdrlPolicyType } from "@twin.org/standards-w3c-odrl";
-import { afterAll, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import type { Dataset } from "../src/entities/dataset.js";
 import { initSchema } from "../src/schema.js";
 import { FederatedCatalogueService } from "../src/services/federatedCatalogueService.js";
@@ -293,9 +292,7 @@ describe("FederatedCatalogueService", () => {
 		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
 			className: () => "FilterByExample",
 			query: async filter => ({
-				datasets: [
-					datasetModelToEntity(dataset, "", new Date().toISOString()) as unknown as IDcatDataset
-				],
+				datasets: [datasetModelToEntity(dataset, "", new Date().toISOString())],
 				cursor: undefined
 			}),
 			createIndex: async dataSet => ({})
@@ -552,9 +549,7 @@ describe("FederatedCatalogueService", () => {
 		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
 			className: () => "FilterByExample",
 			query: async filter => ({
-				datasets: [
-					datasetModelToEntity(dataset, "", new Date().toISOString()) as unknown as IDcatDataset
-				],
+				datasets: [datasetModelToEntity(dataset, "", new Date().toISOString())],
 				cursor: undefined
 			}),
 			createIndex: async dataSet => ({})
@@ -817,9 +812,7 @@ describe("FederatedCatalogueService", () => {
 		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
 			className: () => "FilterByExample",
 			query: async filter => ({
-				datasets: [
-					datasetModelToEntity(dataset, "", new Date().toISOString()) as unknown as IDcatDataset
-				],
+				datasets: [datasetModelToEntity(dataset, "", new Date().toISOString())],
 				cursor: undefined
 			}),
 			createIndex: async dataSet => ({})

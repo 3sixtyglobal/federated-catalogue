@@ -1,6 +1,5 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import { describe, expect, test } from "vitest";
 import { FederatedCatalogueRestClient } from "../src/federatedCatalogueRestClient.js";
 
 describe("FederatedCatalogueRestClient", () => {

@@ -7,7 +7,6 @@ import { type Dataset, initSchema } from "@twin.org/federated-catalogue-service"
 import { nameof } from "@twin.org/nameof";
 import { DublinCoreContexts } from "@twin.org/standards-dublin-core";
 import { DcatClasses, DcatContexts } from "@twin.org/standards-w3c-dcat";
-import { describe, expect, test, beforeAll, beforeEach } from "vitest";
 import { FilterByExample } from "../src/filterByExample.js";
 
 let datasetEntityStorage: MemoryEntityStorageConnector<Dataset>;
@@ -69,8 +68,8 @@ describe("FilterByExample", () => {
 			"dcterms:title": "Dataset 2"
 		};
 
-		await datasetEntityStorage.set(dataset1 as unknown as Dataset);
-		await datasetEntityStorage.set(dataset2 as unknown as Dataset);
+		await datasetEntityStorage.set(dataset1);
+		await datasetEntityStorage.set(dataset2);
 
 		const result = await filter.query({});
 
@@ -108,8 +107,8 @@ describe("FilterByExample", () => {
 			"dcterms:identifier": "TRAFFIC-001"
 		};
 
-		await datasetEntityStorage.set(dataset1 as unknown as Dataset);
-		await datasetEntityStorage.set(dataset2 as unknown as Dataset);
+		await datasetEntityStorage.set(dataset1);
+		await datasetEntityStorage.set(dataset2);
 
 		const result = await filter.query({
 			"dcterms:identifier": "WEATHER-001"
@@ -149,8 +148,8 @@ describe("FilterByExample", () => {
 			"dcterms:issued": "2024-02-01"
 		};
 
-		await datasetEntityStorage.set(dataset1 as unknown as Dataset);
-		await datasetEntityStorage.set(dataset2 as unknown as Dataset);
+		await datasetEntityStorage.set(dataset1);
+		await datasetEntityStorage.set(dataset2);
 
 		const result = await filter.query({
 			"dcterms:title": "Weather Data",
@@ -195,8 +194,8 @@ describe("FilterByExample", () => {
 		};
 
 		// Store datasets
-		await datasetEntityStorage.set(dataset1 as unknown as Dataset);
-		await datasetEntityStorage.set(dataset2 as unknown as Dataset);
+		await datasetEntityStorage.set(dataset1);
+		await datasetEntityStorage.set(dataset2);
 
 		// Query with nested object - Note: nested object matching has limitations
 		// with database-level queries. This test now verifies the query doesn't error,
@@ -244,8 +243,8 @@ describe("FilterByExample", () => {
 		};
 
 		// Store datasets
-		await datasetEntityStorage.set(dataset1 as unknown as Dataset);
-		await datasetEntityStorage.set(dataset2 as unknown as Dataset);
+		await datasetEntityStorage.set(dataset1);
+		await datasetEntityStorage.set(dataset2);
 
 		// Query with array - Note: array matching with ComparisonOperator.In has limitations
 		// in MemoryEntityStorageConnector. The IN operator checks if the stored value
@@ -276,7 +275,7 @@ describe("FilterByExample", () => {
 			"dcterms:identifier": "DATASET-001"
 		};
 
-		await datasetEntityStorage.set(dataset as unknown as Dataset);
+		await datasetEntityStorage.set(dataset);
 
 		const result = await filter.query({
 			"dcterms:identifier": "NON-EXISTENT"
@@ -298,7 +297,7 @@ describe("FilterByExample", () => {
 			"dcterms:title": "Test Dataset"
 		};
 
-		await datasetEntityStorage.set(dataset as unknown as Dataset);
+		await datasetEntityStorage.set(dataset);
 
 		// Query with null should return all datasets
 		const result = await filter.query(null);
@@ -334,8 +333,8 @@ describe("FilterByExample", () => {
 			"dcterms:title": "Regular Dataset"
 		};
 
-		await datasetEntityStorage.set(catalogDataset as unknown as Dataset);
-		await datasetEntityStorage.set(regularDataset as unknown as Dataset);
+		await datasetEntityStorage.set(catalogDataset);
+		await datasetEntityStorage.set(regularDataset);
 
 		const result = await filter.query({
 			"@type": DcatClasses.Dataset
@@ -370,8 +369,8 @@ describe("FilterByExample", () => {
 			"dcterms:title": "Traffic Analysis Data"
 		};
 
-		await datasetEntityStorage.set(dataset1 as unknown as Dataset);
-		await datasetEntityStorage.set(dataset2 as unknown as Dataset);
+		await datasetEntityStorage.set(dataset1);
+		await datasetEntityStorage.set(dataset2);
 
 		// FilterByExample uses exact matching, so partial match won't work
 		const result = await filter.query({

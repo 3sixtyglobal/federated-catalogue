@@ -12,8 +12,8 @@ import { EventBusService } from "@twin.org/event-bus-service";
 import { FederatedCatalogueFilterFactory } from "@twin.org/federated-catalogue-models";
 import { nameof } from "@twin.org/nameof";
 import {
-	type IDataspaceProtocolCatalog,
-	DataspaceProtocolDataTypes
+	DataspaceProtocolDataTypes,
+	type IDataspaceProtocolCatalog
 } from "@twin.org/standards-dataspace-protocol";
 import { DublinCoreContexts } from "@twin.org/standards-dublin-core";
 import { addAllContextsToDocumentCache } from "@twin.org/standards-ld-contexts";
@@ -21,11 +21,10 @@ import { DcatClasses, DcatContexts, type IDcatDataset } from "@twin.org/standard
 import { OdrlContexts, OdrlDataTypes } from "@twin.org/standards-w3c-odrl";
 import {
 	SynchronisedStorageTopics,
-	type ISyncItemSet,
 	type ISyncItemRemove,
+	type ISyncItemSet,
 	type ISynchronisedEntity
 } from "@twin.org/synchronised-storage-models";
-import { afterAll, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import type { Dataset } from "../src/entities/dataset.js";
 import { initSchema } from "../src/schema.js";
 import { FederatedCatalogueService } from "../src/services/federatedCatalogueService.js";
@@ -324,7 +323,7 @@ describe("Synchronised Storage Integration", () => {
 
 		await eventBusService.publish<ISyncItemSet>(SynchronisedStorageTopics.RemoteItemSet, {
 			storageKey: STORAGE_KEY,
-			entity: bobEntity as unknown as ISynchronisedEntity
+			entity: bobEntity
 		});
 		await new Promise(resolve => setTimeout(resolve, 200));
 

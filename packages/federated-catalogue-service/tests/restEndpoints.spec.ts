@@ -34,7 +34,6 @@ import {
 } from "@twin.org/standards-w3c-dcat";
 import { OdrlContexts, OdrlDataTypes } from "@twin.org/standards-w3c-odrl";
 import { HeaderTypes } from "@twin.org/web";
-import { afterAll, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import type { Dataset } from "../src/entities/dataset.js";
 import {
 	generateRestRoutesFederatedCatalogue,
@@ -337,7 +336,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 				pathParams: {
 					datasetId: ""
 				}
-			} as IGetDatasetRequest;
+			};
 			const response2 = (await getDatasetRoute.handler(
 				{} as never,
 				invalidRequest2
