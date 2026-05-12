@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.3-next.16](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-models-v0.0.3-next.15...federated-catalogue-models-v0.0.3-next.16) (2026-05-12)
+
+
+### Features
+
+* typescript 6 update ([ead042d](https://github.com/iotaledger/twin-federated-catalogue/commit/ead042d09f4e6b03a2db46ace2ea95d197f0f4b0))
+
 ## [0.0.3-next.15](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-models-v0.0.3-next.14...federated-catalogue-models-v0.0.3-next.15) (2026-05-08)
 
 
