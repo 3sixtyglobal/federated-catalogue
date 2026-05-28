@@ -615,16 +615,13 @@ describe("FederatedCatalogueService", () => {
 		expect(queryResult.result).toEqual({
 			"@context": "https://w3id.org/dspace/2025/1/context.jsonld",
 			"@type": "CatalogError",
-			code: "GuardError:guard.array",
+			code: "GeneralError:federatedCatalogueService.filterMustBeArray",
 			reason: [
 				{
-					name: "GuardError",
+					name: "GeneralError",
 					source: "FederatedCatalogueService",
-					message: "guard.array",
-					properties: {
-						property: "filter",
-						value: ""
-					},
+					message: "federatedCatalogueService.filterMustBeArray",
+					cause: undefined,
 					stack: expect.any(String)
 				}
 			]

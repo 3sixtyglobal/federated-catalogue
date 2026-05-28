@@ -318,8 +318,6 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		cursor?: string;
 	}> {
 		try {
-			Guards.array(FederatedCatalogueService.CLASS_NAME, nameof(filter), filter);
-
 			let datasets: IDcatDataset[];
 			let resultCursor: string | undefined;
 
