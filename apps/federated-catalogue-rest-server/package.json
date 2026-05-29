@@ -4,7 +4,7 @@
 	"description": "Serve APIs using the specified configuration",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/iotaledger/federated-catalogue.git",
+		"url": "git+https://github.com/iotaledger/twin-federated-catalogue.git",
 		"directory": "apps/federated-catalogue-rest-server"
 	},
 	"author": "cornel.filip@iota.org",
@@ -59,7 +59,7 @@
 		"vitest": "4.1.6"
 	},
 	"bugs": {
-		"url": "git+https://github.com/iotaledger/federated-catalogue/issues"
+		"url": "git+https://github.com/iotaledger/twin-federated-catalogue/issues"
 	},
 	"homepage": "https://twindev.org"
 }
