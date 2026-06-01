@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0.
 import type { IHttpRequestContext } from "@twin.org/api-models";
 import { ContextIdStore } from "@twin.org/context";
-import { ComponentFactory, Is } from "@twin.org/core";
+import { ArrayHelper, ComponentFactory, Is } from "@twin.org/core";
 import {
 	JsonLdDataTypes,
 	JsonLdHelper,
@@ -22,7 +22,8 @@ import { nameof } from "@twin.org/nameof";
 import {
 	DataspaceProtocolCatalogTypes,
 	DataspaceProtocolContexts,
-	DataspaceProtocolDataTypes
+	DataspaceProtocolDataTypes,
+	type IDataspaceProtocolCatalog
 } from "@twin.org/standards-dataspace-protocol";
 import { DublinCoreContexts } from "@twin.org/standards-dublin-core";
 import { addAllContextsToDocumentCache } from "@twin.org/standards-ld-contexts";
@@ -182,6 +183,86 @@ describe("Federated Catalogue REST Endpoints", () => {
 			} else if (Is.object(context)) {
 				// After compaction, context might be an object
 				expect(context).toBeDefined();
+			}
+		});
+
+		test("Catalog query response datasets each include @id field", async () => {
+			const routes = generateRestRoutesFederatedCatalogue("/catalog", "federated-catalogue");
+			const catalogRequestRoute = routes.find(r => r.operationId === "catalogRequest");
+			if (!catalogRequestRoute) {
+				throw new Error("catalogRequest route not found");
+			}
+
+			const datasetId = "urn:uuid:consignment";
+			const dataset = {
+				"@context": {
+					dcat: DcatContexts.Namespace,
+					dcterms: DublinCoreContexts.NamespaceTerms,
+					odrl: OdrlContexts.Namespace
+				},
+				"@id": datasetId,
+				"@type": DcatClasses.Dataset,
+				"dcterms:type": "https://vocabulary.uncefact.org/Consignment",
+				"dcterms:publisher": "https://example.com/participants/test-publisher",
+				"dcat:distribution": {
+					"@type": "dcat:Distribution",
+					"@id": "urn:uuid:dist",
+					"dcterms:format": "application/json",
+					"dcat:accessService": "https://example.com/services/test-service"
+				},
+				"odrl:hasPolicy": {
+					"@context": OdrlContexts.Context,
+					"@type": "Offer",
+					uid: "urn:uuid:policy",
+					assigner: "https://example.com/participants/test-publisher",
+					permission: [{ action: "use" }]
+				}
+			} as unknown as IDcatDataset;
+
+			await service.set(dataset);
+
+			FederatedCatalogueFilterFactory.clear();
+			// The real FilterByExample calls datasetEntityToModel() internally before returning.
+			// Returning a true IDcatDataset model (with "@id") mirrors that behavior.
+			// The service must not strip "@id" by re-applying datasetEntityToModel on a model.
+			FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
+				className: () => "FilterByExample",
+				query: async filter => ({
+					datasets: [dataset] as IDcatDataset[],
+					cursor: undefined
+				}),
+				createIndex: async dataSet => ({})
+			}));
+
+			const request: ICatalogRequestRequest = {
+				body: {
+					"@context": [DataspaceProtocolContexts.Context],
+					"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage,
+					filter: [
+						{
+							"@type": "FilterByExample",
+							"dcterms:type": "https://vocabulary.uncefact.org/Consignment"
+						}
+					]
+				}
+			};
+
+			const response = (await catalogRequestRoute.handler(
+				{} as never,
+				request
+			)) as ICatalogRequestResponse;
+
+			expect(response.body["@type"]).toBe("Catalog");
+
+			const catalog = response.body as unknown as IDataspaceProtocolCatalog;
+			const datasets = ArrayHelper.fromObjectOrArray(catalog.dataset ?? []);
+
+			expect(datasets.length).toBeGreaterThan(0);
+
+			// Every dataset in the HTTP catalog response must carry @id
+			for (const d of datasets) {
+				const datasetObj = d as { "@id"?: string };
+				expect(datasetObj["@id"]).toBe(datasetId);
 			}
 		});
 

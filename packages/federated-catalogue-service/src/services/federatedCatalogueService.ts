@@ -350,7 +350,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 				ObjectHelper.propertyDelete(filter, "@type");
 				const result = await selectedFilter.query(filter, cursor, limit);
 
-				datasets = result.datasets.map(d => datasetEntityToModel(d));
+				datasets = result.datasets;
 				resultCursor = result.cursor;
 			}
 

@@ -18,7 +18,6 @@ import { OdrlContexts, OdrlDataTypes, OdrlPolicyType } from "@twin.org/standards
 import type { Dataset } from "../src/entities/dataset.js";
 import { initSchema } from "../src/schema.js";
 import { FederatedCatalogueService } from "../src/services/federatedCatalogueService.js";
-import { datasetModelToEntity } from "../src/utils/datasetConverters.js";
 
 let datasetEntityStorage: MemoryEntityStorageConnector<Dataset>;
 
@@ -222,9 +221,7 @@ describe("FederatedCatalogueService", () => {
 		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
 			className: () => "FilterByExample",
 			query: async filter => ({
-				datasets: [dataset1, dataset2].map(
-					d => datasetModelToEntity(d, "", new Date().toISOString()) as unknown as IDcatDataset
-				),
+				datasets: [dataset1, dataset2],
 				cursor: undefined
 			}),
 			createIndex: async dataSet => ({})
@@ -292,7 +289,7 @@ describe("FederatedCatalogueService", () => {
 		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
 			className: () => "FilterByExample",
 			query: async filter => ({
-				datasets: [datasetModelToEntity(dataset, "", new Date().toISOString())],
+				datasets: [dataset],
 				cursor: undefined
 			}),
 			createIndex: async dataSet => ({})
@@ -376,9 +373,7 @@ describe("FederatedCatalogueService", () => {
 		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
 			className: () => "FilterByExample",
 			query: async filter => ({
-				datasets: [dataset1, dataset2].map(
-					d => datasetModelToEntity(d, "", new Date().toISOString()) as unknown as IDcatDataset
-				),
+				datasets: [dataset1, dataset2],
 				cursor: undefined
 			}),
 			createIndex: async dataSet => ({})
@@ -480,9 +475,7 @@ describe("FederatedCatalogueService", () => {
 		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
 			className: () => "FilterByExample",
 			query: async filter => ({
-				datasets: [ownDataset, otherDataset].map(
-					d => datasetModelToEntity(d, "", new Date().toISOString()) as unknown as IDcatDataset
-				),
+				datasets: [ownDataset, otherDataset],
 				cursor: undefined
 			}),
 			createIndex: async dataSet => ({})
@@ -549,7 +542,7 @@ describe("FederatedCatalogueService", () => {
 		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
 			className: () => "FilterByExample",
 			query: async filter => ({
-				datasets: [datasetModelToEntity(dataset, "", new Date().toISOString())],
+				datasets: [dataset],
 				cursor: undefined
 			}),
 			createIndex: async dataSet => ({})
@@ -576,6 +569,73 @@ describe("FederatedCatalogueService", () => {
 				return datasetObj["@id"] === dataset["@id"];
 			})
 		).toBe(true);
+	});
+
+	test("Query result datasets each include @id field", async () => {
+		const service = new FederatedCatalogueService({
+			datasetEntityStorageType: "dataset"
+		});
+
+		const datasetId = "https://example.com/datasets/consignment-1";
+		const dataset = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": datasetId,
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "Consignment Dataset",
+			"dcterms:type": "https://vocabulary.uncefact.org/Consignment",
+			"dcterms:publisher": "https://example.com/participants/publisher-1",
+			"dcat:distribution": {
+				"@type": DcatClasses.Distribution,
+				"@id": "https://example.com/distributions/consignment-dist",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.Context,
+				"@type": OdrlPolicyType.Offer,
+				uid: "https://example.com/policies/consignment-policy",
+				assigner: "https://example.com/participants/publisher-1",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		await service.set(dataset);
+
+		// The real FilterByExample calls datasetEntityToModel() internally before returning.
+		// Returning a true IDcatDataset model (with "@id") mirrors that behavior.
+		// The service must not strip "@id" by re-applying datasetEntityToModel on a model.
+		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
+			className: () => "FilterByExample",
+			query: async filter => ({
+				datasets: [dataset] as IDcatDataset[],
+				cursor: undefined
+			}),
+			createIndex: async dataSet => ({})
+		}));
+
+		const queryResult = await service.query([
+			{
+				"@type": "FilterByExample",
+				"dcterms:type": "https://vocabulary.uncefact.org/Consignment"
+			}
+		]);
+
+		expect(queryResult.result["@type"]).toBe("Catalog");
+
+		const catalog = queryResult.result as IDataspaceProtocolCatalog;
+		const datasets = ArrayHelper.fromObjectOrArray(catalog.dataset ?? []);
+
+		expect(datasets.length).toBeGreaterThan(0);
+
+		// Every dataset in the catalog query response must carry @id
+		for (const d of datasets) {
+			const datasetObj = d as { "@id"?: string };
+			expect(datasetObj["@id"]).toBe(datasetId);
+		}
 	});
 
 	test("Query returns CatalogError 400 when filter type is missing", async () => {
@@ -737,9 +797,7 @@ describe("FederatedCatalogueService", () => {
 			className: () => "MockFilterWithCursorAndData",
 			async query() {
 				return {
-					datasets: [
-						datasetModelToEntity(dataset1, "", new Date().toISOString()) as unknown as IDcatDataset
-					],
+					datasets: [dataset1],
 					cursor: "next-page-cursor-456"
 				};
 			},
@@ -809,7 +867,7 @@ describe("FederatedCatalogueService", () => {
 		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
 			className: () => "FilterByExample",
 			query: async filter => ({
-				datasets: [datasetModelToEntity(dataset, "", new Date().toISOString())],
+				datasets: [dataset],
 				cursor: undefined
 			}),
 			createIndex: async dataSet => ({})
