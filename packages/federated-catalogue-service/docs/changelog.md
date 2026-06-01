@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.0.3-next.18](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.17...federated-catalogue-service-v0.0.3-next.18) (2026-06-01)
+
+
+### Bug Fixes
+
+* allow CatalogRequestMessage without filter ([#72](https://github.com/iotaledger/twin-federated-catalogue/issues/72)) ([477343d](https://github.com/iotaledger/twin-federated-catalogue/commit/477343dd590150626c417a16705d5fa8bb96838f))
+* stop double-converting filter results in query, preserving dataset [@id](https://github.com/id) ([#75](https://github.com/iotaledger/twin-federated-catalogue/issues/75)) ([f071eda](https://github.com/iotaledger/twin-federated-catalogue/commit/f071eda0f5fc35270570cac7bd106b2bdf02e6e2))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.0.3-next.17 to 0.0.3-next.18
+
 ## [0.0.3-next.17](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.16...federated-catalogue-service-v0.0.3-next.17) (2026-05-20)
 
 
