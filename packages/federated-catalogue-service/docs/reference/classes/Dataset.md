@@ -114,7 +114,7 @@ A language of the resource.
 
 ### dcterms:publisher? {#dctermspublisher}
 
-> `optional` **dcterms:publisher?**: `string` \| `IFoafAgentWithAliases`
+> `optional` **dcterms:publisher?**: `string` \| `JsonLdObjectWithAliases`\<`IFoafAgent`, `"foaf"`\>
 
 An entity responsible for making the resource available.
 
@@ -122,7 +122,7 @@ An entity responsible for making the resource available.
 
 ### dcterms:creator? {#dctermscreator}
 
-> `optional` **dcterms:creator?**: `string` \| `IFoafAgentWithAliases`
+> `optional` **dcterms:creator?**: `string` \| `JsonLdObjectWithAliases`\<`IFoafAgent`, `"foaf"`\>
 
 An entity responsible for producing the resource.
 
