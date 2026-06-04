@@ -481,6 +481,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * Publisher can be a string or an IFoafAgent object with @id.
 	 * @param dataset The dataset to extract publisher from.
 	 * @returns The publisher string or undefined if not found.
+	 * @internal
 	 */
 	private extractPublisher(dataset: IDcatDataset): string | undefined {
 		const publisher = dataset["dcterms:publisher"];

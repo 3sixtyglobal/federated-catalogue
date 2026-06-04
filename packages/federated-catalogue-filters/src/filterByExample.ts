@@ -129,6 +129,7 @@ export class FilterByExample implements IFederatedCatalogueFilter {
 	 * For complex objects, stringifies them for comparison.
 	 * @param filter The filter criteria (Partial<IDataset> with example values).
 	 * @returns Query conditions array for entity storage.
+	 * @internal
 	 */
 	private buildQueryConditions(
 		filter: Partial<IDcatDataset>
