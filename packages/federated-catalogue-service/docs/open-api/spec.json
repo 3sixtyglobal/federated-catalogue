@@ -46,11 +46,16 @@
 						"schema": {
 							"type": "string"
 						}
-					}
-				],
-				"security": [
+					},
 					{
-						"jwtBearerAuthScheme": []
+						"name": "authorization",
+						"in": "header",
+						"required": true,
+						"schema": {
+							"type": "string"
+						},
+						"style": "simple",
+						"example": "Bearer <trust-token>"
 					}
 				],
 				"requestBody": {
@@ -158,24 +163,6 @@
 							}
 						}
 					},
-					"401": {
-						"description": "You are not authorized to use the API or no credentials were supplied, see the content for more details.",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								},
-								"examples": {
-									"exampleResponse": {
-										"value": {
-											"name": "UnauthorizedError",
-											"message": "errorMessage"
-										}
-									}
-								}
-							}
-						}
-					},
 					"500": {
 						"description": "The server has encountered a situation it does not know how to handle, see the content for more details.",
 						"content": {
@@ -215,11 +202,16 @@
 						},
 						"style": "simple",
 						"example": "urn:uuid:dataset-123"
-					}
-				],
-				"security": [
+					},
 					{
-						"jwtBearerAuthScheme": []
+						"name": "authorization",
+						"in": "header",
+						"required": true,
+						"schema": {
+							"type": "string"
+						},
+						"style": "simple",
+						"example": "Bearer <trust-token>"
 					}
 				],
 				"responses": {
@@ -228,7 +220,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GetDatasetResponse"
+									"$ref": "#/components/schemas/DatasetGetResponse"
 								},
 								"examples": {
 									"getDatasetResponseExample": {
@@ -265,8 +257,8 @@
 							}
 						}
 					},
-					"401": {
-						"description": "You are not authorized to use the API or no credentials were supplied, see the content for more details.",
+					"500": {
+						"description": "The server has encountered a situation it does not know how to handle, see the content for more details.",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -275,8 +267,165 @@
 								"examples": {
 									"exampleResponse": {
 										"value": {
-											"name": "UnauthorizedError",
+											"name": "InternalServerError",
 											"message": "errorMessage"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "removeDataset",
+				"summary": "Remove a dataset from the catalogue by ID",
+				"tags": [
+					"Federated Catalogue"
+				],
+				"parameters": [
+					{
+						"name": "datasetId",
+						"description": "The unique identifier of the dataset.",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						},
+						"style": "simple",
+						"example": "urn:uuid:dataset-123"
+					},
+					{
+						"name": "authorization",
+						"in": "header",
+						"required": true,
+						"schema": {
+							"type": "string"
+						},
+						"style": "simple",
+						"example": "Bearer <trust-token>"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "The response payload for the remove dataset method.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "https://schema.twindev.org/dataspace-protocol/DataspaceProtocolCatalogError"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "The server cannot process the request, see the content for more details.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"examples": {
+									"exampleResponse": {
+										"value": {
+											"name": "GeneralError",
+											"message": "errorMessage",
+											"properties": {
+												"foo": "bar"
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "The server has encountered a situation it does not know how to handle, see the content for more details.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"examples": {
+									"exampleResponse": {
+										"value": {
+											"name": "InternalServerError",
+											"message": "errorMessage"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/catalog/datasets": {
+			"post": {
+				"operationId": "setDataset",
+				"summary": "Insert or update a dataset in the catalogue",
+				"tags": [
+					"Federated Catalogue"
+				],
+				"parameters": [
+					{
+						"name": "authorization",
+						"in": "header",
+						"required": true,
+						"schema": {
+							"type": "string"
+						},
+						"style": "simple",
+						"example": "Bearer <trust-token>"
+					}
+				],
+				"requestBody": {
+					"description": "The request parameters for the set dataset method.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "https://schema.twindev.org/dcat/DcatDataset"
+							},
+							"examples": {
+								"setDatasetRequestExample": {
+									"value": {
+										"@context": "https://w3id.org/dspace/2025/1/context.jsonld",
+										"@id": "urn:uuid:dataset-123",
+										"@type": "dcat:Dataset",
+										"dcterms:title": "Energy Consumption Data",
+										"dcterms:description": "Historical energy consumption data"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "The response payload for the set dataset method.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "https://schema.twindev.org/dataspace-protocol/DataspaceProtocolCatalogError"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "The server cannot process the request, see the content for more details.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"examples": {
+									"exampleResponse": {
+										"value": {
+											"name": "GeneralError",
+											"message": "errorMessage",
+											"properties": {
+												"foo": "bar"
+											}
 										}
 									}
 								}
@@ -318,6 +467,17 @@
 				],
 				"description": "The response payload containing the DS Protocol compliant catalog with participantId,\nor a CatalogError if no datasets are found (404).\nPer DS Protocol: Single participant returns flat catalog, multiple participants return nested catalogs."
 			},
+			"DatasetGetResponse": {
+				"anyOf": [
+					{
+						"$ref": "https://schema.twindev.org/dcat/DcatDataset"
+					},
+					{
+						"$ref": "https://schema.twindev.org/dataspace-protocol/DataspaceProtocolCatalogError"
+					}
+				],
+				"description": "The response payload containing the dataset or error."
+			},
 			"Error": {
 				"description": "Model to describe serialized error.",
 				"type": "object",
@@ -351,17 +511,6 @@
 					"name",
 					"message"
 				]
-			},
-			"GetDatasetResponse": {
-				"anyOf": [
-					{
-						"$ref": "https://schema.twindev.org/dcat/DcatDataset"
-					},
-					{
-						"$ref": "https://schema.twindev.org/dataspace-protocol/DataspaceProtocolCatalogError"
-					}
-				],
-				"description": "The response payload containing the dataset or error."
 			}
 		},
 		"securitySchemes": {

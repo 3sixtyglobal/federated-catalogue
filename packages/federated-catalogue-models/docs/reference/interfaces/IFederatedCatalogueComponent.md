@@ -11,17 +11,23 @@ Provides Dataspace Protocol-compliant catalog endpoints for dataset registry and
 
 ### get() {#get}
 
-> **get**(`dataSetId`): `Promise`\<`IDcatDataset` \| `IDataspaceProtocolCatalogError`\>
+> **get**(`datasetId`, `trustPayload`): `Promise`\<`IDcatDataset` \| `IDataspaceProtocolCatalogError`\>
 
 Retrieve a dataset by its unique identifier.
 
 #### Parameters
 
-##### dataSetId
+##### datasetId
 
 `string`
 
 The unique identifier of the dataset.
+
+##### trustPayload
+
+`unknown`
+
+Optional payload for trust evaluation, if applicable.
 
 #### Returns
 
@@ -33,30 +39,36 @@ The dataset if found, or a CatalogError if not found or an error occurs.
 
 ### set() {#set}
 
-> **set**(`dataSet`): `Promise`\<`void`\>
+> **set**(`dataset`, `trustPayload`): `Promise`\<`string` \| `IDataspaceProtocolCatalogError`\>
 
 Insert or update a dataset in the catalogue.
 This method is internal and should not be exposed via REST endpoints.
 
 #### Parameters
 
-##### dataSet
+##### dataset
 
 `IDcatDataset`
 
 The dataset to store.
 
+##### trustPayload
+
+`unknown`
+
+Optional payload for trust evaluation, if applicable.
+
 #### Returns
 
-`Promise`\<`void`\>
+`Promise`\<`string` \| `IDataspaceProtocolCatalogError`\>
 
-Nothing.
+The unique identifier of the stored dataset, or a CatalogError if an error occurs.
 
 ***
 
 ### query() {#query}
 
-> **query**(`filter?`, `cursor?`, `limit?`): `Promise`\<\{ `result`: `IDataspaceProtocolCatalog` \| `IDataspaceProtocolCatalogError`; `cursor?`: `string`; \}\>
+> **query**(`filter`, `cursor`, `limit`, `trustPayload`): `Promise`\<\{ `result`: `IDataspaceProtocolCatalog` \| `IDataspaceProtocolCatalogError`; `cursor?`: `string`; \}\>
 
 Execute a query against the catalogue using registered filter plugins.
 Returns a DS Protocol compliant Catalog object with participantId.
@@ -70,23 +82,29 @@ Returns CatalogError 404 when no datasets exist.
 
 #### Parameters
 
-##### filter?
+##### filter
 
-`unknown`[]
+`unknown`[] \| `undefined`
 
 The filter criteria containing @type.
 
-##### cursor?
+##### cursor
 
-`string`
+`string` \| `undefined`
 
 Optional cursor for pagination.
 
-##### limit?
+##### limit
 
-`number`
+`number` \| `undefined`
 
 Optional limit for pagination.
+
+##### trustPayload
+
+`unknown`
+
+Optional payload for trust evaluation, if applicable.
 
 #### Returns
 
@@ -99,20 +117,26 @@ or IDataspaceProtocolCatalogError if no datasets found.
 
 ### remove() {#remove}
 
-> **remove**(`dataSetId`): `Promise`\<`void`\>
+> **remove**(`datasetId`, `trustPayload`): `Promise`\<`IDataspaceProtocolCatalogError` \| `undefined`\>
 
 Remove a dataset from the catalogue by its unique identifier.
 
 #### Parameters
 
-##### dataSetId
+##### datasetId
 
 `string`
 
 The unique identifier of the dataset to remove.
 
+##### trustPayload
+
+`unknown`
+
+Optional payload for trust evaluation, if applicable.
+
 #### Returns
 
-`Promise`\<`void`\>
+`Promise`\<`IDataspaceProtocolCatalogError` \| `undefined`\>
 
 Nothing.

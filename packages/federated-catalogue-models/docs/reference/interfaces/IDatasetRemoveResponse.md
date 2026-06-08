@@ -1,6 +1,6 @@
-# Interface: IGetDatasetResponse
+# Interface: IDatasetRemoveResponse
 
-The response payload for the get dataset method.
+The response payload for the remove dataset method.
 
 ## Properties
 
@@ -12,8 +12,8 @@ Response status code.
 
 ***
 
-### body {#body}
+### body? {#body}
 
-> **body**: `IDcatDataset` \| `IDataspaceProtocolCatalogError`
+> `optional` **body?**: `IDataspaceProtocolCatalogError`
 
 The response payload containing the dataset or error.

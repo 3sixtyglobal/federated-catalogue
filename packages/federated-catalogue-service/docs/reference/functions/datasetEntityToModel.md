@@ -3,7 +3,7 @@
 > **datasetEntityToModel**(`entity`): `IDcatDataset`
 
 Convert a Dataset entity to an IDcatDataset model.
-Maps entity.id back to model["@id"] and strips sync-only fields.
+Maps entity.id back to model["@id"] and strips the storage-only id field.
 
 ## Parameters
 

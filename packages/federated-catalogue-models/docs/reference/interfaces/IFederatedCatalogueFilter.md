@@ -47,14 +47,14 @@ Object containing datasets matching the filter criteria and optional cursor for 
 
 ### createIndex() {#createindex}
 
-> **createIndex**(`dataSet`): `Promise`\<\{\[`key`: `string`\]: `unknown`; \}\>
+> **createIndex**(`dataset`): `Promise`\<\{\[`key`: `string`\]: `unknown`; \}\>
 
 Generate filter indexes for a dataset to optimize future queries.
 Indexes are stored as properties on the dataset entity itself.
 
 #### Parameters
 
-##### dataSet
+##### dataset
 
 `IDcatDataset`
 

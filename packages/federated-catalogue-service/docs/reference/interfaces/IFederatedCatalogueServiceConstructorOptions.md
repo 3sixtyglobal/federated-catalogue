@@ -41,6 +41,20 @@ url-transformer
 
 ***
 
+### trustComponentType? {#trustcomponenttype}
+
+> `optional` **trustComponentType?**: `string`
+
+Trust component type for trust verification.
+
+#### Default
+
+```ts
+trust
+```
+
+***
+
 ### config? {#config}
 
 > `optional` **config?**: [`IFederatedCatalogueServiceConfig`](IFederatedCatalogueServiceConfig.md)

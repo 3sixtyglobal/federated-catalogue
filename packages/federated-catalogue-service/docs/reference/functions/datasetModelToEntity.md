@@ -1,9 +1,9 @@
 # Function: datasetModelToEntity()
 
-> **datasetModelToEntity**(`model`, `nodeIdentity`, `dateModified`): [`Dataset`](../classes/Dataset.md)
+> **datasetModelToEntity**(`model`): [`Dataset`](../classes/Dataset.md)
 
 Convert an IDcatDataset model to a Dataset entity.
-Maps model["@id"] to entity.id and sets sync fields from provided values.
+Maps model["@id"] to entity.id.
 
 ## Parameters
 
@@ -12,18 +12,6 @@ Maps model["@id"] to entity.id and sets sync fields from provided values.
 `IDcatDataset`
 
 The IDcatDataset model from API requests.
-
-### nodeIdentity
-
-`string`
-
-The node identity to set on the entity.
-
-### dateModified
-
-`string`
-
-The dateModified timestamp to set on the entity.
 
 ## Returns
 

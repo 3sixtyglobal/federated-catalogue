@@ -24,19 +24,11 @@ The unique identifier for the dataset (mapped from JSON-LD identifier).
 
 ***
 
-### nodeIdentity {#nodeidentity}
+### ownerId {#ownerid}
 
-> **nodeIdentity**: `string`
+> **ownerId**: `string`
 
-The identity of the node that owns this entity (required for sync).
-
-***
-
-### dateModified {#datemodified}
-
-> **dateModified**: `string`
-
-The date the entity was last modified (required for sync).
+The owner of the dataset.
 
 ***
 
@@ -210,7 +202,7 @@ Link to a description of a relationship with another resource.
 
 ### odrl:hasPolicy? {#odrlhaspolicy}
 
-> `optional` **odrl:hasPolicy?**: `IOdrlPolicy`
+> `optional` **odrl:hasPolicy?**: `JsonLdObjectWithOptionalContext`\<`IOdrlPolicy`\>
 
 An ODRL conformant policy expressing the rights associated with the resource.
 

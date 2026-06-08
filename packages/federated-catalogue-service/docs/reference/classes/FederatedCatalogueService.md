@@ -55,37 +55,25 @@ The class name of the component.
 
 ***
 
-### start() {#start}
-
-> **start**(): `Promise`\<`void`\>
-
-Start the federated catalogue service.
-
-#### Returns
-
-`Promise`\<`void`\>
-
-Nothing.
-
-#### Implementation of
-
-`IFederatedCatalogueComponent.start`
-
-***
-
 ### get() {#get}
 
-> **get**(`dataSetId`): `Promise`\<`IDataspaceProtocolCatalogError` \| `IDcatDataset`\>
+> **get**(`datasetId`, `trustPayload`): `Promise`\<`IDataspaceProtocolCatalogError` \| `IDcatDataset`\>
 
 Retrieve a dataset by its unique identifier.
 
 #### Parameters
 
-##### dataSetId
+##### datasetId
 
 `string`
 
 The unique identifier of the dataset.
+
+##### trustPayload
+
+`unknown`
+
+Optional payload for trust evaluation, if applicable.
 
 #### Returns
 
@@ -101,22 +89,29 @@ The dataset if found, or a CatalogError if not found or an error occurs.
 
 ### set() {#set}
 
-> **set**(`dataSet`): `Promise`\<`void`\>
+> **set**(`dataset`, `trustPayload`): `Promise`\<`string` \| `IDataspaceProtocolCatalogError`\>
 
 Insert or update a dataset in the catalogue.
-This method is internal and should not be exposed via REST endpoints.
 
 #### Parameters
 
-##### dataSet
+##### dataset
 
 `IDcatDataset`
 
 The dataset to store.
 
+##### trustPayload
+
+`unknown`
+
+Optional payload for trust evaluation, if applicable.
+
 #### Returns
 
-`Promise`\<`void`\>
+`Promise`\<`string` \| `IDataspaceProtocolCatalogError`\>
+
+The unique identifier of the stored dataset, or a CatalogError if an error occurs.
 
 #### Implementation of
 
@@ -124,9 +119,42 @@ The dataset to store.
 
 ***
 
+### remove() {#remove}
+
+> **remove**(`datasetId`, `trustPayload`): `Promise`\<`IDataspaceProtocolCatalogError` \| `undefined`\>
+
+Remove a dataset from the catalogue by its unique identifier.
+Indexes are automatically removed as they are stored with the dataset.
+
+#### Parameters
+
+##### datasetId
+
+`string`
+
+The unique identifier of the dataset to remove.
+
+##### trustPayload
+
+`unknown`
+
+Optional payload for trust evaluation, if applicable.
+
+#### Returns
+
+`Promise`\<`IDataspaceProtocolCatalogError` \| `undefined`\>
+
+Nothing, or a CatalogError if an error occurs.
+
+#### Implementation of
+
+`IFederatedCatalogueComponent.remove`
+
+***
+
 ### query() {#query}
 
-> **query**(`filter?`, `cursor?`, `limit?`): `Promise`\<\{ `result`: `IDataspaceProtocolCatalogError` \| `IDataspaceProtocolCatalog`; `cursor?`: `string`; \}\>
+> **query**(`filter`, `cursor`, `limit`, `trustPayload`): `Promise`\<\{ `result`: `IDataspaceProtocolCatalogError` \| `IDataspaceProtocolCatalog`; `cursor?`: `string`; \}\>
 
 Execute a query against the catalogue using registered filter plugins.
 Returns a DS Protocol compliant Catalog object with participantId.
@@ -140,23 +168,29 @@ Returns CatalogError 404 when no datasets exist, CatalogError 400 for invalid re
 
 #### Parameters
 
-##### filter?
+##### filter
 
-`unknown`[]
+`unknown`[] \| `undefined`
 
 The filter criteria containing @type, optional cursor and limit properties.
 
-##### cursor?
+##### cursor
 
-`string`
+`string` \| `undefined`
 
 Optional cursor for pagination.
 
-##### limit?
+##### limit
 
-`number`
+`number` \| `undefined`
 
 Optional limit for pagination.
+
+##### trustPayload
+
+`unknown`
+
+Optional payload for trust evaluation, if applicable.
 
 #### Returns
 
@@ -168,28 +202,3 @@ or CatalogError if validation fails or an error occurs.
 #### Implementation of
 
 `IFederatedCatalogueComponent.query`
-
-***
-
-### remove() {#remove}
-
-> **remove**(`dataSetId`): `Promise`\<`void`\>
-
-Remove a dataset from the catalogue by its unique identifier.
-Indexes are automatically removed as they are stored with the dataset.
-
-#### Parameters
-
-##### dataSetId
-
-`string`
-
-The unique identifier of the dataset to remove.
-
-#### Returns
-
-`Promise`\<`void`\>
-
-#### Implementation of
-
-`IFederatedCatalogueComponent.remove`
