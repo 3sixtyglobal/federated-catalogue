@@ -17,16 +17,10 @@ export class Dataset {
 	public id!: string;
 
 	/**
-	 * The identity of the node that owns this entity (required for sync).
+	 * The owner of the dataset.
 	 */
 	@property({ type: "string", isSecondary: true })
-	public nodeIdentity!: string;
-
-	/**
-	 * The date the entity was last modified (required for sync).
-	 */
-	@property({ type: "string", isSecondary: true })
-	public dateModified!: string;
+	public ownerId!: string;
 
 	/**
 	 * The tenant id of the publisher captured at write time.

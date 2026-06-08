@@ -26,8 +26,8 @@ export interface IFederatedCatalogueFilter extends IComponent {
 	/**
 	 * Generate filter indexes for a dataset to optimize future queries.
 	 * Indexes are stored as properties on the dataset entity itself.
-	 * @param dataSet The dataset to index.
+	 * @param dataset The dataset to index.
 	 * @returns Record mapping filter-specific index keys to values.
 	 */
-	createIndex(dataSet: IDcatDataset): Promise<{ [key: string]: unknown }>;
+	createIndex(dataset: IDcatDataset): Promise<{ [key: string]: unknown }>;
 }

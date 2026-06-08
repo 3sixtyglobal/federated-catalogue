@@ -25,6 +25,12 @@ export interface IFederatedCatalogueServiceConstructorOptions {
 	urlTransformerComponentType?: string;
 
 	/**
+	 * Trust component type for trust verification.
+	 * @default trust
+	 */
+	trustComponentType?: string;
+
+	/**
 	 * Configuration for the federated catalogue service.
 	 */
 	config?: IFederatedCatalogueServiceConfig;

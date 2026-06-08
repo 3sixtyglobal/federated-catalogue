@@ -5,7 +5,7 @@ import type { Dataset } from "../entities/dataset.js";
 
 /**
  * Convert a Dataset entity to an IDcatDataset model.
- * Maps entity.id back to model["@id"] and strips sync-only fields.
+ * Maps entity.id back to model["@id"] and strips the storage-only id field.
  * @param entity The dataset entity from storage (may be partial from query results).
  * @returns The IDcatDataset model for API responses.
  */
@@ -13,9 +13,10 @@ export function datasetEntityToModel(entity: Dataset | Partial<Dataset>): IDcatD
 	const model = { ...entity };
 	const { id } = model;
 
+	// Remove storage-specific fields that should not be exposed in the API model
 	delete model.id;
-	delete model.nodeIdentity;
-	delete model.dateModified;
+	delete model.ownerId;
+	delete model.tenantId;
 
 	return {
 		...model,
@@ -25,23 +26,15 @@ export function datasetEntityToModel(entity: Dataset | Partial<Dataset>): IDcatD
 
 /**
  * Convert an IDcatDataset model to a Dataset entity.
- * Maps model["@id"] to entity.id and sets sync fields from provided values.
+ * Maps model["@id"] to entity.id.
  * @param model The IDcatDataset model from API requests.
- * @param nodeIdentity The node identity to set on the entity.
- * @param dateModified The dateModified timestamp to set on the entity.
  * @returns The Dataset entity for storage.
  */
-export function datasetModelToEntity(
-	model: IDcatDataset,
-	nodeIdentity: string,
-	dateModified: string
-): Dataset {
+export function datasetModelToEntity(model: IDcatDataset): Dataset {
 	const { "@id": atId, ...datasetModel } = model;
 
 	return {
 		...datasetModel,
-		id: atId,
-		nodeIdentity,
-		dateModified
+		id: atId
 	} as Dataset;
 }

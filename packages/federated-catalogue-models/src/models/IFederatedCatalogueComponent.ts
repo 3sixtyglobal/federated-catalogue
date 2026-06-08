@@ -14,18 +14,26 @@ import type { IDcatDataset } from "@twin.org/standards-w3c-dcat";
 export interface IFederatedCatalogueComponent extends IComponent {
 	/**
 	 * Retrieve a dataset by its unique identifier.
-	 * @param dataSetId The unique identifier of the dataset.
+	 * @param datasetId The unique identifier of the dataset.
+	 * @param trustPayload Optional payload for trust evaluation, if applicable.
 	 * @returns The dataset if found, or a CatalogError if not found or an error occurs.
 	 */
-	get(dataSetId: string): Promise<IDcatDataset | IDataspaceProtocolCatalogError>;
+	get(
+		datasetId: string,
+		trustPayload: unknown
+	): Promise<IDcatDataset | IDataspaceProtocolCatalogError>;
 
 	/**
 	 * Insert or update a dataset in the catalogue.
 	 * This method is internal and should not be exposed via REST endpoints.
-	 * @param dataSet The dataset to store.
-	 * @returns Nothing.
+	 * @param dataset The dataset to store.
+	 * @param trustPayload Optional payload for trust evaluation, if applicable.
+	 * @returns The unique identifier of the stored dataset, or a CatalogError if an error occurs.
 	 */
-	set(dataSet: IDcatDataset): Promise<void>;
+	set(
+		dataset: IDcatDataset,
+		trustPayload: unknown
+	): Promise<string | IDataspaceProtocolCatalogError>;
 
 	/**
 	 * Execute a query against the catalogue using registered filter plugins.
@@ -41,13 +49,15 @@ export interface IFederatedCatalogueComponent extends IComponent {
 	 * @param filter The filter criteria containing @type.
 	 * @param cursor Optional cursor for pagination.
 	 * @param limit Optional limit for pagination.
+	 * @param trustPayload Optional payload for trust evaluation, if applicable.
 	 * @returns Complete IDataspaceProtocolCatalog with @context, @id, @type, participantId, dataset/catalog,
 	 * or IDataspaceProtocolCatalogError if no datasets found.
 	 */
 	query(
-		filter?: unknown[],
-		cursor?: string,
-		limit?: number
+		filter: unknown[] | undefined,
+		cursor: string | undefined,
+		limit: number | undefined,
+		trustPayload: unknown
 	): Promise<{
 		result: IDataspaceProtocolCatalog | IDataspaceProtocolCatalogError;
 		cursor?: string;
@@ -55,8 +65,12 @@ export interface IFederatedCatalogueComponent extends IComponent {
 
 	/**
 	 * Remove a dataset from the catalogue by its unique identifier.
-	 * @param dataSetId The unique identifier of the dataset to remove.
+	 * @param datasetId The unique identifier of the dataset to remove.
+	 * @param trustPayload Optional payload for trust evaluation, if applicable.
 	 * @returns Nothing.
 	 */
-	remove(dataSetId: string): Promise<void>;
+	remove(
+		datasetId: string,
+		trustPayload: unknown
+	): Promise<IDataspaceProtocolCatalogError | undefined>;
 }

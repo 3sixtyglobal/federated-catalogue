@@ -11,8 +11,12 @@ import type {
 	ICatalogRequestRequest,
 	ICatalogRequestResponse,
 	IFederatedCatalogueComponent,
-	IGetDatasetRequest,
-	IGetDatasetResponse
+	IDatasetGetRequest,
+	IDatasetGetResponse,
+	IDatasetRemoveRequest,
+	IDatasetRemoveResponse,
+	IDatasetSetRequest,
+	IDatasetSetResponse
 } from "@twin.org/federated-catalogue-models";
 import { nameof } from "@twin.org/nameof";
 import {
@@ -64,6 +68,9 @@ export function generateRestRoutesFederatedCatalogue(
 				{
 					id: "catalogRequestExample",
 					request: {
+						headers: {
+							[HeaderTypes.Authorization]: "Bearer <trust-token>"
+						},
 						body: {
 							"@context": [DataspaceProtocolContexts.Context],
 							"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage,
@@ -78,6 +85,9 @@ export function generateRestRoutesFederatedCatalogue(
 				{
 					id: "catalogRequestNoFilterExample",
 					request: {
+						headers: {
+							[HeaderTypes.Authorization]: "Bearer <trust-token>"
+						},
 						body: {
 							"@context": [DataspaceProtocolContexts.Context],
 							"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage
@@ -131,10 +141,12 @@ export function generateRestRoutesFederatedCatalogue(
 					}
 				]
 			}
-		]
+		],
+		skipAuth: true,
+		skipTenant: true
 	};
 
-	const getDatasetRoute: IRestRoute<IGetDatasetRequest, IGetDatasetResponse> = {
+	const getDatasetRoute: IRestRoute<IDatasetGetRequest, IDatasetGetResponse> = {
 		operationId: "getDataset",
 		summary: "Retrieve a specific dataset by ID",
 		tag: tagsFederatedCatalogue[0].name,
@@ -143,11 +155,14 @@ export function generateRestRoutesFederatedCatalogue(
 		handler: async (httpRequestContext, request) =>
 			getDataset(httpRequestContext, componentName, request),
 		requestType: {
-			type: nameof<IGetDatasetRequest>(),
+			type: nameof<IDatasetGetRequest>(),
 			examples: [
 				{
 					id: "getDatasetRequestExample",
 					request: {
+						headers: {
+							[HeaderTypes.Authorization]: "Bearer <trust-token>"
+						},
 						pathParams: {
 							datasetId: "urn:uuid:dataset-123"
 						}
@@ -157,7 +172,7 @@ export function generateRestRoutesFederatedCatalogue(
 		},
 		responseType: [
 			{
-				type: nameof<IGetDatasetResponse>(),
+				type: nameof<IDatasetGetResponse>(),
 				examples: [
 					{
 						id: "getDatasetResponseExample",
@@ -173,10 +188,98 @@ export function generateRestRoutesFederatedCatalogue(
 					}
 				]
 			}
-		]
+		],
+		skipAuth: true,
+		skipTenant: true
 	};
 
-	return [catalogRequestRoute, getDatasetRoute];
+	const setDatasetRoute: IRestRoute<IDatasetSetRequest, IDatasetSetResponse> = {
+		operationId: "setDataset",
+		summary: "Insert or update a dataset in the catalogue",
+		tag: tagsFederatedCatalogue[0].name,
+		method: "POST",
+		path: `${baseRouteName}/datasets`,
+		handler: async (httpRequestContext, request) =>
+			setDataset(httpRequestContext, componentName, request),
+		requestType: {
+			type: nameof<IDatasetSetRequest>(),
+			examples: [
+				{
+					id: "setDatasetRequestExample",
+					request: {
+						headers: {
+							[HeaderTypes.Authorization]: "Bearer <trust-token>"
+						},
+						body: {
+							"@context": DataspaceProtocolContexts.Context as unknown as DcatContextType,
+							"@id": "urn:uuid:dataset-123",
+							"@type": DcatClasses.Dataset,
+							"dcterms:title": "Energy Consumption Data",
+							"dcterms:description": "Historical energy consumption data"
+						}
+					}
+				}
+			]
+		},
+		responseType: [
+			{
+				type: nameof<IDatasetSetResponse>(),
+				examples: [
+					{
+						id: "setDatasetResponseExample",
+						response: {
+							statusCode: HttpStatusCode.noContent
+						}
+					}
+				]
+			}
+		],
+		skipAuth: true,
+		skipTenant: true
+	};
+
+	const removeDatasetRoute: IRestRoute<IDatasetRemoveRequest, IDatasetRemoveResponse> = {
+		operationId: "removeDataset",
+		summary: "Remove a dataset from the catalogue by ID",
+		tag: tagsFederatedCatalogue[0].name,
+		method: "DELETE",
+		path: `${baseRouteName}/datasets/:datasetId`,
+		handler: async (httpRequestContext, request) =>
+			removeDataset(httpRequestContext, componentName, request),
+		requestType: {
+			type: nameof<IDatasetRemoveRequest>(),
+			examples: [
+				{
+					id: "removeDatasetRequestExample",
+					request: {
+						headers: {
+							[HeaderTypes.Authorization]: "Bearer <trust-token>"
+						},
+						pathParams: {
+							datasetId: "urn:uuid:dataset-123"
+						}
+					}
+				}
+			]
+		},
+		responseType: [
+			{
+				type: nameof<IDatasetRemoveResponse>(),
+				examples: [
+					{
+						id: "removeDatasetResponseExample",
+						response: {
+							statusCode: HttpStatusCode.noContent
+						}
+					}
+				]
+			}
+		],
+		skipAuth: true,
+		skipTenant: true
+	};
+
+	return [catalogRequestRoute, getDatasetRoute, setDatasetRoute, removeDatasetRoute];
 }
 
 /**
@@ -196,6 +299,8 @@ async function catalogRequest(
 		Guards.object(ROUTES_SOURCE, nameof(request.body), request.body);
 		Guards.stringValue(ROUTES_SOURCE, "@type", request.body["@type"]);
 
+		const trustPayload = HeaderHelper.extractBearer(request.headers?.[HeaderTypes.Authorization]);
+
 		const hostingComponent = ComponentFactory.get<IHostingComponent>(
 			httpRequestContext.hostingComponentType ?? "hosting"
 		);
@@ -205,7 +310,8 @@ async function catalogRequest(
 		const result = await component.query(
 			request.body.filter,
 			request.query?.cursor,
-			Coerce.integer(request.query?.limit)
+			Coerce.integer(request.query?.limit),
+			trustPayload
 		);
 
 		const headers: ICatalogRequestResponse["headers"] = {};
@@ -242,10 +348,10 @@ async function catalogRequest(
 async function getDataset(
 	httpRequestContext: IHttpRequestContext,
 	componentName: string,
-	request: IGetDatasetRequest
-): Promise<IGetDatasetResponse> {
+	request: IDatasetGetRequest
+): Promise<IDatasetGetResponse> {
 	try {
-		Guards.object<IGetDatasetRequest>(ROUTES_SOURCE, nameof(request), request);
+		Guards.object<IDatasetGetRequest>(ROUTES_SOURCE, nameof(request), request);
 		Guards.object(ROUTES_SOURCE, nameof(request.pathParams), request.pathParams);
 		Guards.stringValue(
 			ROUTES_SOURCE,
@@ -253,12 +359,98 @@ async function getDataset(
 			request.pathParams.datasetId
 		);
 
+		const trustPayload = HeaderHelper.extractBearer(request.headers?.[HeaderTypes.Authorization]);
+
 		const component: IFederatedCatalogueComponent = ComponentFactory.get(componentName);
 
-		const result = await component.get(request.pathParams.datasetId);
+		const result = await component.get(request.pathParams.datasetId, trustPayload);
 
 		return {
 			statusCode: transformErrorToStatusCode(result),
+			body: result
+		};
+	} catch (error) {
+		const catalogError = transformToCatalogError(error);
+		return {
+			statusCode: transformErrorToStatusCode(catalogError) ?? HttpStatusCode.badRequest,
+			body: catalogError
+		};
+	}
+}
+
+/**
+ * Handle the set dataset operation.
+ * @param httpRequestContext The request context for the operation.
+ * @param componentName The name of the component to use.
+ * @param request The request.
+ * @returns The response.
+ */
+async function setDataset(
+	httpRequestContext: IHttpRequestContext,
+	componentName: string,
+	request: IDatasetSetRequest
+): Promise<IDatasetSetResponse> {
+	try {
+		Guards.object<IDatasetSetRequest>(ROUTES_SOURCE, nameof(request), request);
+		Guards.object(ROUTES_SOURCE, nameof(request.body), request.body);
+
+		const trustPayload = HeaderHelper.extractBearer(request.headers?.[HeaderTypes.Authorization]);
+
+		const component: IFederatedCatalogueComponent = ComponentFactory.get(componentName);
+
+		const result = await component.set(request.body, trustPayload);
+
+		if (Is.stringValue(result)) {
+			return {
+				statusCode: HttpStatusCode.created,
+				headers: {
+					[HeaderTypes.Location]: Coerce.string(result)
+				}
+			};
+		}
+
+		return {
+			statusCode: transformErrorToStatusCode(result),
+			body: result
+		};
+	} catch (error) {
+		const catalogError = transformToCatalogError(error);
+		return {
+			statusCode: transformErrorToStatusCode(catalogError) ?? HttpStatusCode.badRequest,
+			body: catalogError
+		};
+	}
+}
+
+/**
+ * Handle the remove dataset operation.
+ * @param httpRequestContext The request context for the operation.
+ * @param componentName The name of the component to use.
+ * @param request The request.
+ * @returns The response.
+ */
+async function removeDataset(
+	httpRequestContext: IHttpRequestContext,
+	componentName: string,
+	request: IDatasetRemoveRequest
+): Promise<IDatasetRemoveResponse> {
+	try {
+		Guards.object<IDatasetRemoveRequest>(ROUTES_SOURCE, nameof(request), request);
+		Guards.object(ROUTES_SOURCE, nameof(request.pathParams), request.pathParams);
+		Guards.stringValue(
+			ROUTES_SOURCE,
+			nameof(request.pathParams.datasetId),
+			request.pathParams.datasetId
+		);
+
+		const trustPayload = HeaderHelper.extractBearer(request.headers?.[HeaderTypes.Authorization]);
+
+		const component: IFederatedCatalogueComponent = ComponentFactory.get(componentName);
+
+		const result = await component.remove(request.pathParams.datasetId, trustPayload);
+
+		return {
+			statusCode: transformErrorToStatusCode(result) ?? HttpStatusCode.noContent,
 			body: result
 		};
 	} catch (error) {

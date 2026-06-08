@@ -1,7 +1,6 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 import type { IUrlTransformerComponent } from "@twin.org/api-models";
-import { ContextIdHelper, ContextIdKeys, ContextIdStore } from "@twin.org/context";
 import {
 	ArrayHelper,
 	BaseError,
@@ -11,6 +10,7 @@ import {
 	Guards,
 	Is,
 	JsonHelper,
+	Mutex,
 	NotFoundError,
 	ObjectHelper,
 	Url,
@@ -23,8 +23,10 @@ import {
 	EntityStorageConnectorFactory,
 	type IEntityStorageConnector
 } from "@twin.org/entity-storage-models";
-import type { IFederatedCatalogueComponent } from "@twin.org/federated-catalogue-models";
-import { FederatedCatalogueFilterFactory } from "@twin.org/federated-catalogue-models";
+import {
+	FederatedCatalogueFilterFactory,
+	type IFederatedCatalogueComponent
+} from "@twin.org/federated-catalogue-models";
 import type { ILoggingComponent } from "@twin.org/logging-models";
 import { nameof } from "@twin.org/nameof";
 import {
@@ -44,6 +46,11 @@ import {
 	type IDcatDataset
 } from "@twin.org/standards-w3c-dcat";
 import { OdrlContexts } from "@twin.org/standards-w3c-odrl";
+import {
+	TrustHelper,
+	type ITrustComponent,
+	type ITrustVerificationInfo
+} from "@twin.org/trust-models";
 import type { Dataset } from "../entities/dataset.js";
 import type { IFederatedCatalogueServiceConstructorOptions } from "../models/IFederatedCatalogueServiceConstructorOptions.js";
 import { transformToCatalogError } from "../utils/catalogErrorUtils.js";
@@ -78,10 +85,10 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	private readonly _urlTransformerComponent: IUrlTransformerComponent;
 
 	/**
-	 * The node identity.
+	 * The trust component for token verification and generation.
 	 * @internal
 	 */
-	private _nodeId?: string;
+	private readonly _trustComponent: ITrustComponent;
 
 	/**
 	 * Create a new instance of FederatedCatalogueService.
@@ -98,6 +105,10 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 
 		this._urlTransformerComponent = ComponentFactory.get<IUrlTransformerComponent>(
 			options?.urlTransformerComponentType ?? "url-transformer"
+		);
+
+		this._trustComponent = ComponentFactory.get<ITrustComponent>(
+			options?.trustComponentType ?? "trust"
 		);
 
 		// Register JSON-LD redirects for offline processing
@@ -119,36 +130,31 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	}
 
 	/**
-	 * Start the federated catalogue service.
-	 * @returns Nothing.
-	 */
-	public async start(): Promise<void> {
-		const contextIds = await ContextIdStore.getContextIds();
-		ContextIdHelper.guard(contextIds, ContextIdKeys.Node);
-		this._nodeId = contextIds[ContextIdKeys.Node];
-	}
-
-	/**
 	 * Retrieve a dataset by its unique identifier.
-	 * @param dataSetId The unique identifier of the dataset.
+	 * @param datasetId The unique identifier of the dataset.
+	 * @param trustPayload Optional payload for trust evaluation, if applicable.
 	 * @returns The dataset if found, or a CatalogError if not found or an error occurs.
 	 */
-	public async get(dataSetId: string): Promise<IDcatDataset | IDataspaceProtocolCatalogError> {
+	public async get(
+		datasetId: string,
+		trustPayload: unknown
+	): Promise<IDcatDataset | IDataspaceProtocolCatalogError> {
 		try {
-			Guards.stringValue(FederatedCatalogueService.CLASS_NAME, nameof(dataSetId), dataSetId);
+			Guards.stringValue(FederatedCatalogueService.CLASS_NAME, nameof(datasetId), datasetId);
+			await TrustHelper.verifyTrust(this._trustComponent, trustPayload, "get");
 
 			await this._logging?.log({
 				level: "info",
 				source: FederatedCatalogueService.CLASS_NAME,
 				ts: Date.now(),
 				message: "datasetRetrieve",
-				data: { dataSetId }
+				data: { datasetId }
 			});
 
-			const datasetEntity = await this._datasetStorage.get(dataSetId);
+			const datasetEntity = await this._datasetStorage.get(datasetId);
 
 			if (!datasetEntity) {
-				throw new NotFoundError(FederatedCatalogueService.CLASS_NAME, "datasetNotFound", dataSetId);
+				throw new NotFoundError(FederatedCatalogueService.CLASS_NAME, "datasetNotFound", datasetId);
 			}
 
 			const dataset = datasetEntityToModel(datasetEntity);
@@ -168,128 +174,184 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 
 	/**
 	 * Insert or update a dataset in the catalogue.
-	 * This method is internal and should not be exposed via REST endpoints.
-	 * @param dataSet The dataset to store.
+	 * @param dataset The dataset to store.
+	 * @param trustPayload Optional payload for trust evaluation, if applicable.
+	 * @returns The unique identifier of the stored dataset, or a CatalogError if an error occurs.
 	 */
-	public async set(dataSet: IDcatDataset): Promise<void> {
-		Guards.object(FederatedCatalogueService.CLASS_NAME, nameof(dataSet), dataSet);
+	public async set(
+		dataset: IDcatDataset,
+		trustPayload: unknown
+	): Promise<string | IDataspaceProtocolCatalogError> {
+		try {
+			Guards.object(FederatedCatalogueService.CLASS_NAME, nameof(dataset), dataset);
 
-		// Normalize @id from dcterms:identifier if provided
-		const dataSetId = dataSet["@id"] ?? dataSet["dcterms:identifier"];
-		Guards.stringValue(FederatedCatalogueService.CLASS_NAME, nameof(dataSetId), dataSetId);
+			const trustInfo = await TrustHelper.verifyTrust(this._trustComponent, trustPayload, "set");
 
-		// Set @id if it was derived from dcterms:identifier
-		if (Is.empty(dataSet["@id"]) && !Is.empty(dataSet["dcterms:identifier"])) {
-			dataSet["@id"] = dataSetId;
-		}
+			// Normalize @id from dcterms:identifier if provided
+			const datasetId = dataset["@id"] ?? dataset["dcterms:identifier"];
+			Guards.stringValue(FederatedCatalogueService.CLASS_NAME, nameof(datasetId), datasetId);
 
-		// Validate @id is a valid URI (URN or URL) per DS Protocol
-		const isValidUrn = !Is.empty(Urn.tryParseExact(dataSetId));
-		const isValidUrl = !Is.empty(Url.tryParseExact(dataSetId));
-		if (!isValidUrn && !isValidUrl) {
-			throw new GeneralError(FederatedCatalogueService.CLASS_NAME, "datasetIdInvalidUri", {
-				dataSetId
-			});
-		}
-
-		// Validate @type exists
-		Guards.stringValue(FederatedCatalogueService.CLASS_NAME, "@type", dataSet["@type"]);
-
-		// Validate dcterms:publisher exists (required for multi-participant catalog)
-		// The publisher is used to derive participantId when returning catalog query results
-		const publisher = dataSet["dcterms:publisher"];
-		if (Is.empty(publisher)) {
-			throw new GeneralError(FederatedCatalogueService.CLASS_NAME, "datasetMissingPublisher", {
-				dataSetId
-			});
-		}
-
-		// DS Protocol compliance validation
-		const validationFailures = await DataspaceProtocolHelper.validate(
-			JsonLdHelper.toNodeObject(dataSet)
-		);
-
-		Validation.asValidationError(
-			FederatedCatalogueService.CLASS_NAME,
-			"dataSet",
-			validationFailures
-		);
-
-		// Normalize dataset for storage using JSON-LD compaction
-		// This ensures the dataset uses prefixed properties that entity storage expects
-		// Entity storage schema uses DCAT-prefixed properties (dcat:distribution, not distribution)
-		// Use a standard context with prefixes to ensure proper normalization
-		const storageContext: DcatContextType = {
-			dcat: DcatContexts.Namespace,
-			dcterms: DublinCoreContexts.NamespaceTerms,
-			odrl: OdrlContexts.Namespace
-		};
-		const normalizedDataset = await JsonLdProcessor.compact(dataSet, storageContext);
-
-		const datasetEntity = datasetModelToEntity(
-			normalizedDataset,
-			this._nodeId ?? "",
-			new Date().toISOString()
-		);
-
-		// Capture the publishing tenant from the current request context.
-		const setContextIds = await ContextIdStore.getContextIds();
-		const setTenantId = setContextIds?.[ContextIdKeys.Tenant];
-		if (Is.stringValue(setTenantId)) {
-			datasetEntity.tenantId = setTenantId;
-
-			// Bake the publishing tenant token into distribution accessService URLs
-			await this.bakeTenantTokenIntoDistributions(datasetEntity, setTenantId);
-		}
-
-		// Skip update if entity content hasn't changed to avoid unnecessary sync
-		const existingEntity = await this._datasetStorage.get(dataSetId);
-		if (existingEntity) {
-			const existingContent = ObjectHelper.omit(existingEntity, ["nodeIdentity", "dateModified"]);
-			const newContent = ObjectHelper.omit(datasetEntity, ["nodeIdentity", "dateModified"]);
-
-			if (ObjectHelper.equal(existingContent, newContent, false)) {
-				return;
+			// Set @id if it was derived from dcterms:identifier
+			if (Is.empty(dataset["@id"]) && !Is.empty(dataset["dcterms:identifier"])) {
+				dataset["@id"] = datasetId;
 			}
-		}
 
-		await this._logging?.log({
-			level: "info",
-			source: FederatedCatalogueService.CLASS_NAME,
-			ts: Date.now(),
-			message: "datasetSet",
-			data: { dataSetId }
-		});
+			// Validate @id is a valid URI (URN or URL) per DS Protocol
+			const isValidUrn = !Is.empty(Urn.tryParseExact(datasetId));
+			const isValidUrl = !Is.empty(Url.tryParseExact(datasetId));
+			if (!isValidUrn && !isValidUrl) {
+				throw new GeneralError(FederatedCatalogueService.CLASS_NAME, "datasetIdInvalidUri", {
+					datasetId
+				});
+			}
 
-		const allIndexes: { [key: string]: unknown } = {};
-		const filterNames = FederatedCatalogueFilterFactory.names();
-		for (const filterType of filterNames) {
+			// Validate @type exists
+			Guards.stringValue(FederatedCatalogueService.CLASS_NAME, "@type", dataset["@type"]);
+
+			// Validate dcterms:publisher exists (required for multi-participant catalog)
+			// The publisher is used to derive participantId when returning catalog query results
+			const publisher = dataset["dcterms:publisher"];
+			if (Is.empty(publisher)) {
+				throw new GeneralError(FederatedCatalogueService.CLASS_NAME, "datasetMissingPublisher", {
+					datasetId
+				});
+			}
+
+			// DS Protocol compliance validation
+			const validationFailures = await DataspaceProtocolHelper.validate(
+				JsonLdHelper.toNodeObject(dataset)
+			);
+
+			Validation.asValidationError(
+				FederatedCatalogueService.CLASS_NAME,
+				"dataset",
+				validationFailures
+			);
+
+			// Normalize dataset for storage using JSON-LD compaction
+			// This ensures the dataset uses prefixed properties that entity storage expects
+			// Entity storage schema uses DCAT-prefixed properties (dcat:distribution, not distribution)
+			// Use a standard context with prefixes to ensure proper normalization
+			const storageContext: DcatContextType = {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			};
+			const normalizedDataset = await JsonLdProcessor.compact(dataset, storageContext);
+
+			const datasetEntity = datasetModelToEntity(normalizedDataset);
+
+			datasetEntity.ownerId = this.buildCompositeOwnerId(trustInfo);
+			if (Is.stringValue(trustInfo.tenantId)) {
+				datasetEntity.tenantId = trustInfo.tenantId;
+			}
+
+			// Serialise the read-check-write cycle so concurrent requests for the
+			// same dataset cannot both pass the ownership check and overwrite each other.
+			await Mutex.lock(datasetId);
 			try {
-				const filter = FederatedCatalogueFilterFactory.get(filterType);
-				const filterIndexes = await filter.createIndex(dataSet);
+				const existingEntity = await this._datasetStorage.get(datasetId);
+				if (
+					existingEntity &&
+					Is.stringValue(existingEntity.ownerId) &&
+					existingEntity.ownerId !== datasetEntity.ownerId
+				) {
+					throw new GeneralError(FederatedCatalogueService.CLASS_NAME, "datasetOwnerMismatch", {
+						datasetId
+					});
+				}
 
-				allIndexes[filterType] = filterIndexes;
+				// Bake the publishing tenant token into distribution accessService URLs
+				// (done inside the lock, after ownership passes, so wasted work is avoided)
+				if (Is.stringValue(trustInfo.tenantId)) {
+					await this.bakeTenantTokenIntoDistributions(datasetEntity, trustInfo.tenantId);
+				}
 
 				await this._logging?.log({
 					level: "info",
 					source: FederatedCatalogueService.CLASS_NAME,
 					ts: Date.now(),
-					message: "filterIndexPersisted",
-					data: { dataSetId, filterType, indexCount: Object.keys(filterIndexes).length }
+					message: "datasetSet",
+					data: { datasetId }
 				});
-			} catch (error) {
+
+				const filterNames = FederatedCatalogueFilterFactory.names();
+				for (const filterType of filterNames) {
+					try {
+						const filter = FederatedCatalogueFilterFactory.get(filterType);
+						const filterIndexes = await filter.createIndex(normalizedDataset);
+
+						await this._logging?.log({
+							level: "info",
+							source: FederatedCatalogueService.CLASS_NAME,
+							ts: Date.now(),
+							message: "filterIndexPersisted",
+							data: { datasetId, filterType, indexCount: Object.keys(filterIndexes).length }
+						});
+					} catch (error) {
+						await this._logging?.log({
+							level: "error",
+							source: FederatedCatalogueService.CLASS_NAME,
+							ts: Date.now(),
+							message: "filterIndexCreationFailed",
+							data: { datasetId, filterType },
+							error: BaseError.fromError(error)
+						});
+					}
+				}
+
+				await this._datasetStorage.set(datasetEntity);
+
+				return datasetId;
+			} finally {
+				Mutex.unlock(datasetId);
+			}
+		} catch (error) {
+			return transformToCatalogError(error);
+		}
+	}
+
+	/**
+	 * Remove a dataset from the catalogue by its unique identifier.
+	 * Indexes are automatically removed as they are stored with the dataset.
+	 * @param datasetId The unique identifier of the dataset to remove.
+	 * @param trustPayload Optional payload for trust evaluation, if applicable.
+	 * @returns Nothing, or a CatalogError if an error occurs.
+	 */
+	public async remove(
+		datasetId: string,
+		trustPayload: unknown
+	): Promise<IDataspaceProtocolCatalogError | undefined> {
+		try {
+			Guards.stringValue(FederatedCatalogueService.CLASS_NAME, nameof(datasetId), datasetId);
+
+			const trustInfo = await TrustHelper.verifyTrust(this._trustComponent, trustPayload, "remove");
+			const ownerId = this.buildCompositeOwnerId(trustInfo);
+
+			await Mutex.lock(datasetId);
+			try {
+				const existingEntity = await this._datasetStorage.get(datasetId);
+				if (Is.stringValue(existingEntity?.ownerId) && existingEntity.ownerId !== ownerId) {
+					throw new GeneralError(FederatedCatalogueService.CLASS_NAME, "datasetRemoveNotOwner", {
+						datasetId
+					});
+				}
+
 				await this._logging?.log({
-					level: "error",
+					level: "info",
 					source: FederatedCatalogueService.CLASS_NAME,
 					ts: Date.now(),
-					message: "filterIndexCreationFailed",
-					data: { dataSetId, filterType },
-					error: BaseError.fromError(error)
+					message: "datasetRemove",
+					data: { datasetId }
 				});
-			}
-		}
 
-		await this._datasetStorage.set(datasetEntity);
+				await this._datasetStorage.remove(datasetId);
+			} finally {
+				Mutex.unlock(datasetId);
+			}
+		} catch (error) {
+			return transformToCatalogError(error);
+		}
 	}
 
 	/**
@@ -306,18 +368,22 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * @param filter The filter criteria containing @type, optional cursor and limit properties.
 	 * @param cursor Optional cursor for pagination.
 	 * @param limit Optional limit for pagination.
+	 * @param trustPayload Optional payload for trust evaluation, if applicable.
 	 * @returns Complete IDataspaceProtocolCatalog with @context, @id, @type, participantId, dataset/catalog,
 	 * or CatalogError if validation fails or an error occurs.
 	 */
 	public async query(
-		filter?: unknown[],
-		cursor?: string,
-		limit?: number
+		filter: unknown[] | undefined,
+		cursor: string | undefined,
+		limit: number | undefined,
+		trustPayload: unknown
 	): Promise<{
 		result: IDataspaceProtocolCatalog | IDataspaceProtocolCatalogError;
 		cursor?: string;
 	}> {
 		try {
+			const trustInfo = await TrustHelper.verifyTrust(this._trustComponent, trustPayload, "query");
+
 			let datasets: IDcatDataset[];
 			let resultCursor: string | undefined;
 
@@ -326,8 +392,15 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			}
 
 			if (!Is.arrayValue(filter)) {
-				const result = await this._datasetStorage.query();
+				const result = await this._datasetStorage.query(
+					undefined,
+					undefined,
+					undefined,
+					cursor,
+					limit
+				);
 				datasets = result.entities.map(entity => datasetEntityToModel(entity));
+				resultCursor = result.cursor;
 			} else if (filter.length > 1) {
 				throw new GeneralError(FederatedCatalogueService.CLASS_NAME, "multipleFiltersNotSupported");
 			} else {
@@ -367,9 +440,9 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 				throw new NotFoundError(FederatedCatalogueService.CLASS_NAME, "noDatasetsFound");
 			}
 
-			// Get requesting participant from context (organizationId maps to participantId)
-			const contextIds = await ContextIdStore.getContextIds();
-			let requestingParticipantId = contextIds?.[ContextIdKeys.Organization];
+			// Get requesting participant from verified trust info (organizationId maps to participantId).
+			// For local calls this comes from ContextIdStore; for REST calls from the trust token claim.
+			let requestingParticipantId = trustInfo.organizationId;
 
 			// Group datasets by dcterms:publisher (participantId)
 			const datasetsByParticipant = new Map<string, IDcatDataset[]>();
@@ -458,25 +531,6 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	}
 
 	/**
-	 * Remove a dataset from the catalogue by its unique identifier.
-	 * Indexes are automatically removed as they are stored with the dataset.
-	 * @param dataSetId The unique identifier of the dataset to remove.
-	 */
-	public async remove(dataSetId: string): Promise<void> {
-		Guards.stringValue(FederatedCatalogueService.CLASS_NAME, nameof(dataSetId), dataSetId);
-
-		await this._logging?.log({
-			level: "info",
-			source: FederatedCatalogueService.CLASS_NAME,
-			ts: Date.now(),
-			message: "datasetRemove",
-			data: { dataSetId }
-		});
-
-		await this._datasetStorage.remove(dataSetId);
-	}
-
-	/**
 	 * Extract publisher from dataset.
 	 * Publisher can be a string or an IFoafAgent object with @id.
 	 * @param dataset The dataset to extract publisher from.
@@ -539,5 +593,20 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		const canonicalBytes = Converter.utf8ToBytes(canonicalContent);
 		const catalogHash = Converter.bytesToHex(Blake2b.sum256(canonicalBytes));
 		return `urn:x-catalog:${catalogHash}`;
+	}
+
+	/**
+	 * Build a composite owner ID by combining the node identifier and tenant ID.
+	 * @param trustInfo The trust verification information containing the node and tenant IDs.
+	 * @returns A composite owner ID string in the format "node:tenantId" if tenantId is provided, or just "node" if tenantId is not provided.
+	 * @internal
+	 */
+	private buildCompositeOwnerId(trustInfo: ITrustVerificationInfo): string {
+		const node = trustInfo.identity;
+		const tenantId = trustInfo.tenantId;
+		if (Is.stringValue(tenantId)) {
+			return `${node}:${tenantId}`;
+		}
+		return node;
 	}
 }

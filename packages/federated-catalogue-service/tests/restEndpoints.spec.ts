@@ -15,8 +15,8 @@ import {
 	type ICatalogRequestRequest,
 	type ICatalogRequestResponse,
 	type IFederatedCatalogueComponent,
-	type IGetDatasetRequest,
-	type IGetDatasetResponse
+	type IDatasetGetRequest,
+	type IDatasetGetResponse
 } from "@twin.org/federated-catalogue-models";
 import { nameof } from "@twin.org/nameof";
 import {
@@ -75,6 +75,16 @@ describe("Federated Catalogue REST Endpoints", () => {
 			addEncryptedQueryParamToUrl: async (url: string, id: string, value: string) =>
 				`${url}${url.includes("?") ? "&" : "?"}x-enc-${id}=${value}`
 		}));
+
+		// Mock trust component: always verifies, returns a fixed identity
+		ComponentFactory.register("trust", () => ({
+			className: () => "MockTrustComponent",
+			verify: async () => ({
+				verified: true,
+				info: { identity: "did:example:test-node" }
+			}),
+			generate: async () => "mock-trust-token"
+		}));
 	});
 
 	beforeEach(async () => {
@@ -99,16 +109,134 @@ describe("Federated Catalogue REST Endpoints", () => {
 				datasets: [],
 				cursor: undefined
 			}),
-			createIndex: async dataSet => ({})
+			createIndex: async dataset => ({})
 		}));
 
-		// Create fresh service instance
+		// Create fresh service instances
 		service = new FederatedCatalogueService({
 			datasetEntityStorageType: "dataset"
 		});
 
 		// Register service in ComponentFactory
 		ComponentFactory.register("federated-catalogue", () => service);
+	});
+
+	describe("Trust Token Authentication", () => {
+		test("catalogRequest route has skipAuth: true (framework JWT middleware bypassed)", () => {
+			const routes = generateRestRoutesFederatedCatalogue("/catalog", "federated-catalogue");
+			expect(routes.find(r => r.operationId === "catalogRequest")?.skipAuth).toBe(true);
+		});
+
+		test("getDataset route has skipAuth: true (framework JWT middleware bypassed)", () => {
+			const routes = generateRestRoutesFederatedCatalogue("/catalog", "federated-catalogue");
+			expect(routes.find(r => r.operationId === "getDataset")?.skipAuth).toBe(true);
+		});
+
+		test("catalogRequest returns 401 when trust token verification fails", async () => {
+			ComponentFactory.register("failing-trust", () => ({
+				className: () => "FailingTrustComponent",
+				verify: async () => ({ verified: false }),
+				generate: async () => "token"
+			}));
+
+			const failingService = new FederatedCatalogueService({
+				datasetEntityStorageType: "dataset",
+				trustComponentType: "failing-trust"
+			});
+			ComponentFactory.register("failing-federated-catalogue", () => failingService);
+
+			const routes = generateRestRoutesFederatedCatalogue(
+				"/catalog",
+				"failing-federated-catalogue"
+			);
+			const route = routes.find(r => r.operationId === "catalogRequest");
+
+			const request: ICatalogRequestRequest = {
+				headers: { [HeaderTypes.Authorization]: "Bearer invalid-token" },
+				body: {
+					"@context": [DataspaceProtocolContexts.Context],
+					"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage
+				}
+			};
+
+			const response = (await route?.handler({} as never, request)) as ICatalogRequestResponse;
+			expect(response.statusCode).toBe(401);
+			expect(response.body["@type"]).toBe(DataspaceProtocolCatalogTypes.CatalogError);
+		});
+
+		test("getDataset returns 401 when trust token verification fails", async () => {
+			ComponentFactory.register("failing-trust2", () => ({
+				className: () => "FailingTrustComponent2",
+				verify: async () => ({ verified: false }),
+				generate: async () => "token"
+			}));
+
+			const failingService2 = new FederatedCatalogueService({
+				datasetEntityStorageType: "dataset",
+				trustComponentType: "failing-trust2"
+			});
+			ComponentFactory.register("failing-federated-catalogue2", () => failingService2);
+
+			const routes = generateRestRoutesFederatedCatalogue(
+				"/catalog",
+				"failing-federated-catalogue2"
+			);
+			const route = routes.find(r => r.operationId === "getDataset");
+
+			const request: IDatasetGetRequest = {
+				headers: { [HeaderTypes.Authorization]: "Bearer invalid-token" },
+				pathParams: { datasetId: "urn:uuid:any-id" }
+			};
+
+			const response = (await route?.handler({} as never, request)) as IDatasetGetResponse;
+			expect(response.statusCode).toBe(401);
+			expect(response.body["@type"]).toBe(DataspaceProtocolCatalogTypes.CatalogError);
+		});
+
+		test("catalogRequest succeeds when trust token is valid", async () => {
+			const dataset = {
+				"@context": {
+					dcat: DcatContexts.Namespace,
+					dcterms: DublinCoreContexts.NamespaceTerms,
+					odrl: OdrlContexts.Namespace
+				},
+				"@id": "urn:uuid:auth-test-dataset",
+				"@type": DcatClasses.Dataset,
+				"dcterms:publisher": "https://example.com/participants/auth-pub",
+				"dcat:distribution": {
+					"@type": "dcat:Distribution",
+					"@id": "urn:uuid:auth-dist",
+					"dcterms:format": "application/json",
+					"dcat:accessService": "https://example.com/services/auth-service"
+				},
+				"odrl:hasPolicy": {
+					"@context": OdrlContexts.Context,
+					"@type": "Offer",
+					uid: "urn:uuid:auth-policy",
+					assigner: "https://example.com/participants/auth-pub",
+					permission: [{ action: "use" }]
+				}
+			} as unknown as IDcatDataset;
+
+			await service.set(dataset, "mock-trust-token");
+
+			const routes = generateRestRoutesFederatedCatalogue("/catalog", "federated-catalogue");
+			const route = routes.find(r => r.operationId === "catalogRequest");
+
+			const request: ICatalogRequestRequest = {
+				headers: { authorization: "Bearer mock-valid-token" },
+				body: {
+					"@context": [DataspaceProtocolContexts.Context],
+					"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage,
+					filter: []
+				}
+			};
+
+			const response = (await route?.handler({} as never, request)) as ICatalogRequestResponse;
+			// Valid token → catalog response, not 401
+			expect(response.statusCode).not.toBe(401);
+			expect(response.body["@type"]).not.toBe(DataspaceProtocolCatalogTypes.CatalogError);
+		});
 	});
 
 	afterAll(() => {
@@ -145,7 +273,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 				}
 			} as unknown as IDcatDataset;
 
-			await service.set(dataset);
+			await service.set(dataset, "mock-trust-token");
 
 			// Generate routes
 			const routes = generateRestRoutesFederatedCatalogue("/catalog", "federated-catalogue");
@@ -157,6 +285,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 
 			// Prepare request
 			const request: ICatalogRequestRequest = {
+				headers: { [HeaderTypes.Authorization]: "Bearer mock-trust-token" },
 				body: {
 					"@context": [DataspaceProtocolContexts.Context],
 					"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage,
@@ -219,7 +348,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 				}
 			} as unknown as IDcatDataset;
 
-			await service.set(dataset);
+			await service.set(dataset, "mock-trust-token");
 
 			FederatedCatalogueFilterFactory.clear();
 			// The real FilterByExample calls datasetEntityToModel() internally before returning.
@@ -231,10 +360,11 @@ describe("Federated Catalogue REST Endpoints", () => {
 					datasets: [dataset] as IDcatDataset[],
 					cursor: undefined
 				}),
-				createIndex: async dataSet => ({})
+				createIndex: async dataset2 => ({})
 			}));
 
 			const request: ICatalogRequestRequest = {
+				headers: { [HeaderTypes.Authorization]: "Bearer mock-trust-token" },
 				body: {
 					"@context": [DataspaceProtocolContexts.Context],
 					"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage,
@@ -297,6 +427,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			expect(catalogRequestRoute?.path).toBe("/catalog/request");
 			expect(catalogRequestRoute?.tag).toBe(tagsFederatedCatalogue[0].name);
 			expect(catalogRequestRoute?.summary).toBe("Query the federated catalogue for datasets");
+			expect(catalogRequestRoute?.skipAuth).toBe(true);
 		});
 	});
 
@@ -329,7 +460,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 				}
 			} as unknown as IDcatDataset;
 
-			await service.set(dataset);
+			await service.set(dataset, "mock-trust-token");
 
 			// Generate routes
 			const routes = generateRestRoutesFederatedCatalogue("/catalog", "federated-catalogue");
@@ -342,14 +473,15 @@ describe("Federated Catalogue REST Endpoints", () => {
 			}
 
 			// Prepare request
-			const request: IGetDatasetRequest = {
+			const request: IDatasetGetRequest = {
+				headers: { [HeaderTypes.Authorization]: "Bearer mock-trust-token" },
 				pathParams: {
 					datasetId: "urn:uuid:dataset-123"
 				}
 			};
 
 			// Execute handler
-			const response = (await getDatasetRoute.handler({} as never, request)) as IGetDatasetResponse;
+			const response = (await getDatasetRoute.handler({} as never, request)) as IDatasetGetResponse;
 
 			// Verify response
 			expect(response).toBeDefined();
@@ -379,14 +511,15 @@ describe("Federated Catalogue REST Endpoints", () => {
 			}
 
 			// Prepare request with non-existent ID
-			const request: IGetDatasetRequest = {
+			const request: IDatasetGetRequest = {
+				headers: { [HeaderTypes.Authorization]: "Bearer mock-trust-token" },
 				pathParams: {
 					datasetId: "urn:uuid:non-existent"
 				}
 			};
 
 			// Execute handler - should return CatalogError
-			const response = (await getDatasetRoute.handler({} as never, request)) as IGetDatasetResponse;
+			const response = (await getDatasetRoute.handler({} as never, request)) as IDatasetGetResponse;
 
 			// Verify it's a CatalogError with 404 status
 			expect(response.statusCode).toBe(404);
@@ -403,11 +536,11 @@ describe("Federated Catalogue REST Endpoints", () => {
 			}
 
 			// Test with missing pathParams - should return CatalogError, not throw
-			const invalidRequest1 = {} as IGetDatasetRequest;
+			const invalidRequest1 = {} as IDatasetGetRequest;
 			const response1 = (await getDatasetRoute.handler(
 				{} as never,
 				invalidRequest1
-			)) as IGetDatasetResponse;
+			)) as IDatasetGetResponse;
 
 			expect(response1.statusCode).toBe(400);
 			expect(response1.body["@type"]).toBe(DataspaceProtocolCatalogTypes.CatalogError);
@@ -421,7 +554,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			const response2 = (await getDatasetRoute.handler(
 				{} as never,
 				invalidRequest2
-			)) as IGetDatasetResponse;
+			)) as IDatasetGetResponse;
 
 			expect(response2.statusCode).toBe(400);
 			expect(response2.body["@type"]).toBe(DataspaceProtocolCatalogTypes.CatalogError);
@@ -436,6 +569,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			expect(getDatasetRoute?.path).toBe("/catalog/datasets/:datasetId");
 			expect(getDatasetRoute?.tag).toBe(tagsFederatedCatalogue[0].name);
 			expect(getDatasetRoute?.summary).toBe("Retrieve a specific dataset by ID");
+			expect(getDatasetRoute?.skipAuth).toBe(true);
 		});
 	});
 
@@ -451,6 +585,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 
 			// Prepare request
 			const request: ICatalogRequestRequest = {
+				headers: { [HeaderTypes.Authorization]: "Bearer mock-trust-token" },
 				body: {
 					"@context": [DataspaceProtocolContexts.Context],
 					"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage
@@ -503,11 +638,11 @@ describe("Federated Catalogue REST Endpoints", () => {
 						permission: [{ action: "use" }]
 					}
 				} as unknown as IDcatDataset;
-				await testService.set(dataset);
+				await testService.set(dataset, "mock-trust-token");
 			}
 
 			// Call service.query directly with no filter to get catalog with all datasets
-			const catalog = await testService.query();
+			const catalog = await testService.query(undefined, undefined, undefined, "mock-trust-token");
 
 			// Manually add a cursor to simulate pagination
 			(catalog as { cursor?: string }).cursor = "test-cursor-token-abc123";
@@ -708,9 +843,11 @@ describe("Federated Catalogue REST Endpoints", () => {
 		test("Generates all expected routes", () => {
 			const routes = generateRestRoutesFederatedCatalogue("/catalog", "federated-catalogue");
 
-			expect(routes.length).toBe(2);
+			expect(routes.length).toBe(4);
 			expect(routes.find(r => r.operationId === "catalogRequest")).toBeDefined();
 			expect(routes.find(r => r.operationId === "getDataset")).toBeDefined();
+			expect(routes.find(r => r.operationId === "setDataset")).toBeDefined();
+			expect(routes.find(r => r.operationId === "removeDataset")).toBeDefined();
 		});
 
 		test("All routes have proper tags", () => {
@@ -754,14 +891,15 @@ describe("Federated Catalogue REST Endpoints", () => {
 			}
 
 			// Prepare request with non-existent ID
-			const request: IGetDatasetRequest = {
+			const request: IDatasetGetRequest = {
+				headers: { [HeaderTypes.Authorization]: "Bearer mock-trust-token" },
 				pathParams: {
 					datasetId: "urn:uuid:non-existent-dataset"
 				}
 			};
 
 			// Execute handler - should return CatalogError with 404 status
-			const response = (await getDatasetRoute.handler({} as never, request)) as IGetDatasetResponse;
+			const response = (await getDatasetRoute.handler({} as never, request)) as IDatasetGetResponse;
 
 			// Verify it's a CatalogError
 			expect(response.body["@type"]).toBe(DataspaceProtocolCatalogTypes.CatalogError);
@@ -786,18 +924,16 @@ describe("Federated Catalogue REST Endpoints", () => {
 			});
 		});
 
-		test("POST /request with missing @context throws GuardError", async () => {
-			// Missing @context should throw GuardError
+		test("POST /request with missing @context returns CatalogError", async () => {
 			const invalidDataset = {
-				// Missing @context
 				"@id": "urn:uuid:invalid-dataset",
 				"@type": DcatClasses.Dataset,
 				"dcterms:title": "Invalid Dataset",
 				"dcterms:publisher": "https://example.com/participants/test-publisher"
 			} as IDcatDataset;
 
-			// Attempt to set invalid dataset - should throw GuardError
-			await expect(service.set(invalidDataset)).rejects.toThrow();
+			const result = await service.set(invalidDataset, "mock-trust-token");
+			expect(result).toMatchObject({ "@type": "CatalogError" });
 		});
 
 		test("POST /request with empty body returns CatalogError", async () => {
@@ -823,7 +959,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 
 		test("Service transforms errors to CatalogError format", async () => {
 			// This test verifies service.get() returns CatalogError for non-existent datasets
-			const result = await service.get("urn:uuid:test-123");
+			const result = await service.get("urn:uuid:test-123", "mock-trust-token");
 
 			// Verify transformation to ICatalogError
 			expect(result["@context"]).toBe(DataspaceProtocolContexts.Context);
@@ -874,10 +1010,10 @@ describe("Federated Catalogue REST Endpoints", () => {
 				}
 			} as unknown as IDcatDataset;
 
-			await service.set(testDataset);
+			await service.set(testDataset, "mock-trust-token");
 
 			// Retrieve the dataset
-			const result = await service.get("urn:uuid:success-test");
+			const result = await service.get("urn:uuid:success-test", "mock-trust-token");
 
 			// DS Protocol context compacts dcat:Dataset to just Dataset
 			expect(result["@type"]).toBe("Dataset");
@@ -1010,7 +1146,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			const getDatasetRoute = routes.find(r => r.operationId === "getDataset");
 			expect(getDatasetRoute).toBeDefined();
 
-			const request: IGetDatasetRequest = {
+			const request: IDatasetGetRequest = {
 				pathParams: {
 					datasetId: ""
 				}
@@ -1019,7 +1155,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			const result = (await getDatasetRoute?.handler(
 				{} as IHttpRequestContext,
 				request
-			)) as IGetDatasetResponse;
+			)) as IDatasetGetResponse;
 
 			// Should return CatalogError, not throw GuardError
 			expect(result.statusCode).toBe(400);
@@ -1058,6 +1194,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			expect(catalogRoute).toBeDefined();
 
 			const request: ICatalogRequestRequest = {
+				headers: { [HeaderTypes.Authorization]: "Bearer mock-trust-token" },
 				body: {
 					"@context": [DataspaceProtocolContexts.Context],
 					"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage,
@@ -1097,6 +1234,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 
 			// Valid CatalogRequestMessage but with filter missing @type
 			const request: ICatalogRequestRequest = {
+				headers: { [HeaderTypes.Authorization]: "Bearer mock-trust-token" },
 				body: {
 					"@context": [DataspaceProtocolContexts.Context],
 					"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage,
@@ -1159,12 +1297,13 @@ describe("Federated Catalogue REST Endpoints", () => {
 					permission: [{ action: "use" }]
 				}
 			};
-			await service.set(testDataset as unknown as IDcatDataset);
+			await service.set(testDataset as unknown as IDcatDataset, "mock-trust-token");
 
 			const catalogRoute = routes.find(r => r.operationId === "catalogRequest");
 			expect(catalogRoute).toBeDefined();
 
 			const request: ICatalogRequestRequest = {
+				headers: { [HeaderTypes.Authorization]: "Bearer mock-trust-token" },
 				body: {
 					"@context": [DataspaceProtocolContexts.Context],
 					"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage,

@@ -43,11 +43,10 @@ describe("FilterByExample", () => {
 	});
 
 	test("Query with empty filter returns all datasets", async () => {
-		// Add test datasets (entity shape: id, nodeIdentity, dateModified)
+		// Add test datasets directly via entity storage (entity shape: id + DCAT fields)
 		const dataset1 = {
 			id: "https://example.com/datasets/test-1",
-			nodeIdentity: "",
-			dateModified: new Date().toISOString(),
+			ownerId: "did:test:owner",
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
@@ -58,8 +57,7 @@ describe("FilterByExample", () => {
 
 		const dataset2 = {
 			id: "https://example.com/datasets/test-2",
-			nodeIdentity: "",
-			dateModified: new Date().toISOString(),
+			ownerId: "did:test:owner",
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
@@ -83,8 +81,7 @@ describe("FilterByExample", () => {
 	test("Query with exact string match", async () => {
 		const dataset1 = {
 			id: "https://example.com/datasets/exact-match-1",
-			nodeIdentity: "",
-			dateModified: new Date().toISOString(),
+			ownerId: "did:test:owner",
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
@@ -96,8 +93,7 @@ describe("FilterByExample", () => {
 
 		const dataset2 = {
 			id: "https://example.com/datasets/exact-match-2",
-			nodeIdentity: "",
-			dateModified: new Date().toISOString(),
+			ownerId: "did:test:owner",
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
@@ -122,8 +118,7 @@ describe("FilterByExample", () => {
 	test("Query with multiple criteria (AND logic)", async () => {
 		const dataset1 = {
 			id: "https://example.com/datasets/multi-criteria-1",
-			nodeIdentity: "",
-			dateModified: new Date().toISOString(),
+			ownerId: "did:test:owner",
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
@@ -136,8 +131,7 @@ describe("FilterByExample", () => {
 
 		const dataset2 = {
 			id: "https://example.com/datasets/multi-criteria-2",
-			nodeIdentity: "",
-			dateModified: new Date().toISOString(),
+			ownerId: "did:test:owner",
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
@@ -163,8 +157,7 @@ describe("FilterByExample", () => {
 	test("Query with nested object properties", async () => {
 		const dataset1 = {
 			id: "https://example.com/datasets/nested-1",
-			nodeIdentity: "",
-			dateModified: new Date().toISOString(),
+			ownerId: "did:test:owner",
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
@@ -179,8 +172,7 @@ describe("FilterByExample", () => {
 
 		const dataset2 = {
 			id: "https://example.com/datasets/nested-2",
-			nodeIdentity: "",
-			dateModified: new Date().toISOString(),
+			ownerId: "did:test:owner",
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
@@ -218,8 +210,7 @@ describe("FilterByExample", () => {
 	test("Query with array property matching", async () => {
 		const dataset1 = {
 			id: "https://example.com/datasets/array-1",
-			nodeIdentity: "",
-			dateModified: new Date().toISOString(),
+			ownerId: "did:test:owner",
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
@@ -231,8 +222,7 @@ describe("FilterByExample", () => {
 
 		const dataset2 = {
 			id: "https://example.com/datasets/array-2",
-			nodeIdentity: "",
-			dateModified: new Date().toISOString(),
+			ownerId: "did:test:owner",
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
@@ -264,8 +254,7 @@ describe("FilterByExample", () => {
 	test("Query returns empty array when no matches", async () => {
 		const dataset = {
 			id: "https://example.com/datasets/no-match",
-			nodeIdentity: "",
-			dateModified: new Date().toISOString(),
+			ownerId: "did:test:owner",
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
@@ -287,8 +276,7 @@ describe("FilterByExample", () => {
 	test("Query handles null and undefined filter values gracefully", async () => {
 		const dataset = {
 			id: "https://example.com/datasets/null-test",
-			nodeIdentity: "",
-			dateModified: new Date().toISOString(),
+			ownerId: "did:test:owner",
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
@@ -311,8 +299,7 @@ describe("FilterByExample", () => {
 	test("Query with @type filter", async () => {
 		const catalogDataset = {
 			id: "https://example.com/datasets/catalog",
-			nodeIdentity: "",
-			dateModified: new Date().toISOString(),
+			ownerId: "did:test:owner",
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
@@ -323,8 +310,7 @@ describe("FilterByExample", () => {
 
 		const regularDataset = {
 			id: "https://example.com/datasets/regular",
-			nodeIdentity: "",
-			dateModified: new Date().toISOString(),
+			ownerId: "did:test:owner",
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
@@ -347,8 +333,7 @@ describe("FilterByExample", () => {
 	test("Query with partial string match in title", async () => {
 		const dataset1 = {
 			id: "https://example.com/datasets/partial-1",
-			nodeIdentity: "",
-			dateModified: new Date().toISOString(),
+			ownerId: "did:test:owner",
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms
@@ -359,8 +344,7 @@ describe("FilterByExample", () => {
 
 		const dataset2 = {
 			id: "https://example.com/datasets/partial-2",
-			nodeIdentity: "",
-			dateModified: new Date().toISOString(),
+			ownerId: "did:test:owner",
 			"@context": {
 				dcat: DcatContexts.Namespace,
 				dcterms: DublinCoreContexts.NamespaceTerms

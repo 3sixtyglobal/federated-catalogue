@@ -10,39 +10,34 @@ describe("FederatedCatalogueRestClient", () => {
 
 	test("query method exists and is callable", () => {
 		const client = new FederatedCatalogueRestClient({ endpoint: "http://localhost:3000" });
-
 		expect(client.query).toBeDefined();
 		expect(typeof client.query).toBe("function");
 	});
 
 	test("get method exists and is callable", () => {
 		const client = new FederatedCatalogueRestClient({ endpoint: "http://localhost:3000" });
-
 		expect(client.get).toBeDefined();
 		expect(typeof client.get).toBe("function");
 	});
 
 	test("get method validates datasetId parameter", async () => {
 		const client = new FederatedCatalogueRestClient({ endpoint: "http://localhost:3000" });
-
-		// Should throw on empty string (Guards validation)
-		await expect(client.get("")).rejects.toThrow();
+		await expect(client.get("", "token")).rejects.toThrow();
 	});
 
-	test("query method accepts various filter parameters", () => {
+	test("set method validates dataset parameter", async () => {
 		const client = new FederatedCatalogueRestClient({ endpoint: "http://localhost:3000" });
+		await expect(client.set(null as never, "token")).rejects.toThrow();
+	});
 
-		// Verify method signature allows optional filter
-		// We don't execute the requests as they would need a running server
+	test("remove method validates datasetId parameter", async () => {
+		const client = new FederatedCatalogueRestClient({ endpoint: "http://localhost:3000" });
+		await expect(client.remove("", "token")).rejects.toThrow();
+	});
+
+	test("query method has filter, cursor, limit and trustPayload parameters", () => {
+		const client = new FederatedCatalogueRestClient({ endpoint: "http://localhost:3000" });
 		expect(typeof client.query).toBe("function");
-		expect(client.query.length).toBeLessThanOrEqual(3);
-	});
-
-	test("Client uses correct base route", () => {
-		const client = new FederatedCatalogueRestClient({ endpoint: "http://localhost:3000" });
-
-		// BaseRestClient sets up the routing internally
-		// We verify the client was constructed with the correct package name
-		expect(client).toBeDefined();
+		expect(client.query.length).toBe(4);
 	});
 });

@@ -96,28 +96,28 @@ export class FilterByExample implements IFederatedCatalogueFilter {
 	 * Generate filter indexes for a dataset to optimize future queries.
 	 * Creates indexes for common searchable properties.
 	 * Indexes are stored as properties on the dataset entity itself.
-	 * @param dataSet The dataset to index.
+	 * @param dataset The dataset to index.
 	 * @returns Record mapping property names to their values for indexing.
 	 */
-	public async createIndex(dataSet: IDcatDataset): Promise<{ [key: string]: unknown }> {
-		Guards.object(FilterByExample.CLASS_NAME, nameof(dataSet), dataSet);
+	public async createIndex(dataset: IDcatDataset): Promise<{ [key: string]: unknown }> {
+		Guards.object(FilterByExample.CLASS_NAME, nameof(dataset), dataset);
 
 		const indexes: { [key: string]: unknown } = {};
 
-		if (dataSet["dcterms:title"]) {
-			indexes["dcterms:title"] = dataSet["dcterms:title"];
+		if (dataset["dcterms:title"]) {
+			indexes["dcterms:title"] = dataset["dcterms:title"];
 		}
 
-		if (dataSet["dcterms:description"]) {
-			indexes["dcterms:description"] = dataSet["dcterms:description"];
+		if (dataset["dcterms:description"]) {
+			indexes["dcterms:description"] = dataset["dcterms:description"];
 		}
 
-		if (dataSet["dcat:keyword"]) {
-			indexes["dcat:keyword"] = ArrayHelper.fromObjectOrArray(dataSet["dcat:keyword"]);
+		if (dataset["dcat:keyword"]) {
+			indexes["dcat:keyword"] = ArrayHelper.fromObjectOrArray(dataset["dcat:keyword"]);
 		}
 
-		if (dataSet["dcterms:publisher"]) {
-			indexes["dcterms:publisher"] = dataSet["dcterms:publisher"];
+		if (dataset["dcterms:publisher"]) {
+			indexes["dcterms:publisher"] = dataset["dcterms:publisher"];
 		}
 
 		return indexes;

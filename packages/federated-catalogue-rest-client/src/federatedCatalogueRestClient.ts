@@ -2,13 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0.
 import { BaseRestClient } from "@twin.org/api-core";
 import type { IBaseRestClientConfig } from "@twin.org/api-models";
-import { Coerce, Guards, NotSupportedError } from "@twin.org/core";
+import { Coerce, Guards } from "@twin.org/core";
 import type {
 	ICatalogRequestRequest,
 	ICatalogRequestResponse,
-	IFederatedCatalogueComponent,
-	IGetDatasetRequest,
-	IGetDatasetResponse
+	IDatasetGetRequest,
+	IDatasetGetResponse,
+	IDatasetRemoveRequest,
+	IDatasetRemoveResponse,
+	IDatasetSetRequest,
+	IDatasetSetResponse,
+	IFederatedCatalogueComponent
 } from "@twin.org/federated-catalogue-models";
 import { nameof } from "@twin.org/nameof";
 import {
@@ -49,24 +53,117 @@ export class FederatedCatalogueRestClient
 	}
 
 	/**
+	 * Retrieve a specific dataset by its unique identifier.
+	 * @param datasetId The unique identifier of the dataset.
+	 * @param trustPayload Optional payload for trust evaluation, if applicable.
+	 * @returns The dataset if found, or a CatalogError if not found or an error occurs.
+	 */
+	public async get(
+		datasetId: string,
+		trustPayload: unknown
+	): Promise<IDcatDataset | IDataspaceProtocolCatalogError> {
+		Guards.stringValue(FederatedCatalogueRestClient.CLASS_NAME, nameof(datasetId), datasetId);
+		Guards.stringValue(FederatedCatalogueRestClient.CLASS_NAME, nameof(trustPayload), trustPayload);
+
+		const response = await this.fetch<IDatasetGetRequest, IDatasetGetResponse>(
+			"/datasets/:datasetId",
+			"GET",
+			{
+				headers: {
+					[HeaderTypes.Authorization]: HeaderHelper.createBearer(trustPayload)
+				},
+				pathParams: {
+					datasetId
+				}
+			}
+		);
+
+		return response.body;
+	}
+
+	/**
+	 * Insert or update a dataset in the catalogue.
+	 * This method is internal and is not exposed via REST endpoints.
+	 * @param dataset The dataset to store.
+	 * @param trustPayload Optional payload for trust evaluation, if applicable.
+	 * @returns The unique identifier of the stored dataset, or a CatalogError if an error occurs.
+	 */
+	public async set(
+		dataset: IDcatDataset,
+		trustPayload: unknown
+	): Promise<string | IDataspaceProtocolCatalogError> {
+		Guards.object<IDcatDataset>(FederatedCatalogueRestClient.CLASS_NAME, nameof(dataset), dataset);
+		Guards.stringValue(FederatedCatalogueRestClient.CLASS_NAME, nameof(trustPayload), trustPayload);
+
+		const response = await this.fetch<IDatasetSetRequest, IDatasetSetResponse>(
+			"/datasets",
+			"POST",
+			{
+				headers: {
+					[HeaderTypes.Authorization]: HeaderHelper.createBearer(trustPayload)
+				},
+				body: dataset
+			}
+		);
+
+		return response.headers?.[HeaderTypes.Location] ?? response.body ?? "";
+	}
+
+	/**
+	 * Remove a dataset from the catalogue by its unique identifier.
+	 * This method is internal and is not exposed via REST endpoints.
+	 * @param datasetId The unique identifier of the dataset to remove.
+	 * @param trustPayload Optional payload for trust evaluation, if applicable.
+	 * @returns Nothing.
+	 */
+	public async remove(
+		datasetId: string,
+		trustPayload: unknown
+	): Promise<IDataspaceProtocolCatalogError | undefined> {
+		Guards.stringValue(FederatedCatalogueRestClient.CLASS_NAME, nameof(datasetId), datasetId);
+		Guards.stringValue(FederatedCatalogueRestClient.CLASS_NAME, nameof(trustPayload), trustPayload);
+
+		const result = await this.fetch<IDatasetRemoveRequest, IDatasetRemoveResponse>(
+			"/datasets/:datasetId",
+			"DELETE",
+			{
+				headers: {
+					[HeaderTypes.Authorization]: HeaderHelper.createBearer(trustPayload)
+				},
+				pathParams: {
+					datasetId
+				}
+			}
+		);
+
+		return result.body;
+	}
+
+	/**
 	 * Query the federated catalogue with an optional filter.
 	 * @param filter Optional filter criteria for querying datasets.
 	 * @param cursor Optional cursor for pagination.
 	 * @param limit Optional limit for pagination.
+	 * @param trustPayload Optional payload for trust evaluation, if applicable.
 	 * @returns The catalog containing matching datasets (or CatalogError if none found), with cursor if more pages exist.
 	 */
 	public async query(
-		filter?: unknown[],
-		cursor?: string,
-		limit?: number
+		filter: unknown[] | undefined,
+		cursor: string | undefined,
+		limit: number | undefined,
+		trustPayload: unknown
 	): Promise<{
 		result: IDataspaceProtocolCatalog | IDataspaceProtocolCatalogError;
 		cursor?: string;
 	}> {
+		Guards.stringValue(FederatedCatalogueRestClient.CLASS_NAME, nameof(trustPayload), trustPayload);
 		const response = await this.fetch<ICatalogRequestRequest, ICatalogRequestResponse>(
 			"/request",
 			"POST",
 			{
+				headers: {
+					[HeaderTypes.Authorization]: HeaderHelper.createBearer(trustPayload)
+				},
 				query: {
 					cursor,
 					limit: Coerce.string(limit)
@@ -84,50 +181,5 @@ export class FederatedCatalogueRestClient
 			cursor: HeaderHelper.extractLinkHeaderRelation(response.headers?.[HeaderTypes.Link], "next")
 				?.urlQueryParams?.cursor
 		};
-	}
-
-	/**
-	 * Retrieve a specific dataset by its unique identifier.
-	 * @param datasetId The unique identifier of the dataset.
-	 * @returns The dataset if found, or a CatalogError if not found or an error occurs.
-	 */
-	public async get(datasetId: string): Promise<IDcatDataset | IDataspaceProtocolCatalogError> {
-		Guards.stringValue(FederatedCatalogueRestClient.CLASS_NAME, nameof(datasetId), datasetId);
-
-		const response = await this.fetch<IGetDatasetRequest, IGetDatasetResponse>(
-			"/datasets/:datasetId",
-			"GET",
-			{
-				pathParams: {
-					datasetId
-				}
-			}
-		);
-
-		return response.body;
-	}
-
-	/**
-	 * Insert or update a dataset in the catalogue.
-	 * This method is internal and is not exposed via REST endpoints.
-	 * @param dataSet The dataset to store.
-	 * @returns Nothing.
-	 */
-	public async set(dataSet: IDcatDataset): Promise<void> {
-		throw new NotSupportedError(FederatedCatalogueRestClient.CLASS_NAME, "notSupportedOnClient", {
-			methodName: "set"
-		});
-	}
-
-	/**
-	 * Remove a dataset from the catalogue by its unique identifier.
-	 * This method is internal and is not exposed via REST endpoints.
-	 * @param dataSetId The unique identifier of the dataset to remove.
-	 * @returns Nothing.
-	 */
-	public async remove(dataSetId: string): Promise<void> {
-		throw new NotSupportedError(FederatedCatalogueRestClient.CLASS_NAME, "notSupportedOnClient", {
-			methodName: "remove"
-		});
 	}
 }

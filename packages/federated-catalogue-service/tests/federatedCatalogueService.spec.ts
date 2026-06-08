@@ -1,8 +1,8 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import { ContextIdKeys, ContextIdStore } from "@twin.org/context";
-import { ArrayHelper, ComponentFactory, GeneralError, GuardError, Is } from "@twin.org/core";
-import { JsonLdDataTypes } from "@twin.org/data-json-ld";
+import { ContextIdStore } from "@twin.org/context";
+import { ArrayHelper, ComponentFactory, Is } from "@twin.org/core";
+import { JsonLdDataTypes, JsonLdHelper } from "@twin.org/data-json-ld";
 import { MemoryEntityStorageConnector } from "@twin.org/entity-storage-connector-memory";
 import { EntityStorageConnectorFactory } from "@twin.org/entity-storage-models";
 import { FederatedCatalogueFilterFactory } from "@twin.org/federated-catalogue-models";
@@ -42,6 +42,23 @@ describe("FederatedCatalogueService", () => {
 				`${url}${url.includes("?") ? "&" : "?"}x-enc-${id}=${value}`
 		}));
 
+		// Mock trust component: uses the token string as identity.
+		// Pass a JSON-encoded ITrustVerificationInfo object to set identity/tenantId/organizationId.
+		ComponentFactory.register("trust", () => ({
+			className: () => "MockTrustComponent",
+			verify: async (token: unknown) => {
+				if (Is.stringValue(token)) {
+					try {
+						return { verified: true, info: JSON.parse(token) };
+					} catch {
+						return { verified: true, info: { identity: token } };
+					}
+				}
+				return { verified: true, info: { identity: "anonymous" } };
+			},
+			generate: async () => "mock-trust-token"
+		}));
+
 		// Mock ContextIdStore.getContextIds to return undefined (anonymous) by default
 		ContextIdStore.getContextIds = vi.fn().mockResolvedValue(undefined);
 	});
@@ -78,7 +95,7 @@ describe("FederatedCatalogueService", () => {
 				datasets: [],
 				cursor: undefined
 			}),
-			createIndex: async dataSet => ({})
+			createIndex: async () => ({})
 		}));
 
 		const service = new FederatedCatalogueService({
@@ -86,7 +103,12 @@ describe("FederatedCatalogueService", () => {
 		});
 
 		// Verify the filter is accessible by the service (won't throw NotFoundError)
-		const catalog = await service.query([{ "@type": "FilterByExample" }]);
+		const catalog = await service.query(
+			[{ "@type": "FilterByExample" }],
+			undefined,
+			undefined,
+			"mock-trust-token"
+		);
 		expect(catalog).toBeDefined();
 		const datasets = ArrayHelper.fromObjectOrArray(
 			(catalog as { dataset?: unknown }).dataset ?? []
@@ -125,9 +147,12 @@ describe("FederatedCatalogueService", () => {
 			}
 		};
 
-		await service.set(testDataset);
+		await service.set(testDataset, "mock-trust-token");
 
-		const retrieved = await service.get("https://example.com/datasets/test-dataset-1");
+		const retrieved = await service.get(
+			"https://example.com/datasets/test-dataset-1",
+			"mock-trust-token"
+		);
 
 		expect(retrieved).toBeDefined();
 		expect((retrieved as IDcatDataset)["@id"]).toBe("https://example.com/datasets/test-dataset-1");
@@ -138,7 +163,10 @@ describe("FederatedCatalogueService", () => {
 			datasetEntityStorageType: "dataset"
 		});
 
-		const result = await service.get("https://example.com/datasets/non-existent");
+		const result = await service.get(
+			"https://example.com/datasets/non-existent",
+			"mock-trust-token"
+		);
 
 		// Verify it's a CatalogError
 		expect(result).toEqual({
@@ -215,8 +243,8 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await service.set(dataset1);
-		await service.set(dataset2);
+		await service.set(dataset1, "mock-trust-token");
+		await service.set(dataset2, "mock-trust-token");
 
 		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
 			className: () => "FilterByExample",
@@ -224,10 +252,15 @@ describe("FederatedCatalogueService", () => {
 				datasets: [dataset1, dataset2],
 				cursor: undefined
 			}),
-			createIndex: async dataSet => ({})
+			createIndex: async () => ({})
 		}));
 
-		const queryResult = await service.query([{ "@type": "FilterByExample" }]);
+		const queryResult = await service.query(
+			[{ "@type": "FilterByExample" }],
+			undefined,
+			undefined,
+			"mock-trust-token"
+		);
 		const datasets = ArrayHelper.fromObjectOrArray(
 			(queryResult.result as { dataset?: unknown }).dataset ?? []
 		);
@@ -284,7 +317,7 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await service.set(dataset);
+		await service.set(dataset, "mock-trust-token");
 
 		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
 			className: () => "FilterByExample",
@@ -292,10 +325,15 @@ describe("FederatedCatalogueService", () => {
 				datasets: [dataset],
 				cursor: undefined
 			}),
-			createIndex: async dataSet => ({})
+			createIndex: async () => ({})
 		}));
 
-		const queryResult = await service.query([{ "@type": "FilterByExample" }]);
+		const queryResult = await service.query(
+			[{ "@type": "FilterByExample" }],
+			undefined,
+			undefined,
+			"mock-trust-token"
+		);
 
 		// Verify single participant returns flat catalog with participantId
 		expect(queryResult.result).toBeDefined();
@@ -367,8 +405,8 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await service.set(dataset1);
-		await service.set(dataset2);
+		await service.set(dataset1, "mock-trust-token");
+		await service.set(dataset2, "mock-trust-token");
 
 		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
 			className: () => "FilterByExample",
@@ -376,11 +414,16 @@ describe("FederatedCatalogueService", () => {
 				datasets: [dataset1, dataset2],
 				cursor: undefined
 			}),
-			createIndex: async dataSet => ({})
+			createIndex: async () => ({})
 		}));
 
 		// Anonymous request (no context) - first publisher becomes root participantId
-		const queryResult = await service.query([{ "@type": "FilterByExample" }]);
+		const queryResult = await service.query(
+			[{ "@type": "FilterByExample" }],
+			undefined,
+			undefined,
+			"mock-trust-token"
+		);
 
 		// Verify catalog structure for anonymous multi-participant query
 		expect(queryResult.result).toBeDefined();
@@ -413,11 +456,6 @@ describe("FederatedCatalogueService", () => {
 
 		const requestingParticipant = "https://example.com/participants/requesting-org";
 		const otherParticipant = "https://example.com/participants/other-org";
-
-		// Mock authenticated context with requesting participant
-		vi.mocked(ContextIdStore.getContextIds).mockResolvedValue({
-			[ContextIdKeys.Organization]: requestingParticipant
-		});
 
 		const ownDataset = {
 			"@context": {
@@ -469,8 +507,8 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await service.set(ownDataset);
-		await service.set(otherDataset);
+		await service.set(ownDataset, "mock-trust-token");
+		await service.set(otherDataset, "mock-trust-token");
 
 		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
 			className: () => "FilterByExample",
@@ -478,10 +516,15 @@ describe("FederatedCatalogueService", () => {
 				datasets: [ownDataset, otherDataset],
 				cursor: undefined
 			}),
-			createIndex: async dataSet => ({})
+			createIndex: async () => ({})
 		}));
 
-		const queryResult = await service.query([{ "@type": "FilterByExample" }]);
+		const queryResult = await service.query(
+			[{ "@type": "FilterByExample" }],
+			undefined,
+			undefined,
+			JSON.stringify({ identity: "did:node:requester", organizationId: requestingParticipant })
+		);
 
 		// Verify catalog structure for authenticated request
 		expect(queryResult.result).toBeDefined();
@@ -537,7 +580,7 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await service.set(dataset);
+		await service.set(dataset, "mock-trust-token");
 
 		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
 			className: () => "FilterByExample",
@@ -545,7 +588,7 @@ describe("FederatedCatalogueService", () => {
 				datasets: [dataset],
 				cursor: undefined
 			}),
-			createIndex: async dataSet => ({})
+			createIndex: async () => ({})
 		}));
 
 		// Query with filter matching the identifier
@@ -554,7 +597,7 @@ describe("FederatedCatalogueService", () => {
 			"dcterms:identifier": "FILTER-TEST-123"
 		};
 
-		const queryResult = await service.query([filter]);
+		const queryResult = await service.query([filter], undefined, undefined, "mock-trust-token");
 		const datasets = ArrayHelper.fromObjectOrArray(
 			(queryResult.result as { dataset?: unknown }).dataset ?? []
 		);
@@ -603,7 +646,7 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await service.set(dataset);
+		await service.set(dataset, "mock-trust-token");
 
 		// The real FilterByExample calls datasetEntityToModel() internally before returning.
 		// Returning a true IDcatDataset model (with "@id") mirrors that behavior.
@@ -614,15 +657,20 @@ describe("FederatedCatalogueService", () => {
 				datasets: [dataset] as IDcatDataset[],
 				cursor: undefined
 			}),
-			createIndex: async dataSet => ({})
+			createIndex: async () => ({})
 		}));
 
-		const queryResult = await service.query([
-			{
-				"@type": "FilterByExample",
-				"dcterms:type": "https://vocabulary.uncefact.org/Consignment"
-			}
-		]);
+		const queryResult = await service.query(
+			[
+				{
+					"@type": "FilterByExample",
+					"dcterms:type": "https://vocabulary.uncefact.org/Consignment"
+				}
+			],
+			undefined,
+			undefined,
+			"mock-trust-token"
+		);
 
 		expect(queryResult.result["@type"]).toBe("Catalog");
 
@@ -643,7 +691,7 @@ describe("FederatedCatalogueService", () => {
 			datasetEntityStorageType: "dataset"
 		});
 
-		const queryResult = await service.query([{}]);
+		const queryResult = await service.query([{}], undefined, undefined, "mock-trust-token");
 
 		expect(queryResult.result).toEqual({
 			"@context": "https://w3id.org/dspace/2025/1/context.jsonld",
@@ -670,7 +718,12 @@ describe("FederatedCatalogueService", () => {
 		});
 
 		// Passing a non-array value (e.g., empty string) should return CatalogError
-		const queryResult = await service.query("" as unknown as unknown[]);
+		const queryResult = await service.query(
+			"" as unknown as unknown[],
+			undefined,
+			undefined,
+			"mock-trust-token"
+		);
 
 		expect(queryResult.result).toEqual({
 			"@context": "https://w3id.org/dspace/2025/1/context.jsonld",
@@ -710,11 +763,12 @@ describe("FederatedCatalogueService", () => {
 		FederatedCatalogueFilterFactory.register("MockEmptyFilter", () => mockFilter);
 
 		// Query with the mock filter
-		const queryResult = await service.query([
-			{
-				"@type": "MockEmptyFilter"
-			}
-		]);
+		const queryResult = await service.query(
+			[{ "@type": "MockEmptyFilter" }],
+			undefined,
+			undefined,
+			"mock-trust-token"
+		);
 
 		// Verify it returns a CatalogError with Not found
 		expect(queryResult.result).toEqual({
@@ -789,8 +843,8 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await service.set(dataset1);
-		await service.set(dataset2);
+		await service.set(dataset1, "mock-trust-token");
+		await service.set(dataset2, "mock-trust-token");
 
 		// Create a mock filter that returns datasets with a cursor
 		const mockFilter = {
@@ -809,11 +863,12 @@ describe("FederatedCatalogueService", () => {
 		FederatedCatalogueFilterFactory.register("MockFilterWithCursorAndData", () => mockFilter);
 
 		// Query with the mock filter
-		const queryResult = await service.query([
-			{
-				"@type": "MockFilterWithCursorAndData"
-			}
-		]);
+		const queryResult = await service.query(
+			[{ "@type": "MockFilterWithCursorAndData" }],
+			undefined,
+			undefined,
+			"mock-trust-token"
+		);
 
 		// Verify cursor is present after compaction
 		expect(queryResult.cursor).toBeDefined();
@@ -861,7 +916,7 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await service.set(dataset);
+		await service.set(dataset, "mock-trust-token");
 
 		// Register filter that returns the dataset but no cursor
 		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
@@ -870,15 +925,16 @@ describe("FederatedCatalogueService", () => {
 				datasets: [dataset],
 				cursor: undefined
 			}),
-			createIndex: async dataSet => ({})
+			createIndex: async () => ({})
 		}));
 
 		// Query without cursor (FilterByExample doesn't return cursor by default)
-		const queryResult = await service.query([
-			{
-				"@type": "FilterByExample"
-			}
-		]);
+		const queryResult = await service.query(
+			[{ "@type": "FilterByExample" }],
+			undefined,
+			undefined,
+			"mock-trust-token"
+		);
 
 		// Verify cursor is not present when filter doesn't return one
 		expect(queryResult.cursor).toBeUndefined();
@@ -886,7 +942,7 @@ describe("FederatedCatalogueService", () => {
 		expect(queryResult.result["@type"]).toBe("Catalog");
 	});
 
-	test("Set throws GuardError when dataset is missing @type", async () => {
+	test("Set returns CatalogError when dataset is missing @type", async () => {
 		const service = new FederatedCatalogueService({
 			datasetEntityStorageType: "dataset"
 		});
@@ -899,10 +955,11 @@ describe("FederatedCatalogueService", () => {
 			"@id": "https://example.com/datasets/missing-type"
 		} as unknown as IDcatDataset;
 
-		await expect(service.set(invalidDataset)).rejects.toThrow(GuardError);
+		const result = await service.set(invalidDataset, "mock-trust-token");
+		expect(result).toMatchObject({ "@type": "CatalogError" });
 	});
 
-	test("Set throws GuardError when dataset is missing @id", async () => {
+	test("Set returns CatalogError when dataset is missing @id", async () => {
 		const service = new FederatedCatalogueService({
 			datasetEntityStorageType: "dataset"
 		});
@@ -916,10 +973,11 @@ describe("FederatedCatalogueService", () => {
 			"dcterms:title": "Dataset without @id"
 		} as unknown as IDcatDataset;
 
-		await expect(service.set(invalidDataset)).rejects.toThrow(GuardError);
+		const result = await service.set(invalidDataset, "mock-trust-token");
+		expect(result).toMatchObject({ "@type": "CatalogError" });
 	});
 
-	test("Set throws GeneralError when dataset is missing dcterms:publisher", async () => {
+	test("Set returns CatalogError when dataset is missing dcterms:publisher", async () => {
 		const service = new FederatedCatalogueService({
 			datasetEntityStorageType: "dataset"
 		});
@@ -948,10 +1006,11 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		// dcterms:publisher is required for multi-participant catalog
-		// to derive participantId when returning query results
-		await expect(service.set(datasetMissingPublisher)).rejects.toThrow(GeneralError);
-		await expect(service.set(datasetMissingPublisher)).rejects.toThrow("datasetMissingPublisher");
+		const result = await service.set(datasetMissingPublisher, "mock-trust-token");
+		expect(result).toMatchObject({
+			"@type": "CatalogError",
+			code: expect.stringContaining("datasetMissingPublisher")
+		});
 	});
 
 	test("Set succeeds with valid minimal dataset (all required fields)", async () => {
@@ -983,9 +1042,14 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await expect(service.set(validMinimalDataset)).resolves.toBeUndefined();
+		await expect(service.set(validMinimalDataset, "mock-trust-token")).resolves.toBe(
+			"https://example.com/datasets/minimal-valid"
+		);
 
-		const retrieved = await service.get("https://example.com/datasets/minimal-valid");
+		const retrieved = await service.get(
+			"https://example.com/datasets/minimal-valid",
+			"mock-trust-token"
+		);
 		expect(retrieved).toBeDefined();
 		expect((retrieved as IDcatDataset)["@id"]).toBe("https://example.com/datasets/minimal-valid");
 	});
@@ -1023,16 +1087,21 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await expect(service.set(validDsProtocolDataset)).resolves.toBeUndefined();
+		await expect(service.set(validDsProtocolDataset, "mock-trust-token")).resolves.toBe(
+			"https://example.com/datasets/ds-protocol-compliant"
+		);
 
-		const retrieved = await service.get("https://example.com/datasets/ds-protocol-compliant");
+		const retrieved = await service.get(
+			"https://example.com/datasets/ds-protocol-compliant",
+			"mock-trust-token"
+		);
 		expect(retrieved).toBeDefined();
 		expect((retrieved as IDcatDataset)["@id"]).toBe(
 			"https://example.com/datasets/ds-protocol-compliant"
 		);
 	});
 
-	test("Set throws validation error when dataset is missing distribution (prefixed form)", async () => {
+	test("Set returns CatalogError when dataset is missing distribution (prefixed form)", async () => {
 		const service = new FederatedCatalogueService({
 			datasetEntityStorageType: "dataset"
 		});
@@ -1056,10 +1125,11 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await expect(service.set(datasetMissingDistribution)).rejects.toThrow("common.validation");
+		const result = await service.set(datasetMissingDistribution, "mock-trust-token");
+		expect(result).toMatchObject({ "@type": "CatalogError" });
 	});
 
-	test("Set throws validation error when dataset is missing hasPolicy (prefixed form)", async () => {
+	test("Set returns CatalogError when dataset is missing hasPolicy (prefixed form)", async () => {
 		const service = new FederatedCatalogueService({
 			datasetEntityStorageType: "dataset"
 		});
@@ -1081,10 +1151,11 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await expect(service.set(datasetMissingPolicy)).rejects.toThrow("common.validation");
+		const result = await service.set(datasetMissingPolicy, "mock-trust-token");
+		expect(result).toMatchObject({ "@type": "CatalogError" });
 	});
 
-	test("Set throws validation error when dataset is missing distribution (unprefixed form)", async () => {
+	test("Set returns CatalogError when dataset is missing distribution (unprefixed form)", async () => {
 		const service = new FederatedCatalogueService({
 			datasetEntityStorageType: "dataset"
 		});
@@ -1108,10 +1179,11 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await expect(service.set(datasetMissingDistribution)).rejects.toThrow("common.validation");
+		const result = await service.set(datasetMissingDistribution, "mock-trust-token");
+		expect(result).toMatchObject({ "@type": "CatalogError" });
 	});
 
-	test("Set throws validation error when dataset is missing hasPolicy (unprefixed form)", async () => {
+	test("Set returns CatalogError when dataset is missing hasPolicy (unprefixed form)", async () => {
 		const service = new FederatedCatalogueService({
 			datasetEntityStorageType: "dataset"
 		});
@@ -1133,7 +1205,8 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await expect(service.set(datasetMissingPolicy)).rejects.toThrow("common.validation");
+		const result = await service.set(datasetMissingPolicy, "mock-trust-token");
+		expect(result).toMatchObject({ "@type": "CatalogError" });
 	});
 
 	test("Set succeeds with valid DS Protocol dataset (prefixed properties)", async () => {
@@ -1166,9 +1239,14 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await expect(service.set(validDataset)).resolves.toBeUndefined();
+		await expect(service.set(validDataset, "mock-trust-token")).resolves.toBe(
+			"https://example.com/datasets/valid-prefixed"
+		);
 
-		const retrieved = await service.get("https://example.com/datasets/valid-prefixed");
+		const retrieved = await service.get(
+			"https://example.com/datasets/valid-prefixed",
+			"mock-trust-token"
+		);
 		expect(retrieved).toBeDefined();
 		expect((retrieved as IDcatDataset)["@id"]).toBe("https://example.com/datasets/valid-prefixed");
 	});
@@ -1203,16 +1281,21 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await expect(service.set(validDataset)).resolves.toBeUndefined();
+		await expect(service.set(validDataset, "mock-trust-token")).resolves.toBe(
+			"https://example.com/datasets/valid-unprefixed"
+		);
 
-		const retrieved = await service.get("https://example.com/datasets/valid-unprefixed");
+		const retrieved = await service.get(
+			"https://example.com/datasets/valid-unprefixed",
+			"mock-trust-token"
+		);
 		expect(retrieved).toBeDefined();
 		expect((retrieved as IDcatDataset)["@id"]).toBe(
 			"https://example.com/datasets/valid-unprefixed"
 		);
 	});
 
-	test("Set throws validation error when distribution is missing dcterms:format", async () => {
+	test("Set returns CatalogError when distribution is missing dcterms:format", async () => {
 		const service = new FederatedCatalogueService({
 			datasetEntityStorageType: "dataset"
 		});
@@ -1242,10 +1325,11 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await expect(service.set(datasetMissingFormat)).rejects.toThrow("common.validation");
+		const result = await service.set(datasetMissingFormat, "mock-trust-token");
+		expect(result).toMatchObject({ "@type": "CatalogError" });
 	});
 
-	test("Set throws validation error when distribution is missing dcat:accessService", async () => {
+	test("Set returns CatalogError when distribution is missing dcat:accessService", async () => {
 		const service = new FederatedCatalogueService({
 			datasetEntityStorageType: "dataset"
 		});
@@ -1275,10 +1359,11 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await expect(service.set(datasetMissingAccessService)).rejects.toThrow("common.validation");
+		const result = await service.set(datasetMissingAccessService, "mock-trust-token");
+		expect(result).toMatchObject({ "@type": "CatalogError" });
 	});
 
-	test("Set throws validation error when distribution array is empty", async () => {
+	test("Set returns CatalogError when distribution array is empty", async () => {
 		const service = new FederatedCatalogueService({
 			datasetEntityStorageType: "dataset"
 		});
@@ -1303,53 +1388,11 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await expect(service.set(datasetEmptyDistribution)).rejects.toThrow("common.validation");
+		const result = await service.set(datasetEmptyDistribution, "mock-trust-token");
+		expect(result).toMatchObject({ "@type": "CatalogError" });
 	});
 
-	test("start() captures nodeIdentity from context and sets it on stored entities", async () => {
-		vi.mocked(ContextIdStore.getContextIds).mockResolvedValue({
-			node: "did:example:test-node"
-		});
-
-		const service = new FederatedCatalogueService({
-			datasetEntityStorageType: "dataset"
-		});
-		await service.start();
-
-		const dataset = {
-			"@context": {
-				dcat: DcatContexts.Namespace,
-				dcterms: DublinCoreContexts.NamespaceTerms,
-				odrl: OdrlContexts.Namespace
-			},
-			"@id": "https://example.com/datasets/node-identity-test",
-			"@type": DcatClasses.Dataset,
-			"dcterms:title": "Node Identity Test",
-			"dcterms:publisher": "https://example.com/participants/test-publisher",
-			"dcat:distribution": {
-				"@type": "dcat:Distribution",
-				"@id": "https://example.com/distributions/ni-dist",
-				"dcterms:format": "application/json",
-				"dcat:accessService": "https://example.com/services/test-service"
-			},
-			"odrl:hasPolicy": {
-				"@context": OdrlContexts.Context,
-				"@type": "Offer",
-				uid: "https://example.com/policies/ni-policy",
-				assigner: "https://example.com/participants/test-publisher",
-				permission: [{ action: "use" }]
-			}
-		} as unknown as IDcatDataset;
-
-		await service.set(dataset);
-
-		const entity = await datasetEntityStorage.get(
-			"https://example.com/datasets/node-identity-test"
-		);
-		expect(entity?.nodeIdentity).toBe("did:example:test-node");
-	});
-
-	test("Set preserves dateModified when entity content is unchanged", async () => {
+	test("Set always writes to storage even when called twice with unchanged content", async () => {
 		const service = new FederatedCatalogueService({
 			datasetEntityStorageType: "dataset"
 		});
@@ -1379,25 +1422,16 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await service.set(dataset);
+		await service.set(dataset, "mock-trust-token");
 
-		const entityAfterFirstSet = await datasetEntityStorage.get(
-			"https://example.com/datasets/unchanged-test"
-		);
-		const initialDateModified = entityAfterFirstSet?.dateModified;
-		expect(initialDateModified).toBeDefined();
-
-		await new Promise(resolve => setTimeout(resolve, 10));
-
-		await service.set(dataset);
-
-		const entityAfterSecondSet = await datasetEntityStorage.get(
-			"https://example.com/datasets/unchanged-test"
-		);
-		expect(entityAfterSecondSet?.dateModified).toBe(initialDateModified);
+		const setSpy = vi.spyOn(datasetEntityStorage, "set");
+		const result = await service.set(dataset, "mock-trust-token");
+		expect(result).toBe("https://example.com/datasets/unchanged-test");
+		expect(setSpy).toHaveBeenCalledTimes(1);
+		setSpy.mockRestore();
 	});
 
-	test("Set updates dateModified when entity content changes", async () => {
+	test("Set writes again when entity content changes", async () => {
 		const service = new FederatedCatalogueService({
 			datasetEntityStorageType: "dataset"
 		});
@@ -1427,43 +1461,28 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await service.set(dataset);
+		await service.set(dataset, "mock-trust-token");
 
-		const entityAfterFirstSet = await datasetEntityStorage.get(
-			"https://example.com/datasets/changed-test"
-		);
-		const initialDateModified = entityAfterFirstSet?.dateModified;
-
-		await new Promise(resolve => setTimeout(resolve, 10));
-
+		const setSpy = vi.spyOn(datasetEntityStorage, "set");
 		const updatedDataset = {
 			...dataset,
 			"dcterms:title": "Updated Title"
 		} as unknown as IDcatDataset;
+		await service.set(updatedDataset, "mock-trust-token");
+		expect(setSpy).toHaveBeenCalledTimes(1);
+		setSpy.mockRestore();
 
-		await service.set(updatedDataset);
-
-		const entityAfterSecondSet = await datasetEntityStorage.get(
-			"https://example.com/datasets/changed-test"
+		// Verify the new title is persisted — DS Protocol normalisation compacts dcterms:title → dct:title
+		const retrieved = await service.get(
+			"https://example.com/datasets/changed-test",
+			"mock-trust-token"
 		);
-		expect(entityAfterSecondSet?.dateModified).not.toBe(initialDateModified);
+		const retrievedNode = JsonLdHelper.toNodeObject(retrieved as IDcatDataset);
+		expect(retrievedNode["dct:title"]).toBe("Updated Title");
 	});
 
-	test("start() throws when node context ID is missing", async () => {
-		vi.mocked(ContextIdStore.getContextIds).mockResolvedValue(undefined);
-
-		const service = new FederatedCatalogueService({
-			datasetEntityStorageType: "dataset"
-		});
-
-		await expect(service.start()).rejects.toThrow(GeneralError);
-		await expect(service.start()).rejects.toThrow("contextIdMissing");
-	});
-
-	test("Multiple sequential unchanged sets preserve the same dateModified", async () => {
-		const service = new FederatedCatalogueService({
-			datasetEntityStorageType: "dataset"
-		});
+	test("Set returns CatalogError when updating a dataset owned by a different identity", async () => {
+		const service = new FederatedCatalogueService({ datasetEntityStorageType: "dataset" });
 
 		const dataset = {
 			"@context": {
@@ -1471,47 +1490,384 @@ describe("FederatedCatalogueService", () => {
 				dcterms: DublinCoreContexts.NamespaceTerms,
 				odrl: OdrlContexts.Namespace
 			},
-			"@id": "https://example.com/datasets/multi-unchanged-test",
+			"@id": "https://example.com/datasets/owner-mismatch-set",
 			"@type": DcatClasses.Dataset,
-			"dcterms:title": "Multi Unchanged Test",
+			"dcterms:title": "Owner Mismatch Set Test",
 			"dcterms:publisher": "https://example.com/participants/test-publisher",
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
-				"@id": "https://example.com/distributions/mu-dist",
+				"@id": "https://example.com/distributions/owner-mismatch-dist",
 				"dcterms:format": "application/json",
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
 				"@context": OdrlContexts.Context,
 				"@type": "Offer",
-				uid: "https://example.com/policies/mu-policy",
+				uid: "https://example.com/policies/owner-mismatch-policy",
 				assigner: "https://example.com/participants/test-publisher",
 				permission: [{ action: "use" }]
 			}
 		} as unknown as IDcatDataset;
 
-		await service.set(dataset);
+		await service.set(dataset, "did:node:original-owner");
 
-		const entityAfterFirst = await datasetEntityStorage.get(
-			"https://example.com/datasets/multi-unchanged-test"
+		const result = await service.set(
+			{ ...dataset, "dcterms:title": "Attempted Update" },
+			"did:node:different-owner"
 		);
-		const initialDateModified = entityAfterFirst?.dateModified;
-		expect(initialDateModified).toBeDefined();
 
-		await new Promise(resolve => setTimeout(resolve, 10));
-		await service.set(dataset);
+		expect(result).toMatchObject({
+			"@type": "CatalogError",
+			code: expect.stringContaining("datasetOwnerMismatch")
+		});
+	});
 
-		await new Promise(resolve => setTimeout(resolve, 10));
-		await service.set(dataset);
+	test("Set succeeds when updating a dataset with the same owner identity", async () => {
+		const service = new FederatedCatalogueService({ datasetEntityStorageType: "dataset" });
 
-		const entityAfterThird = await datasetEntityStorage.get(
-			"https://example.com/datasets/multi-unchanged-test"
+		const dataset = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": "https://example.com/datasets/same-owner-update",
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "Same Owner Update Test",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/same-owner-dist",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.Context,
+				"@type": "Offer",
+				uid: "https://example.com/policies/same-owner-policy",
+				assigner: "https://example.com/participants/test-publisher",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		await service.set(dataset, "did:node:consistent-owner");
+		const result = await service.set(
+			{ ...dataset, "dcterms:title": "Updated by Same Owner" },
+			"did:node:consistent-owner"
 		);
-		expect(entityAfterThird?.dateModified).toBe(initialDateModified);
+
+		expect(result).toBe("https://example.com/datasets/same-owner-update");
+	});
+
+	test("Remove returns CatalogError when caller is not the dataset owner", async () => {
+		const service = new FederatedCatalogueService({ datasetEntityStorageType: "dataset" });
+
+		const datasetId = "https://example.com/datasets/owner-remove-mismatch";
+		const dataset = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": datasetId,
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "Remove Owner Mismatch Test",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/remove-mismatch-dist",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.Context,
+				"@type": "Offer",
+				uid: "https://example.com/policies/remove-mismatch-policy",
+				assigner: "https://example.com/participants/test-publisher",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		await service.set(dataset, "did:node:dataset-owner");
+
+		const result = await service.remove(datasetId, "did:node:non-owner");
+
+		expect(result).toMatchObject({
+			"@type": "CatalogError",
+			code: expect.stringContaining("datasetRemoveNotOwner")
+		});
+	});
+
+	test("Remove succeeds when caller is the dataset owner", async () => {
+		const service = new FederatedCatalogueService({ datasetEntityStorageType: "dataset" });
+
+		const datasetId = "https://example.com/datasets/owner-remove-success";
+		const dataset = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": datasetId,
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "Remove Owner Success Test",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/remove-success-dist",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.Context,
+				"@type": "Offer",
+				uid: "https://example.com/policies/remove-success-policy",
+				assigner: "https://example.com/participants/test-publisher",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		await service.set(dataset, "did:node:actual-owner");
+		const removeResult = await service.remove(datasetId, "did:node:actual-owner");
+		expect(removeResult).toBeUndefined();
+
+		const retrieved = await service.get(datasetId, "did:node:actual-owner");
+		expect(retrieved).toMatchObject({ "@type": "CatalogError" });
+	});
+
+	test("Set uses dcterms:identifier as @id when @id is absent", async () => {
+		const service = new FederatedCatalogueService({ datasetEntityStorageType: "dataset" });
+
+		const datasetId = "https://example.com/datasets/from-identifier";
+		const dataset = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			// No "@id" — should be derived from dcterms:identifier
+			"@type": DcatClasses.Dataset,
+			"dcterms:identifier": datasetId,
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/ident-dist",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.Context,
+				"@type": "Offer",
+				uid: "https://example.com/policies/ident-policy",
+				assigner: "https://example.com/participants/test-publisher",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		await expect(service.set(dataset, "mock-trust-token")).resolves.toBe(datasetId);
+
+		const retrieved = await service.get(datasetId, "mock-trust-token");
+		expect((retrieved as IDcatDataset)["@id"]).toBe(datasetId);
+	});
+
+	test("Set returns CatalogError when @id is not a valid URI", async () => {
+		const service = new FederatedCatalogueService({ datasetEntityStorageType: "dataset" });
+
+		const dataset = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": "not-a-valid-uri",
+			"@type": DcatClasses.Dataset,
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/invalid-uri-dist",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.Context,
+				"@type": "Offer",
+				uid: "https://example.com/policies/invalid-uri-policy",
+				assigner: "https://example.com/participants/test-publisher",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		const result = await service.set(dataset, "mock-trust-token");
+		expect(result).toMatchObject({
+			"@type": "CatalogError",
+			code: expect.stringContaining("datasetIdInvalidUri")
+		});
+	});
+
+	test("Set bakes tenant token into distribution accessService URL when tenantId is in context", async () => {
+		const service = new FederatedCatalogueService({ datasetEntityStorageType: "dataset" });
+
+		const datasetId = "https://example.com/datasets/tenant-baking-test";
+		const accessServiceUrl = "https://example.com/services/tenant-service";
+		const tenantId = "my-tenant";
+
+		const dataset = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": datasetId,
+			"@type": DcatClasses.Dataset,
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/tenant-dist",
+				"dcterms:format": "application/json",
+				"dcat:accessService": accessServiceUrl
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.Context,
+				"@type": "Offer",
+				uid: "https://example.com/policies/tenant-policy",
+				assigner: "https://example.com/participants/test-publisher",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		await service.set(dataset, JSON.stringify({ identity: "did:node:tenant-owner", tenantId }));
+
+		const entity = await datasetEntityStorage.get(datasetId);
+		const distributions = ArrayHelper.fromObjectOrArray(entity?.["dcat:distribution"]);
+		const bakedUrl = (distributions[0] as { "dcat:accessService"?: string })["dcat:accessService"];
+		expect(bakedUrl).toContain(`x-enc-tenant=${tenantId}`);
+		expect(bakedUrl).toContain(accessServiceUrl);
+	});
+
+	test("Set composite ownerId includes tenantId — different tenant causes mismatch on update", async () => {
+		const service = new FederatedCatalogueService({ datasetEntityStorageType: "dataset" });
+
+		const dataset = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": "https://example.com/datasets/composite-owner-test",
+			"@type": DcatClasses.Dataset,
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/composite-dist",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.Context,
+				"@type": "Offer",
+				uid: "https://example.com/policies/composite-policy",
+				assigner: "https://example.com/participants/test-publisher",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		// Set with node + tenant-a
+		await service.set(
+			dataset,
+			JSON.stringify({ identity: "did:node:shared-node", tenantId: "tenant-a" })
+		);
+
+		// Try to update with same node but different tenant — composite ownerId differs
+		const result = await service.set(
+			{ ...dataset, "dcterms:title": "Modified" },
+			JSON.stringify({ identity: "did:node:shared-node", tenantId: "tenant-b" })
+		);
+		expect(result).toMatchObject({
+			"@type": "CatalogError",
+			code: expect.stringContaining("datasetOwnerMismatch")
+		});
+	});
+
+	test("Query with undefined filter returns all datasets from storage directly", async () => {
+		const service = new FederatedCatalogueService({ datasetEntityStorageType: "dataset" });
+
+		const makeDataset = (id: string): IDcatDataset =>
+			({
+				"@context": {
+					dcat: DcatContexts.Namespace,
+					dcterms: DublinCoreContexts.NamespaceTerms,
+					odrl: OdrlContexts.Namespace
+				},
+				"@id": id,
+				"@type": DcatClasses.Dataset,
+				"dcterms:publisher": "https://example.com/participants/test-publisher",
+				"dcat:distribution": {
+					"@type": "dcat:Distribution",
+					"@id": `${id}/dist`,
+					"dcterms:format": "application/json",
+					"dcat:accessService": "https://example.com/services/test-service"
+				},
+				"odrl:hasPolicy": {
+					"@context": OdrlContexts.Context,
+					"@type": "Offer",
+					uid: `${id}/policy`,
+					assigner: "https://example.com/participants/test-publisher",
+					permission: [{ action: "use" }]
+				}
+			}) as unknown as IDcatDataset;
+
+		await service.set(makeDataset("https://example.com/datasets/nofilter-1"), "mock-trust-token");
+		await service.set(makeDataset("https://example.com/datasets/nofilter-2"), "mock-trust-token");
+
+		// No filter registered — passing undefined bypasses the filter path entirely
+		const result = await service.query(undefined, undefined, undefined, "mock-trust-token");
+
+		expect(result.result["@type"]).toBe("Catalog");
+		const catalog = result.result as IDataspaceProtocolCatalog;
+		const datasets = ArrayHelper.fromObjectOrArray(catalog.dataset ?? []);
+		expect(datasets.length).toBeGreaterThanOrEqual(2);
+	});
+
+	test("Query with undefined filter forwards cursor and limit to storage", async () => {
+		const service = new FederatedCatalogueService({ datasetEntityStorageType: "dataset" });
+
+		const querySpy = vi.spyOn(datasetEntityStorage, "query");
+
+		const result = await service.query(undefined, "next-page-cursor", 5, "mock-trust-token");
+
+		expect(querySpy).toHaveBeenCalledWith(undefined, undefined, undefined, "next-page-cursor", 5);
+		expect(result.cursor).toBeUndefined();
+	});
+
+	test("Query returns CatalogError when multiple filters are provided", async () => {
+		const service = new FederatedCatalogueService({ datasetEntityStorageType: "dataset" });
+
+		const result = await service.query(
+			[{ "@type": "FilterA" }, { "@type": "FilterB" }],
+			undefined,
+			undefined,
+			"mock-trust-token"
+		);
+
+		expect(result.result).toMatchObject({
+			"@type": "CatalogError",
+			code: expect.stringContaining("multipleFiltersNotSupported")
+		});
+	});
+
+	test("Remove does not error when dataset does not exist", async () => {
+		const service = new FederatedCatalogueService({ datasetEntityStorageType: "dataset" });
+
+		const result = await service.remove(
+			"https://example.com/datasets/non-existent-remove",
+			"mock-trust-token"
+		);
+		expect(result).toBeUndefined();
 	});
 
 	afterAll(() => {
 		FederatedCatalogueFilterFactory.clear();
+		ComponentFactory.clear();
 		EntityStorageConnectorFactory.clear();
 	});
 });

@@ -2,22 +2,24 @@
 	"error": {
 		"federatedCatalogueService": {
 			"datasetNotFound": "Dataset with ID \"{notFoundId}\" not found in the catalogue",
-			"datasetIdInvalidUri": "Dataset @id \"{dataSetId}\" must be a valid URI (URN or URL) per DS Protocol",
-			"datasetMissingPublisher": "Dataset \"{dataSetId}\" is missing required dcterms:publisher property (needed for participant identification)",
-			"filterIndexCreationFailed": "Failed to create filter index for dataset \"{dataSetId}\" using filter \"{filterType}\"",
+			"datasetIdInvalidUri": "Dataset @id \"{datasetId}\" must be a valid URI (URN or URL) per DS Protocol",
+			"datasetMissingPublisher": "Dataset \"{datasetId}\" is missing required dcterms:publisher property (needed for participant identification)",
+			"filterIndexCreationFailed": "Failed to create filter index for dataset \"{datasetId}\" using filter \"{filterType}\"",
 			"multipleFiltersNotSupported": "Multiple filters are not supported in a single query",
 			"filterMustBeArray": "Filter must be an array per DS Protocol specification",
-			"noDatasetsFound": "No datasets found in the catalogue"
+			"noDatasetsFound": "No datasets found in the catalogue",
+			"datasetOwnerMismatch": "Dataset \"{datasetId}\" already exists and is owned by a different identity",
+			"datasetRemoveNotOwner": "Dataset \"{datasetId}\" can only be removed by its owner"
 		}
 	},
 	"info": {
 		"federatedCatalogueService": {
-			"datasetRetrieve": "Retrieving dataset \"{dataSetId}\" from catalogue",
-			"datasetSet": "Storing dataset \"{dataSetId}\" in catalogue",
-			"datasetRemove": "Removing dataset \"{dataSetId}\" from catalogue",
+			"datasetRetrieve": "Retrieving dataset \"{datasetId}\" from catalogue",
+			"datasetSet": "Storing dataset \"{datasetId}\" in catalogue",
+			"datasetRemove": "Removing dataset \"{datasetId}\" from catalogue",
 			"catalogQuery": "Executing catalogue query",
 			"catalogQueryComplete": "Catalogue query complete, found {resultCount} results",
-			"filterIndexPersisted": "Filter indexes persisted for dataset \"{dataSetId}\" using filter \"{filterType}\", {indexCount} entries"
+			"filterIndexPersisted": "Filter indexes persisted for dataset \"{datasetId}\" using filter \"{filterType}\", {indexCount} entries"
 		}
 	}
 }
