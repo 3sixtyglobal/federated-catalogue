@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.0.3-next.19](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-rest-server-v0.0.3-next.18...federated-catalogue-rest-server-v0.0.3-next.19) (2026-06-08)
+
+
+### Miscellaneous Chores
+
+* **federated-catalogue-rest-server:** Synchronize repo versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.0.3-next.18 to 0.0.3-next.19
+    * @twin.org/federated-catalogue-service bumped from 0.0.3-next.18 to 0.0.3-next.19
+
 ## [0.0.3-next.18](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-rest-server-v0.0.3-next.17...federated-catalogue-rest-server-v0.0.3-next.18) (2026-06-01)
 
 

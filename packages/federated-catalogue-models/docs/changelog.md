@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.3-next.19](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-models-v0.0.3-next.18...federated-catalogue-models-v0.0.3-next.19) (2026-06-08)
+
+
+### Features
+
+* replace sync storage with shared DB and trust-token auth ([#79](https://github.com/iotaledger/twin-federated-catalogue/issues/79)) ([3a07f02](https://github.com/iotaledger/twin-federated-catalogue/commit/3a07f02aba8d6f3540a23e5c2cebc7b0e579ef30))
+
 ## [0.0.3-next.18](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-models-v0.0.3-next.17...federated-catalogue-models-v0.0.3-next.18) (2026-06-01)
 
 
