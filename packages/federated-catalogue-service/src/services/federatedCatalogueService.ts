@@ -533,12 +533,23 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		// "accessService" that appears in compacted query responses).
 		const distributions = ArrayHelper.fromObjectOrArray(entity["dcat:distribution"]) ?? [];
 		for (const dist of distributions) {
-			if (Is.stringValue(dist?.["dcat:accessService"])) {
+			const accessService = dist?.["dcat:accessService"];
+			if (Is.stringValue(accessService)) {
 				dist["dcat:accessService"] = HttpUrlHelper.addQueryStringParam(
-					dist["dcat:accessService"],
+					accessService,
 					ContextIdKeys.Organization,
 					organizationId
 				);
+			} else if (Is.objectValue(accessService)) {
+				// DCAT object form: a dcat:DataService with an endpointURL.
+				const dataService = accessService as { "dcat:endpointURL"?: unknown };
+				if (Is.stringValue(dataService["dcat:endpointURL"])) {
+					dataService["dcat:endpointURL"] = HttpUrlHelper.addQueryStringParam(
+						dataService["dcat:endpointURL"],
+						ContextIdKeys.Organization,
+						organizationId
+					);
+				}
 			}
 		}
 	}

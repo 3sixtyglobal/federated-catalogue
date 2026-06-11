@@ -1757,6 +1757,55 @@ describe("FederatedCatalogueService", () => {
 		expect(bakedUrl).toContain(accessServiceUrl);
 	});
 
+	test("Set bakes organization into object-form accessService endpoint URL", async () => {
+		const service = new FederatedCatalogueService({ datasetEntityStorageType: "dataset" });
+
+		const datasetId = "https://example.com/datasets/object-access-service-baking-test";
+		const endpointUrl = "https://example.com/data/";
+		const organizationId = "my-organization-id";
+
+		const dataset = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": datasetId,
+			"@type": DcatClasses.Dataset,
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/object-access-service-dist",
+				"dcterms:format": "application/json",
+				"dcat:accessService": {
+					"@id": "https://example.com/services/object-service",
+					"@type": "dcat:DataService",
+					"dcat:endpointURL": endpointUrl
+				}
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.Context,
+				"@type": "Offer",
+				uid: "https://example.com/policies/object-access-service-policy",
+				assigner: "https://example.com/participants/test-publisher",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		await service.set(dataset, JSON.stringify({ identity: organizationId }));
+
+		const entity = await datasetEntityStorage.get(datasetId);
+		const distributions = ArrayHelper.fromObjectOrArray(entity?.["dcat:distribution"]);
+		const accessService = (
+			distributions[0] as {
+				"dcat:accessService"?: { "dcat:endpointURL"?: string };
+			}
+		)["dcat:accessService"];
+		const bakedUrl = accessService?.["dcat:endpointURL"];
+		expect(bakedUrl).toContain(`${ContextIdKeys.Organization}=${organizationId}`);
+		expect(bakedUrl).toContain(endpointUrl);
+	});
+
 	test("Set ownerId is identity — different identity causes mismatch on update", async () => {
 		const service = new FederatedCatalogueService({ datasetEntityStorageType: "dataset" });
 
