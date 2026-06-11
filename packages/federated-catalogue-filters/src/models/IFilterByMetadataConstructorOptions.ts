@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0.
 
 /**
- * Options for the FilterByExample constructor.
+ * Options for the FilterByMetadata constructor.
  */
-export interface IFilterByExampleConstructorOptions {
+export interface IFilterByMetadataConstructorOptions {
 	/**
 	 * The type of the entity storage connector for datasets.
 	 */

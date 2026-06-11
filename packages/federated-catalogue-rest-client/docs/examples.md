@@ -24,7 +24,7 @@ const client = new FederatedCatalogueRestClient({
 const queryResponse = await client.query(
   [
     {
-      '@type': 'FilterByExample',
+      '@type': 'FilterByMetadata',
       'dcterms:publisher': {
         '@id': 'did:web:publisher.example'
       }

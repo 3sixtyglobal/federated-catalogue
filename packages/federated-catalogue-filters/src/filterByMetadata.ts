@@ -10,17 +10,18 @@ import type { IFederatedCatalogueFilter } from "@twin.org/federated-catalogue-mo
 import { type Dataset, datasetEntityToModel } from "@twin.org/federated-catalogue-service";
 import { nameof } from "@twin.org/nameof";
 import type { IDcatDataset } from "@twin.org/standards-w3c-dcat";
-import type { IFilterByExampleConstructorOptions } from "./models/IFilterByExampleConstructorOptions.js";
+import type { ITrustVerificationInfo } from "@twin.org/trust-models";
+import type { IFilterByMetadataConstructorOptions } from "./models/IFilterByMetadataConstructorOptions.js";
 
 /**
- * Filter plugin that matches datasets by example attributes using partial matching.
+ * Filter plugin that matches datasets by metadata attributes using partial matching.
  * Supports nested properties and array matching.
  */
-export class FilterByExample implements IFederatedCatalogueFilter {
+export class FilterByMetadata implements IFederatedCatalogueFilter {
 	/**
 	 * Runtime name for the class.
 	 */
-	public static readonly CLASS_NAME: string = nameof<FilterByExample>();
+	public static readonly CLASS_NAME: string = nameof<FilterByMetadata>();
 
 	/**
 	 * The entity storage connector for datasets.
@@ -29,10 +30,10 @@ export class FilterByExample implements IFederatedCatalogueFilter {
 	private readonly _datasetStorage: IEntityStorageConnector<Dataset>;
 
 	/**
-	 * Create a new instance of FilterByExample.
+	 * Create a new instance of FilterByMetadata.
 	 * @param options The options for the filter.
 	 */
-	constructor(options?: IFilterByExampleConstructorOptions) {
+	constructor(options?: IFilterByMetadataConstructorOptions) {
 		this._datasetStorage = EntityStorageConnectorFactory.get(
 			options?.datasetStorageConnectorType ?? "dataset"
 		);
@@ -43,18 +44,20 @@ export class FilterByExample implements IFederatedCatalogueFilter {
 	 * @returns The class name of the component.
 	 */
 	public className(): string {
-		return FilterByExample.CLASS_NAME;
+		return FilterByMetadata.CLASS_NAME;
 	}
 
 	/**
 	 * Execute a filter-specific query over the catalogue.
 	 * Uses database-level filtering with query conditions.
+	 * @param trustInfo The trust verification information for the current request.
 	 * @param filter The filter criteria (Partial IDataset with example values).
 	 * @param cursor The pagination cursor from the previous query, if any.
 	 * @param limit The maximum number of results to return.
 	 * @returns Object containing datasets matching the filter criteria and optional cursor for next page.
 	 */
 	public async query(
+		trustInfo: ITrustVerificationInfo,
 		filter: unknown,
 		cursor?: string,
 		limit?: number
@@ -71,9 +74,7 @@ export class FilterByExample implements IFederatedCatalogueFilter {
 			return { datasets, cursor: result.cursor };
 		}
 
-		const filterObj = filter as Partial<IDcatDataset>;
-
-		const conditions = this.buildQueryConditions(filterObj);
+		const conditions = this.buildQueryConditions(filter);
 		const results = await this._datasetStorage.query(
 			conditions.length > 0
 				? {
@@ -100,7 +101,7 @@ export class FilterByExample implements IFederatedCatalogueFilter {
 	 * @returns Record mapping property names to their values for indexing.
 	 */
 	public async createIndex(dataset: IDcatDataset): Promise<{ [key: string]: unknown }> {
-		Guards.object(FilterByExample.CLASS_NAME, nameof(dataset), dataset);
+		Guards.object(FilterByMetadata.CLASS_NAME, nameof(dataset), dataset);
 
 		const indexes: { [key: string]: unknown } = {};
 
@@ -132,13 +133,21 @@ export class FilterByExample implements IFederatedCatalogueFilter {
 	 * @internal
 	 */
 	private buildQueryConditions(
-		filter: Partial<IDcatDataset>
+		filter: Partial<IDcatDataset> & { ownerId?: string }
 	): { property: string; value: unknown; comparison: ComparisonOperator }[] {
 		const conditions: {
 			property: string;
 			value: unknown;
 			comparison: ComparisonOperator;
 		}[] = [];
+
+		if (Is.stringValue(filter.ownerId)) {
+			conditions.push({
+				property: "ownerId",
+				value: filter.ownerId,
+				comparison: ComparisonOperator.Equals
+			});
+		}
 
 		for (const key of Object.keys(filter)) {
 			const value = ObjectHelper.propertyGet(filter, key);

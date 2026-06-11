@@ -70,12 +70,6 @@ describe("Federated Catalogue REST Endpoints", () => {
 			buildPublicUrl: async (url: string) => url
 		}));
 
-		ComponentFactory.register("url-transformer", () => ({
-			className: () => "MockUrlTransformerComponent",
-			addEncryptedQueryParamToUrl: async (url: string, id: string, value: string) =>
-				`${url}${url.includes("?") ? "&" : "?"}x-enc-${id}=${value}`
-		}));
-
 		// Mock trust component: always verifies, returns a fixed identity
 		ComponentFactory.register("trust", () => ({
 			className: () => "MockTrustComponent",
@@ -103,8 +97,8 @@ describe("Federated Catalogue REST Endpoints", () => {
 		FederatedCatalogueFilterFactory.clear();
 
 		// Register filter plugin in factory
-		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
-			className: () => "FilterByExample",
+		FederatedCatalogueFilterFactory.register("FilterByMetadata", () => ({
+			className: () => "FilterByMetadata",
 			query: async filter => ({
 				datasets: [],
 				cursor: undefined
@@ -291,7 +285,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 					"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage,
 					filter: [
 						{
-							"@type": "FilterByExample",
+							"@type": "FilterByMetadata",
 							"dcterms:title": "Test Dataset for Context"
 						}
 					]
@@ -332,7 +326,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 				"@id": datasetId,
 				"@type": DcatClasses.Dataset,
 				"dcterms:type": "https://vocabulary.uncefact.org/Consignment",
-				"dcterms:publisher": "https://example.com/participants/test-publisher",
+				"dcterms:publisher": "did:example:test-node",
 				"dcat:distribution": {
 					"@type": "dcat:Distribution",
 					"@id": "urn:uuid:dist",
@@ -351,11 +345,11 @@ describe("Federated Catalogue REST Endpoints", () => {
 			await service.set(dataset, "mock-trust-token");
 
 			FederatedCatalogueFilterFactory.clear();
-			// The real FilterByExample calls datasetEntityToModel() internally before returning.
+			// The real FilterByMetadata calls datasetEntityToModel() internally before returning.
 			// Returning a true IDcatDataset model (with "@id") mirrors that behavior.
 			// The service must not strip "@id" by re-applying datasetEntityToModel on a model.
-			FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
-				className: () => "FilterByExample",
+			FederatedCatalogueFilterFactory.register("FilterByMetadata", () => ({
+				className: () => "FilterByMetadata",
 				query: async filter => ({
 					datasets: [dataset] as IDcatDataset[],
 					cursor: undefined
@@ -370,7 +364,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 					"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage,
 					filter: [
 						{
-							"@type": "FilterByExample",
+							"@type": "FilterByMetadata",
 							"dcterms:type": "https://vocabulary.uncefact.org/Consignment"
 						}
 					]

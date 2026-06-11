@@ -18,13 +18,6 @@ export interface IFederatedCatalogueServiceConstructorOptions {
 	loggingComponentType?: string;
 
 	/**
-	 * URL transformer component type used to encrypt the per-publisher tenant token into
-	 * distribution accessService URLs at write time.
-	 * @default url-transformer
-	 */
-	urlTransformerComponentType?: string;
-
-	/**
 	 * Trust component type for trust verification.
 	 * @default trust
 	 */

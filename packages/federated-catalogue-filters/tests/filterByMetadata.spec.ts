@@ -7,12 +7,14 @@ import { type Dataset, initSchema } from "@twin.org/federated-catalogue-service"
 import { nameof } from "@twin.org/nameof";
 import { DublinCoreContexts } from "@twin.org/standards-dublin-core";
 import { DcatClasses, DcatContexts } from "@twin.org/standards-w3c-dcat";
-import { FilterByExample } from "../src/filterByExample.js";
+import type { ITrustVerificationInfo } from "@twin.org/trust-models";
+import { FilterByMetadata } from "../src/filterByMetadata.js";
 
 let datasetEntityStorage: MemoryEntityStorageConnector<Dataset>;
-let filter: FilterByExample;
+let filter: FilterByMetadata;
+const trustInfo: ITrustVerificationInfo = { identity: "did:test:owner" };
 
-describe("FilterByExample", () => {
+describe("FilterByMetadata", () => {
 	beforeAll(async () => {
 		initSchema();
 
@@ -32,18 +34,17 @@ describe("FilterByExample", () => {
 			}
 		}
 
-		filter = new FilterByExample({
+		filter = new FilterByMetadata({
 			datasetStorageConnectorType: "dataset"
 		});
 	});
 
 	test("Filter instance is created successfully", () => {
-		expect(filter).toBeInstanceOf(FilterByExample);
+		expect(filter).toBeInstanceOf(FilterByMetadata);
 		expect(filter).toBeDefined();
 	});
 
 	test("Query with empty filter returns all datasets", async () => {
-		// Add test datasets directly via entity storage (entity shape: id + DCAT fields)
 		const dataset1 = {
 			id: "https://example.com/datasets/test-1",
 			ownerId: "did:test:owner",
@@ -69,10 +70,9 @@ describe("FilterByExample", () => {
 		await datasetEntityStorage.set(dataset1);
 		await datasetEntityStorage.set(dataset2);
 
-		const result = await filter.query({});
+		const result = await filter.query(trustInfo, {});
 
 		expect(result.datasets).toHaveLength(2);
-		// Filter returns raw entities; id is the entity primary key
 		const ids = result.datasets.map(d => d["@id"]);
 		expect(ids).toContain(dataset1.id);
 		expect(ids).toContain(dataset2.id);
@@ -106,7 +106,7 @@ describe("FilterByExample", () => {
 		await datasetEntityStorage.set(dataset1);
 		await datasetEntityStorage.set(dataset2);
 
-		const result = await filter.query({
+		const result = await filter.query(trustInfo, {
 			"dcterms:identifier": "WEATHER-001"
 		});
 
@@ -145,7 +145,7 @@ describe("FilterByExample", () => {
 		await datasetEntityStorage.set(dataset1);
 		await datasetEntityStorage.set(dataset2);
 
-		const result = await filter.query({
+		const result = await filter.query(trustInfo, {
 			"dcterms:title": "Weather Data",
 			"dcterms:identifier": "WEATHER-001"
 		});
@@ -185,26 +185,18 @@ describe("FilterByExample", () => {
 			}
 		};
 
-		// Store datasets
 		await datasetEntityStorage.set(dataset1);
 		await datasetEntityStorage.set(dataset2);
 
-		// Query with nested object - Note: nested object matching has limitations
-		// with database-level queries. This test now verifies the query doesn't error,
-		// but may return empty results due to JSON.stringify comparison limitations
-		// in MemoryEntityStorageConnector
-		const result = await filter.query({
+		const result = await filter.query(trustInfo, {
 			"dcterms:publisher": {
 				"@type": "foaf:Organization",
 				name: "ACME Corporation"
 			}
 		});
 
-		// The query executes without error (expected behavior)
 		expect(result.datasets).toBeDefined();
 		expect(Is.array(result.datasets)).toBe(true);
-		// Note: MemoryEntityStorageConnector may not match stringified JSON objects correctly
-		// This is a known limitation of the simplified query approach
 	});
 
 	test("Query with array property matching", async () => {
@@ -232,23 +224,15 @@ describe("FilterByExample", () => {
 			"dcat:keyword": ["traffic", "congestion", "roads"]
 		};
 
-		// Store datasets
 		await datasetEntityStorage.set(dataset1);
 		await datasetEntityStorage.set(dataset2);
 
-		// Query with array - Note: array matching with ComparisonOperator.In has limitations
-		// in MemoryEntityStorageConnector. The IN operator checks if the stored value
-		// matches any of the filter array values, not if all array elements match.
-		// This test verifies the query doesn't error.
-		const result = await filter.query({
+		const result = await filter.query(trustInfo, {
 			"dcat:keyword": ["weather", "temperature", "forecast"]
 		});
 
-		// The query executes without error (expected behavior)
 		expect(result.datasets).toBeDefined();
 		expect(Is.array(result.datasets)).toBe(true);
-		// Note: MemoryEntityStorageConnector may not support complex array matching
-		// This is a known limitation of the simplified query approach
 	});
 
 	test("Query returns empty array when no matches", async () => {
@@ -266,7 +250,7 @@ describe("FilterByExample", () => {
 
 		await datasetEntityStorage.set(dataset);
 
-		const result = await filter.query({
+		const result = await filter.query(trustInfo, {
 			"dcterms:identifier": "NON-EXISTENT"
 		});
 
@@ -287,12 +271,10 @@ describe("FilterByExample", () => {
 
 		await datasetEntityStorage.set(dataset);
 
-		// Query with null should return all datasets
-		const result = await filter.query(null);
+		const result = await filter.query(trustInfo, null);
 		expect(result.datasets).toHaveLength(1);
 
-		// Query with undefined should return all datasets
-		const result2 = await filter.query(undefined);
+		const result2 = await filter.query(trustInfo, undefined);
 		expect(result2.datasets).toHaveLength(1);
 	});
 
@@ -322,7 +304,7 @@ describe("FilterByExample", () => {
 		await datasetEntityStorage.set(catalogDataset);
 		await datasetEntityStorage.set(regularDataset);
 
-		const result = await filter.query({
+		const result = await filter.query(trustInfo, {
 			"@type": DcatClasses.Dataset
 		});
 
@@ -356,8 +338,8 @@ describe("FilterByExample", () => {
 		await datasetEntityStorage.set(dataset1);
 		await datasetEntityStorage.set(dataset2);
 
-		// FilterByExample uses exact matching, so partial match won't work
-		const result = await filter.query({
+		// FilterByMetadata uses exact matching, so partial match won't work
+		const result = await filter.query(trustInfo, {
 			"dcterms:title": "Weather Forecast Data 2024"
 		});
 

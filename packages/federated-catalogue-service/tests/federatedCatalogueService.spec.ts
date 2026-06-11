@@ -1,6 +1,6 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import { ContextIdStore } from "@twin.org/context";
+import { ContextIdKeys, ContextIdStore } from "@twin.org/context";
 import { ArrayHelper, ComponentFactory, Is } from "@twin.org/core";
 import { JsonLdDataTypes, JsonLdHelper } from "@twin.org/data-json-ld";
 import { MemoryEntityStorageConnector } from "@twin.org/entity-storage-connector-memory";
@@ -15,6 +15,7 @@ import { DublinCoreContexts } from "@twin.org/standards-dublin-core";
 import { addAllContextsToDocumentCache } from "@twin.org/standards-ld-contexts";
 import { DcatClasses, DcatContexts, type IDcatDataset } from "@twin.org/standards-w3c-dcat";
 import { OdrlContexts, OdrlDataTypes, OdrlPolicyType } from "@twin.org/standards-w3c-odrl";
+import type { ITrustVerificationInfo } from "@twin.org/trust-models";
 import type { Dataset } from "../src/entities/dataset.js";
 import { initSchema } from "../src/schema.js";
 import { FederatedCatalogueService } from "../src/services/federatedCatalogueService.js";
@@ -35,15 +36,8 @@ describe("FederatedCatalogueService", () => {
 
 		EntityStorageConnectorFactory.register("dataset", () => datasetEntityStorage);
 
-		// Register a mock IUrlTransformerComponent that the service resolves at construct time.
-		ComponentFactory.register("url-transformer", () => ({
-			className: () => "MockUrlTransformerComponent",
-			addEncryptedQueryParamToUrl: async (url: string, id: string, value: string) =>
-				`${url}${url.includes("?") ? "&" : "?"}x-enc-${id}=${value}`
-		}));
-
 		// Mock trust component: uses the token string as identity.
-		// Pass a JSON-encoded ITrustVerificationInfo object to set identity/tenantId/organizationId.
+		// Pass a JSON-encoded object with at least { identity } to set the identity.
 		ComponentFactory.register("trust", () => ({
 			className: () => "MockTrustComponent",
 			verify: async (token: unknown) => {
@@ -88,13 +82,22 @@ describe("FederatedCatalogueService", () => {
 	});
 
 	test("Can register filter in factory and use in service", async () => {
-		// Register filter in factory BEFORE creating service
-		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
-			className: () => "FilterByExample",
-			query: async filter => ({
+		const querySpy = vi.fn(
+			async (
+				trustInfo: ITrustVerificationInfo,
+				filter: unknown,
+				cursor?: string,
+				limit?: number
+			) => ({
 				datasets: [],
 				cursor: undefined
-			}),
+			})
+		);
+
+		// Register filter in factory BEFORE creating service
+		FederatedCatalogueFilterFactory.register("FilterByMetadata", () => ({
+			className: () => "FilterByMetadata",
+			query: querySpy,
 			createIndex: async () => ({})
 		}));
 
@@ -104,12 +107,18 @@ describe("FederatedCatalogueService", () => {
 
 		// Verify the filter is accessible by the service (won't throw NotFoundError)
 		const catalog = await service.query(
-			[{ "@type": "FilterByExample" }],
+			[{ "@type": "FilterByMetadata" }],
 			undefined,
 			undefined,
 			"mock-trust-token"
 		);
 		expect(catalog).toBeDefined();
+		expect(querySpy).toHaveBeenCalledWith(
+			expect.objectContaining({ identity: "mock-trust-token" }),
+			expect.any(Array),
+			undefined,
+			undefined
+		);
 		const datasets = ArrayHelper.fromObjectOrArray(
 			(catalog as { dataset?: unknown }).dataset ?? []
 		);
@@ -246,9 +255,9 @@ describe("FederatedCatalogueService", () => {
 		await service.set(dataset1, "mock-trust-token");
 		await service.set(dataset2, "mock-trust-token");
 
-		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
-			className: () => "FilterByExample",
-			query: async filter => ({
+		FederatedCatalogueFilterFactory.register("FilterByMetadata", () => ({
+			className: () => "FilterByMetadata",
+			query: async (trustInfo, filter) => ({
 				datasets: [dataset1, dataset2],
 				cursor: undefined
 			}),
@@ -256,10 +265,10 @@ describe("FederatedCatalogueService", () => {
 		}));
 
 		const queryResult = await service.query(
-			[{ "@type": "FilterByExample" }],
+			[{ "@type": "FilterByMetadata" }],
 			undefined,
 			undefined,
-			"mock-trust-token"
+			"https://example.com/participants/test-publisher"
 		);
 		const datasets = ArrayHelper.fromObjectOrArray(
 			(queryResult.result as { dataset?: unknown }).dataset ?? []
@@ -286,7 +295,7 @@ describe("FederatedCatalogueService", () => {
 		).toBe(true);
 	});
 
-	test("Query returns catalog with participantId derived from dcterms:publisher (single participant)", async () => {
+	test("Query returns flat catalog when requester identity is the single publisher", async () => {
 		const service = new FederatedCatalogueService({
 			datasetEntityStorageType: "dataset"
 		});
@@ -319,9 +328,9 @@ describe("FederatedCatalogueService", () => {
 
 		await service.set(dataset, "mock-trust-token");
 
-		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
-			className: () => "FilterByExample",
-			query: async filter => ({
+		FederatedCatalogueFilterFactory.register("FilterByMetadata", () => ({
+			className: () => "FilterByMetadata",
+			query: async (trustInfo, filter) => ({
 				datasets: [dataset],
 				cursor: undefined
 			}),
@@ -329,10 +338,10 @@ describe("FederatedCatalogueService", () => {
 		}));
 
 		const queryResult = await service.query(
-			[{ "@type": "FilterByExample" }],
+			[{ "@type": "FilterByMetadata" }],
 			undefined,
 			undefined,
-			"mock-trust-token"
+			publisherId
 		);
 
 		// Verify single participant returns flat catalog with participantId
@@ -347,7 +356,7 @@ describe("FederatedCatalogueService", () => {
 		expect(catalog.catalog).toBeUndefined();
 	});
 
-	test("Query returns nested catalogs for other participants (anonymous request)", async () => {
+	test("Query returns nested catalogs for other participants when requesting as one publisher", async () => {
 		const service = new FederatedCatalogueService({
 			datasetEntityStorageType: "dataset"
 		});
@@ -408,32 +417,31 @@ describe("FederatedCatalogueService", () => {
 		await service.set(dataset1, "mock-trust-token");
 		await service.set(dataset2, "mock-trust-token");
 
-		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
-			className: () => "FilterByExample",
-			query: async filter => ({
+		FederatedCatalogueFilterFactory.register("FilterByMetadata", () => ({
+			className: () => "FilterByMetadata",
+			query: async (trustInfo, filter) => ({
 				datasets: [dataset1, dataset2],
 				cursor: undefined
 			}),
 			createIndex: async () => ({})
 		}));
 
-		// Anonymous request (no context) - first publisher becomes root participantId
+		// Request as publisher1 — publisher1's datasets appear at root, publisher2's in nested catalog
 		const queryResult = await service.query(
-			[{ "@type": "FilterByExample" }],
+			[{ "@type": "FilterByMetadata" }],
 			undefined,
 			undefined,
-			"mock-trust-token"
+			publisher1
 		);
 
-		// Verify catalog structure for anonymous multi-participant query
+		// Verify catalog structure for multi-participant query
 		expect(queryResult.result).toBeDefined();
 		expect(queryResult.result["@type"]).toBe("Catalog");
 
 		// Type guard: verify it's a catalog, not an error
 		const catalog = queryResult.result as IDataspaceProtocolCatalog;
 
-		// For anonymous requests, first publisher (publisher1) becomes root participantId
-		// Root catalog gets publisher1's datasets, publisher2's datasets go in nested catalog
+		// Root catalog has publisher1 as participantId (matches the trust identity)
 		expect(catalog.participantId).toBe(publisher1);
 
 		// Root catalog should have dataset array for own datasets
@@ -510,9 +518,9 @@ describe("FederatedCatalogueService", () => {
 		await service.set(ownDataset, "mock-trust-token");
 		await service.set(otherDataset, "mock-trust-token");
 
-		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
-			className: () => "FilterByExample",
-			query: async filter => ({
+		FederatedCatalogueFilterFactory.register("FilterByMetadata", () => ({
+			className: () => "FilterByMetadata",
+			query: async (trustInfo, filter) => ({
 				datasets: [ownDataset, otherDataset],
 				cursor: undefined
 			}),
@@ -520,10 +528,10 @@ describe("FederatedCatalogueService", () => {
 		}));
 
 		const queryResult = await service.query(
-			[{ "@type": "FilterByExample" }],
+			[{ "@type": "FilterByMetadata" }],
 			undefined,
 			undefined,
-			JSON.stringify({ identity: "did:node:requester", organizationId: requestingParticipant })
+			requestingParticipant
 		);
 
 		// Verify catalog structure for authenticated request
@@ -582,9 +590,9 @@ describe("FederatedCatalogueService", () => {
 
 		await service.set(dataset, "mock-trust-token");
 
-		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
-			className: () => "FilterByExample",
-			query: async filter => ({
+		FederatedCatalogueFilterFactory.register("FilterByMetadata", () => ({
+			className: () => "FilterByMetadata",
+			query: async (trustInfo, filter) => ({
 				datasets: [dataset],
 				cursor: undefined
 			}),
@@ -593,11 +601,16 @@ describe("FederatedCatalogueService", () => {
 
 		// Query with filter matching the identifier
 		const filter = {
-			"@type": "FilterByExample",
+			"@type": "FilterByMetadata",
 			"dcterms:identifier": "FILTER-TEST-123"
 		};
 
-		const queryResult = await service.query([filter], undefined, undefined, "mock-trust-token");
+		const queryResult = await service.query(
+			[filter],
+			undefined,
+			undefined,
+			"https://example.com/participants/test-publisher"
+		);
 		const datasets = ArrayHelper.fromObjectOrArray(
 			(queryResult.result as { dataset?: unknown }).dataset ?? []
 		);
@@ -648,12 +661,12 @@ describe("FederatedCatalogueService", () => {
 
 		await service.set(dataset, "mock-trust-token");
 
-		// The real FilterByExample calls datasetEntityToModel() internally before returning.
+		// The real FilterByMetadata calls datasetEntityToModel() internally before returning.
 		// Returning a true IDcatDataset model (with "@id") mirrors that behavior.
 		// The service must not strip "@id" by re-applying datasetEntityToModel on a model.
-		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
-			className: () => "FilterByExample",
-			query: async filter => ({
+		FederatedCatalogueFilterFactory.register("FilterByMetadata", () => ({
+			className: () => "FilterByMetadata",
+			query: async (trustInfo, filter) => ({
 				datasets: [dataset] as IDcatDataset[],
 				cursor: undefined
 			}),
@@ -663,13 +676,13 @@ describe("FederatedCatalogueService", () => {
 		const queryResult = await service.query(
 			[
 				{
-					"@type": "FilterByExample",
+					"@type": "FilterByMetadata",
 					"dcterms:type": "https://vocabulary.uncefact.org/Consignment"
 				}
 			],
 			undefined,
 			undefined,
-			"mock-trust-token"
+			"https://example.com/participants/publisher-1"
 		);
 
 		expect(queryResult.result["@type"]).toBe("Catalog");
@@ -749,7 +762,7 @@ describe("FederatedCatalogueService", () => {
 		// Create a mock filter that returns empty datasets
 		const mockFilter = {
 			className: () => "MockEmptyFilter",
-			async query() {
+			async query(trustInfo: ITrustVerificationInfo) {
 				return {
 					datasets: [],
 					cursor: undefined
@@ -849,7 +862,7 @@ describe("FederatedCatalogueService", () => {
 		// Create a mock filter that returns datasets with a cursor
 		const mockFilter = {
 			className: () => "MockFilterWithCursorAndData",
-			async query() {
+			async query(trustInfo: ITrustVerificationInfo) {
 				return {
 					datasets: [dataset1],
 					cursor: "next-page-cursor-456"
@@ -867,7 +880,7 @@ describe("FederatedCatalogueService", () => {
 			[{ "@type": "MockFilterWithCursorAndData" }],
 			undefined,
 			undefined,
-			"mock-trust-token"
+			"https://example.com/participants/test-publisher"
 		);
 
 		// Verify cursor is present after compaction
@@ -919,18 +932,18 @@ describe("FederatedCatalogueService", () => {
 		await service.set(dataset, "mock-trust-token");
 
 		// Register filter that returns the dataset but no cursor
-		FederatedCatalogueFilterFactory.register("FilterByExample", () => ({
-			className: () => "FilterByExample",
-			query: async filter => ({
+		FederatedCatalogueFilterFactory.register("FilterByMetadata", () => ({
+			className: () => "FilterByMetadata",
+			query: async (trustInfo, filter) => ({
 				datasets: [dataset],
 				cursor: undefined
 			}),
 			createIndex: async () => ({})
 		}));
 
-		// Query without cursor (FilterByExample doesn't return cursor by default)
+		// Query without cursor (FilterByMetadata doesn't return cursor by default)
 		const queryResult = await service.query(
-			[{ "@type": "FilterByExample" }],
+			[{ "@type": "FilterByMetadata" }],
 			undefined,
 			undefined,
 			"mock-trust-token"
@@ -1704,12 +1717,12 @@ describe("FederatedCatalogueService", () => {
 		});
 	});
 
-	test("Set bakes tenant token into distribution accessService URL when tenantId is in context", async () => {
+	test("Set bakes organization into distribution accessService URL", async () => {
 		const service = new FederatedCatalogueService({ datasetEntityStorageType: "dataset" });
 
 		const datasetId = "https://example.com/datasets/tenant-baking-test";
 		const accessServiceUrl = "https://example.com/services/tenant-service";
-		const tenantId = "my-tenant";
+		const organizationId = "my-organization-id";
 
 		const dataset = {
 			"@context": {
@@ -1735,16 +1748,16 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		await service.set(dataset, JSON.stringify({ identity: "did:node:tenant-owner", tenantId }));
+		await service.set(dataset, JSON.stringify({ identity: organizationId }));
 
 		const entity = await datasetEntityStorage.get(datasetId);
 		const distributions = ArrayHelper.fromObjectOrArray(entity?.["dcat:distribution"]);
 		const bakedUrl = (distributions[0] as { "dcat:accessService"?: string })["dcat:accessService"];
-		expect(bakedUrl).toContain(`x-enc-tenant=${tenantId}`);
+		expect(bakedUrl).toContain(`${ContextIdKeys.Organization}=${organizationId}`);
 		expect(bakedUrl).toContain(accessServiceUrl);
 	});
 
-	test("Set composite ownerId includes tenantId — different tenant causes mismatch on update", async () => {
+	test("Set ownerId is identity — different identity causes mismatch on update", async () => {
 		const service = new FederatedCatalogueService({ datasetEntityStorageType: "dataset" });
 
 		const dataset = {
@@ -1771,16 +1784,13 @@ describe("FederatedCatalogueService", () => {
 			}
 		} as unknown as IDcatDataset;
 
-		// Set with node + tenant-a
-		await service.set(
-			dataset,
-			JSON.stringify({ identity: "did:node:shared-node", tenantId: "tenant-a" })
-		);
+		// Set with identity-a
+		await service.set(dataset, JSON.stringify({ identity: "did:node:owner-a" }));
 
-		// Try to update with same node but different tenant — composite ownerId differs
+		// Try to update with a different identity — ownerId differs, so update is rejected
 		const result = await service.set(
 			{ ...dataset, "dcterms:title": "Modified" },
-			JSON.stringify({ identity: "did:node:shared-node", tenantId: "tenant-b" })
+			JSON.stringify({ identity: "did:node:owner-b" })
 		);
 		expect(result).toMatchObject({
 			"@type": "CatalogError",
@@ -1820,7 +1830,12 @@ describe("FederatedCatalogueService", () => {
 		await service.set(makeDataset("https://example.com/datasets/nofilter-2"), "mock-trust-token");
 
 		// No filter registered — passing undefined bypasses the filter path entirely
-		const result = await service.query(undefined, undefined, undefined, "mock-trust-token");
+		const result = await service.query(
+			undefined,
+			undefined,
+			undefined,
+			"https://example.com/participants/test-publisher"
+		);
 
 		expect(result.result["@type"]).toBe("Catalog");
 		const catalog = result.result as IDataspaceProtocolCatalog;

@@ -16,7 +16,6 @@ export function datasetEntityToModel(entity: Dataset | Partial<Dataset>): IDcatD
 	// Remove storage-specific fields that should not be exposed in the API model
 	delete model.id;
 	delete model.ownerId;
-	delete model.tenantId;
 
 	return {
 		...model,
@@ -28,13 +27,15 @@ export function datasetEntityToModel(entity: Dataset | Partial<Dataset>): IDcatD
  * Convert an IDcatDataset model to a Dataset entity.
  * Maps model["@id"] to entity.id.
  * @param model The IDcatDataset model from API requests.
+ * @param ownerId The owner ID to associate with the dataset entity.
  * @returns The Dataset entity for storage.
  */
-export function datasetModelToEntity(model: IDcatDataset): Dataset {
+export function datasetModelToEntity(model: IDcatDataset, ownerId: string): Dataset {
 	const { "@id": atId, ...datasetModel } = model;
 
 	return {
 		...datasetModel,
-		id: atId
+		id: atId,
+		ownerId
 	} as Dataset;
 }

@@ -1,6 +1,7 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { IUrlTransformerComponent } from "@twin.org/api-models";
+import { HttpUrlHelper } from "@twin.org/api-models";
+import { ContextIdKeys } from "@twin.org/context";
 import {
 	ArrayHelper,
 	BaseError,
@@ -46,11 +47,7 @@ import {
 	type IDcatDataset
 } from "@twin.org/standards-w3c-dcat";
 import { OdrlContexts } from "@twin.org/standards-w3c-odrl";
-import {
-	TrustHelper,
-	type ITrustComponent,
-	type ITrustVerificationInfo
-} from "@twin.org/trust-models";
+import { TrustHelper, type ITrustComponent } from "@twin.org/trust-models";
 import type { Dataset } from "../entities/dataset.js";
 import type { IFederatedCatalogueServiceConstructorOptions } from "../models/IFederatedCatalogueServiceConstructorOptions.js";
 import { transformToCatalogError } from "../utils/catalogErrorUtils.js";
@@ -79,12 +76,6 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	private readonly _datasetStorage: IEntityStorageConnector<Dataset>;
 
 	/**
-	 * The URL transformer component for encrypting tenant routing tokens into distribution URLs.
-	 * @internal
-	 */
-	private readonly _urlTransformerComponent: IUrlTransformerComponent;
-
-	/**
 	 * The trust component for token verification and generation.
 	 * @internal
 	 */
@@ -95,16 +86,10 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * @param options The options for the service.
 	 */
 	constructor(options?: IFederatedCatalogueServiceConstructorOptions) {
-		this._logging = ComponentFactory.getIfExists<ILoggingComponent>(
-			options?.loggingComponentType ?? "logging"
-		);
+		this._logging = ComponentFactory.getIfExists<ILoggingComponent>(options?.loggingComponentType);
 
 		this._datasetStorage = EntityStorageConnectorFactory.get(
 			options?.datasetEntityStorageType ?? "dataset"
-		);
-
-		this._urlTransformerComponent = ComponentFactory.get<IUrlTransformerComponent>(
-			options?.urlTransformerComponentType ?? "url-transformer"
 		);
 
 		this._trustComponent = ComponentFactory.get<ITrustComponent>(
@@ -239,33 +224,21 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			};
 			const normalizedDataset = await JsonLdProcessor.compact(dataset, storageContext);
 
-			const datasetEntity = datasetModelToEntity(normalizedDataset);
-
-			datasetEntity.ownerId = this.buildCompositeOwnerId(trustInfo);
-			if (Is.stringValue(trustInfo.tenantId)) {
-				datasetEntity.tenantId = trustInfo.tenantId;
-			}
+			const datasetEntity = datasetModelToEntity(normalizedDataset, trustInfo.identity);
 
 			// Serialise the read-check-write cycle so concurrent requests for the
 			// same dataset cannot both pass the ownership check and overwrite each other.
 			await Mutex.lock(datasetId);
 			try {
 				const existingEntity = await this._datasetStorage.get(datasetId);
-				if (
-					existingEntity &&
-					Is.stringValue(existingEntity.ownerId) &&
-					existingEntity.ownerId !== datasetEntity.ownerId
-				) {
+				if (!Is.empty(existingEntity) && existingEntity.ownerId !== trustInfo.identity) {
 					throw new GeneralError(FederatedCatalogueService.CLASS_NAME, "datasetOwnerMismatch", {
 						datasetId
 					});
 				}
 
-				// Bake the publishing tenant token into distribution accessService URLs
-				// (done inside the lock, after ownership passes, so wasted work is avoided)
-				if (Is.stringValue(trustInfo.tenantId)) {
-					await this.bakeTenantTokenIntoDistributions(datasetEntity, trustInfo.tenantId);
-				}
+				// Bake the publishing organization into distribution accessService URLs
+				await this.bakeOrganizationIntoDistributions(datasetEntity, trustInfo.identity);
 
 				await this._logging?.log({
 					level: "info",
@@ -326,12 +299,11 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			Guards.stringValue(FederatedCatalogueService.CLASS_NAME, nameof(datasetId), datasetId);
 
 			const trustInfo = await TrustHelper.verifyTrust(this._trustComponent, trustPayload, "remove");
-			const ownerId = this.buildCompositeOwnerId(trustInfo);
 
 			await Mutex.lock(datasetId);
 			try {
 				const existingEntity = await this._datasetStorage.get(datasetId);
-				if (Is.stringValue(existingEntity?.ownerId) && existingEntity.ownerId !== ownerId) {
+				if (!Is.empty(existingEntity) && existingEntity.ownerId !== trustInfo.identity) {
 					throw new GeneralError(FederatedCatalogueService.CLASS_NAME, "datasetRemoveNotOwner", {
 						datasetId
 					});
@@ -421,7 +393,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 				const selectedFilter = FederatedCatalogueFilterFactory.get(filterType);
 
 				ObjectHelper.propertyDelete(filter, "@type");
-				const result = await selectedFilter.query(filter, cursor, limit);
+				const result = await selectedFilter.query(trustInfo, filter, cursor, limit);
 
 				datasets = result.datasets;
 				resultCursor = result.cursor;
@@ -440,9 +412,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 				throw new NotFoundError(FederatedCatalogueService.CLASS_NAME, "noDatasetsFound");
 			}
 
-			// Get requesting participant from verified trust info (organizationId maps to participantId).
-			// For local calls this comes from ContextIdStore; for REST calls from the trust token claim.
-			let requestingParticipantId = trustInfo.organizationId;
+			let requestingParticipantId = trustInfo.identity;
 
 			// Group datasets by dcterms:publisher (participantId)
 			const datasetsByParticipant = new Map<string, IDcatDataset[]>();
@@ -550,23 +520,25 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	}
 
 	/**
-	 * Bake the publishing tenant token into each distribution's accessService URL.
+	 * Bake the publishing organization token into each distribution's accessService URL.
 	 * @param entity The dataset entity to modify in place.
-	 * @param tenantId The publishing tenant id to bake.
+	 * @param organizationId The publishing organization id to bake.
 	 * @internal
 	 */
-	private async bakeTenantTokenIntoDistributions(entity: Dataset, tenantId: string): Promise<void> {
+	private async bakeOrganizationIntoDistributions(
+		entity: Dataset,
+		organizationId: string
+	): Promise<void> {
 		// Storage uses the prefixed JSON-LD key "dcat:accessService" (not the unprefixed
 		// "accessService" that appears in compacted query responses).
 		const distributions = ArrayHelper.fromObjectOrArray(entity["dcat:distribution"]) ?? [];
 		for (const dist of distributions) {
 			if (Is.stringValue(dist?.["dcat:accessService"])) {
-				dist["dcat:accessService"] =
-					await this._urlTransformerComponent.addEncryptedQueryParamToUrl(
-						dist["dcat:accessService"],
-						"tenant",
-						tenantId
-					);
+				dist["dcat:accessService"] = HttpUrlHelper.addQueryStringParam(
+					dist["dcat:accessService"],
+					ContextIdKeys.Organization,
+					organizationId
+				);
 			}
 		}
 	}
@@ -593,20 +565,5 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		const canonicalBytes = Converter.utf8ToBytes(canonicalContent);
 		const catalogHash = Converter.bytesToHex(Blake2b.sum256(canonicalBytes));
 		return `urn:x-catalog:${catalogHash}`;
-	}
-
-	/**
-	 * Build a composite owner ID by combining the node identifier and tenant ID.
-	 * @param trustInfo The trust verification information containing the node and tenant IDs.
-	 * @returns A composite owner ID string in the format "node:tenantId" if tenantId is provided, or just "node" if tenantId is not provided.
-	 * @internal
-	 */
-	private buildCompositeOwnerId(trustInfo: ITrustVerificationInfo): string {
-		const node = trustInfo.identity;
-		const tenantId = trustInfo.tenantId;
-		if (Is.stringValue(tenantId)) {
-			return `${node}:${tenantId}`;
-		}
-		return node;
 	}
 }

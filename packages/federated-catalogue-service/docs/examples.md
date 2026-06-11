@@ -77,7 +77,7 @@ await service.start();
 const queryResult = await service.query(
   [
     {
-      '@type': 'FilterByExample',
+      '@type': 'FilterByMetadata',
       'dcterms:publisher': {
         '@id': 'did:web:publisher.example'
       }
