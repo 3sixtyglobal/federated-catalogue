@@ -26,21 +26,6 @@ The logging component for the service.
 
 ***
 
-### urlTransformerComponentType? {#urltransformercomponenttype}
-
-> `optional` **urlTransformerComponentType?**: `string`
-
-URL transformer component type used to encrypt the per-publisher tenant token into
-distribution accessService URLs at write time.
-
-#### Default
-
-```ts
-url-transformer
-```
-
-***
-
 ### trustComponentType? {#trustcomponenttype}
 
 > `optional` **trustComponentType?**: `string`

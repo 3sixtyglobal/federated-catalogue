@@ -2,8 +2,8 @@
 
 ## Classes
 
-- [FilterByExample](classes/FilterByExample.md)
+- [FilterByMetadata](classes/FilterByMetadata.md)
 
 ## Interfaces
 
-- [IFilterByExampleConstructorOptions](interfaces/IFilterByExampleConstructorOptions.md)
+- [IFilterByMetadataConstructorOptions](interfaces/IFilterByMetadataConstructorOptions.md)

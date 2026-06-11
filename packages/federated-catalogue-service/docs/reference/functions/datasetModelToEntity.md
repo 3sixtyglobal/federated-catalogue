@@ -1,6 +1,6 @@
 # Function: datasetModelToEntity()
 
-> **datasetModelToEntity**(`model`): [`Dataset`](../classes/Dataset.md)
+> **datasetModelToEntity**(`model`, `ownerId`): [`Dataset`](../classes/Dataset.md)
 
 Convert an IDcatDataset model to a Dataset entity.
 Maps model["@id"] to entity.id.
@@ -12,6 +12,12 @@ Maps model["@id"] to entity.id.
 `IDcatDataset`
 
 The IDcatDataset model from API requests.
+
+### ownerId
+
+`string`
+
+The owner ID to associate with the dataset entity.
 
 ## Returns
 

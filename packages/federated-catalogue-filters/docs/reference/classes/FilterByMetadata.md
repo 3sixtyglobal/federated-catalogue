@@ -1,6 +1,6 @@
-# Class: FilterByExample
+# Class: FilterByMetadata
 
-Filter plugin that matches datasets by example attributes using partial matching.
+Filter plugin that matches datasets by metadata attributes using partial matching.
 Supports nested properties and array matching.
 
 ## Implements
@@ -11,21 +11,21 @@ Supports nested properties and array matching.
 
 ### Constructor
 
-> **new FilterByExample**(`options?`): `FilterByExample`
+> **new FilterByMetadata**(`options?`): `FilterByMetadata`
 
-Create a new instance of FilterByExample.
+Create a new instance of FilterByMetadata.
 
 #### Parameters
 
 ##### options?
 
-[`IFilterByExampleConstructorOptions`](../interfaces/IFilterByExampleConstructorOptions.md)
+[`IFilterByMetadataConstructorOptions`](../interfaces/IFilterByMetadataConstructorOptions.md)
 
 The options for the filter.
 
 #### Returns
 
-`FilterByExample`
+`FilterByMetadata`
 
 ## Properties
 
@@ -57,12 +57,18 @@ The class name of the component.
 
 ### query() {#query}
 
-> **query**(`filter`, `cursor?`, `limit?`): `Promise`\<\{ `datasets`: `IDcatDataset`[]; `cursor?`: `string`; \}\>
+> **query**(`trustInfo`, `filter`, `cursor?`, `limit?`): `Promise`\<\{ `datasets`: `IDcatDataset`[]; `cursor?`: `string`; \}\>
 
 Execute a filter-specific query over the catalogue.
 Uses database-level filtering with query conditions.
 
 #### Parameters
+
+##### trustInfo
+
+`ITrustVerificationInfo`
+
+The trust verification information for the current request.
 
 ##### filter
 

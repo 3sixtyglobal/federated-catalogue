@@ -1,6 +1,6 @@
-# Interface: IFilterByExampleConstructorOptions
+# Interface: IFilterByMetadataConstructorOptions
 
-Options for the FilterByExample constructor.
+Options for the FilterByMetadata constructor.
 
 ## Properties
 

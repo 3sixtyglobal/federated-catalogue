@@ -12,12 +12,18 @@ Filters are registered by name in the FilterFactory and do not need to self-iden
 
 ### query() {#query}
 
-> **query**(`filter`, `cursor?`, `limit?`): `Promise`\<\{ `datasets`: `IDcatDataset`[]; `cursor?`: `string`; \}\>
+> **query**(`trustInfo`, `filter`, `cursor?`, `limit?`): `Promise`\<\{ `datasets`: `IDcatDataset`[]; `cursor?`: `string`; \}\>
 
 Execute a filter-specific query over the catalogue.
 Each filter interprets the payload according to its own semantics.
 
 #### Parameters
+
+##### trustInfo
+
+`ITrustVerificationInfo`
+
+The trust verification information for the current request.
 
 ##### filter
 

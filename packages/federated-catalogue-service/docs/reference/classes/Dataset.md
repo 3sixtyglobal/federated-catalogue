@@ -32,14 +32,6 @@ The owner of the dataset.
 
 ***
 
-### tenantId? {#tenantid}
-
-> `optional` **tenantId?**: `string`
-
-The tenant id of the publisher captured at write time.
-
-***
-
 ### @context {#context}
 
 > **@context**: `DcatContextType`
