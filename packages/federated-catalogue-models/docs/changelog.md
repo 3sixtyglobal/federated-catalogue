@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.3-next.20](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-models-v0.0.3-next.19...federated-catalogue-models-v0.0.3-next.20) (2026-06-11)
+
+
+### Features
+
+* organization identifiers ([#84](https://github.com/iotaledger/twin-federated-catalogue/issues/84)) ([1e02971](https://github.com/iotaledger/twin-federated-catalogue/commit/1e02971a12e40bd20a0034ee1de0988a689d3dc8))
+
 ## [0.0.3-next.19](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-models-v0.0.3-next.18...federated-catalogue-models-v0.0.3-next.19) (2026-06-08)
 
 
