@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.0.3-next.21](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.20...federated-catalogue-service-v0.0.3-next.21) (2026-06-12)
+
+
+### Bug Fixes
+
+* bake organization id into object-form accessService endpoint URLs ([#88](https://github.com/iotaledger/twin-federated-catalogue/issues/88)) ([155d86d](https://github.com/iotaledger/twin-federated-catalogue/commit/155d86de7c416abf3c17a38fc3ac5969fd36449c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.0.3-next.20 to 0.0.3-next.21
+
 ## [0.0.3-next.20](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.19...federated-catalogue-service-v0.0.3-next.20) (2026-06-11)
 
 
