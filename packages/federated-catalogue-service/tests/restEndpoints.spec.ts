@@ -57,7 +57,8 @@ describe("Federated Catalogue REST Endpoints", () => {
 		await addAllContextsToDocumentCache();
 
 		datasetEntityStorage = new MemoryEntityStorageConnector<Dataset>({
-			entitySchema: nameof<Dataset>()
+			entitySchema: nameof<Dataset>(),
+			config: { storageKey: "dataset" }
 		});
 
 		EntityStorageConnectorFactory.register("dataset", () => datasetEntityStorage);
