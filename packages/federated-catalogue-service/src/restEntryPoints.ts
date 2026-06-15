@@ -6,6 +6,9 @@ import {
 	tagsFederatedCatalogue
 } from "./federatedCatalogueRoutes.js";
 
+/**
+ * REST route entry points for the federated catalogue service.
+ */
 export const restEntryPoints: IRestRouteEntryPoint[] = [
 	{
 		name: "federated-catalogue",

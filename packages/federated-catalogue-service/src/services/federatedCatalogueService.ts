@@ -118,7 +118,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * Retrieve a dataset by its unique identifier.
 	 * @param datasetId The unique identifier of the dataset.
 	 * @param trustPayload Optional payload for trust evaluation, if applicable.
-	 * @returns The dataset if found, or a CatalogError if not found or an error occurs.
+	 * @returns A promise that resolves with the dataset if found, or a CatalogError if not found or an error occurs.
 	 */
 	public async get(
 		datasetId: string,
@@ -161,7 +161,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * Insert or update a dataset in the catalogue.
 	 * @param dataset The dataset to store.
 	 * @param trustPayload Optional payload for trust evaluation, if applicable.
-	 * @returns The unique identifier of the stored dataset, or a CatalogError if an error occurs.
+	 * @returns A promise that resolves with the unique identifier of the stored dataset, or a CatalogError if an error occurs.
 	 */
 	public async set(
 		dataset: IDcatDataset,
@@ -289,7 +289,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * Indexes are automatically removed as they are stored with the dataset.
 	 * @param datasetId The unique identifier of the dataset to remove.
 	 * @param trustPayload Optional payload for trust evaluation, if applicable.
-	 * @returns Nothing, or a CatalogError if an error occurs.
+	 * @returns A promise that resolves with undefined on success, or a CatalogError if removal fails.
 	 */
 	public async remove(
 		datasetId: string,
@@ -328,21 +328,20 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 
 	/**
 	 * Execute a query against the catalogue using registered filter plugins.
-	 * Returns a DS Protocol compliant Catalog object with participantId.
+	 * Returns a Dataspace Protocol compliant Catalog object with participantId.
 	 *
 	 * The root catalog's participantId is the requesting participant (from context).
 	 * Own datasets (matching requestingParticipantId) go directly in root dataset[].
 	 * Other participants' datasets are grouped in nested catalog[] entries.
 	 *
 	 * For anonymous requests (no context), uses the first publisher found as fallback.
-	 * Returns CatalogError 404 when no datasets exist, CatalogError 400 for invalid requests.
+	 * Returns a CatalogError with status 404 when no datasets exist, or status 400 for invalid requests.
 	 *
-	 * @param filter The filter criteria containing @type, optional cursor and limit properties.
+	 * @param filter The filter criteria array, where the first element contains @type.
 	 * @param cursor Optional cursor for pagination.
 	 * @param limit Optional limit for pagination.
 	 * @param trustPayload Optional payload for trust evaluation, if applicable.
-	 * @returns Complete IDataspaceProtocolCatalog with @context, @id, @type, participantId, dataset/catalog,
-	 * or CatalogError if validation fails or an error occurs.
+	 * @returns A promise that resolves with the catalog result and optional next-page cursor.
 	 */
 	public async query(
 		filter: unknown[] | undefined,
@@ -523,6 +522,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 * Bake the publishing organization token into each distribution's accessService URL.
 	 * @param entity The dataset entity to modify in place.
 	 * @param organizationId The publishing organization id to bake.
+	 * @returns A promise that resolves when all distribution URLs have been updated.
 	 * @internal
 	 */
 	private async bakeOrganizationIntoDistributions(

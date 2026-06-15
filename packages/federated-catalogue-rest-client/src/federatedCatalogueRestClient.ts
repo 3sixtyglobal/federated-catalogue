@@ -56,7 +56,7 @@ export class FederatedCatalogueRestClient
 	 * Retrieve a specific dataset by its unique identifier.
 	 * @param datasetId The unique identifier of the dataset.
 	 * @param trustPayload Optional payload for trust evaluation, if applicable.
-	 * @returns The dataset if found, or a CatalogError if not found or an error occurs.
+	 * @returns A promise that resolves with the dataset if found, or a CatalogError if not found or an error occurs.
 	 */
 	public async get(
 		datasetId: string,
@@ -86,7 +86,7 @@ export class FederatedCatalogueRestClient
 	 * This method is internal and is not exposed via REST endpoints.
 	 * @param dataset The dataset to store.
 	 * @param trustPayload Optional payload for trust evaluation, if applicable.
-	 * @returns The unique identifier of the stored dataset, or a CatalogError if an error occurs.
+	 * @returns A promise that resolves with the unique identifier of the stored dataset, or a CatalogError if an error occurs.
 	 */
 	public async set(
 		dataset: IDcatDataset,
@@ -114,7 +114,7 @@ export class FederatedCatalogueRestClient
 	 * This method is internal and is not exposed via REST endpoints.
 	 * @param datasetId The unique identifier of the dataset to remove.
 	 * @param trustPayload Optional payload for trust evaluation, if applicable.
-	 * @returns Nothing.
+	 * @returns A promise that resolves with undefined on success, or a CatalogError if removal fails.
 	 */
 	public async remove(
 		datasetId: string,
@@ -145,7 +145,7 @@ export class FederatedCatalogueRestClient
 	 * @param cursor Optional cursor for pagination.
 	 * @param limit Optional limit for pagination.
 	 * @param trustPayload Optional payload for trust evaluation, if applicable.
-	 * @returns The catalog containing matching datasets (or CatalogError if none found), with cursor if more pages exist.
+	 * @returns A promise that resolves with the catalog result and optional next-page cursor.
 	 */
 	public async query(
 		filter: unknown[] | undefined,

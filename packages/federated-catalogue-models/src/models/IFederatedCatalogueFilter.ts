@@ -17,7 +17,7 @@ export interface IFederatedCatalogueFilter extends IComponent {
 	 * @param filter The filter criteria (structure depends on the filter implementation).
 	 * @param cursor The pagination cursor from the previous query, if any.
 	 * @param limit The maximum number of results to return.
-	 * @returns Object containing datasets matching the filter criteria and optional cursor for next page.
+	 * @returns A promise that resolves with datasets matching the filter criteria and an optional cursor for the next page.
 	 */
 	query(
 		trustInfo: ITrustVerificationInfo,
@@ -30,7 +30,7 @@ export interface IFederatedCatalogueFilter extends IComponent {
 	 * Generate filter indexes for a dataset to optimize future queries.
 	 * Indexes are stored as properties on the dataset entity itself.
 	 * @param dataset The dataset to index.
-	 * @returns Record mapping filter-specific index keys to values.
+	 * @returns A promise that resolves with a record mapping filter-specific index keys to values.
 	 */
 	createIndex(dataset: IDcatDataset): Promise<{ [key: string]: unknown }>;
 }

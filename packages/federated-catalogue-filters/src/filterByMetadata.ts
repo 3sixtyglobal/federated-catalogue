@@ -48,13 +48,12 @@ export class FilterByMetadata implements IFederatedCatalogueFilter {
 	}
 
 	/**
-	 * Execute a filter-specific query over the catalogue.
-	 * Uses database-level filtering with query conditions.
+	 * Execute a filter-specific query over the catalogue using database-level filtering.
 	 * @param trustInfo The trust verification information for the current request.
-	 * @param filter The filter criteria (Partial IDataset with example values).
+	 * @param filter The filter criteria as a partial dataset object with example values.
 	 * @param cursor The pagination cursor from the previous query, if any.
 	 * @param limit The maximum number of results to return.
-	 * @returns Object containing datasets matching the filter criteria and optional cursor for next page.
+	 * @returns A promise that resolves with datasets matching the filter criteria and an optional cursor for the next page.
 	 */
 	public async query(
 		trustInfo: ITrustVerificationInfo,
@@ -95,10 +94,9 @@ export class FilterByMetadata implements IFederatedCatalogueFilter {
 
 	/**
 	 * Generate filter indexes for a dataset to optimize future queries.
-	 * Creates indexes for common searchable properties.
-	 * Indexes are stored as properties on the dataset entity itself.
+	 * Creates indexes for common searchable properties stored as properties on the entity.
 	 * @param dataset The dataset to index.
-	 * @returns Record mapping property names to their values for indexing.
+	 * @returns A promise that resolves with a record mapping property names to their values for indexing.
 	 */
 	public async createIndex(dataset: IDcatDataset): Promise<{ [key: string]: unknown }> {
 		Guards.object(FilterByMetadata.CLASS_NAME, nameof(dataset), dataset);
@@ -126,9 +124,8 @@ export class FilterByMetadata implements IFederatedCatalogueFilter {
 
 	/**
 	 * Build database-level query conditions from filter criteria.
-	 * Converts filter properties into entity storage query conditions.
-	 * For complex objects, stringifies them for comparison.
-	 * @param filter The filter criteria (Partial<IDataset> with example values).
+	 * Converts filter properties into entity storage query conditions, serializing complex objects as JSON strings.
+	 * @param filter The filter criteria as a partial dataset object with optional ownerId.
 	 * @returns Query conditions array for entity storage.
 	 * @internal
 	 */

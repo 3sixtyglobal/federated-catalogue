@@ -15,7 +15,7 @@ export interface IDatasetSetRequest {
 	};
 
 	/**
-	 * The response payload containing the dataset or error.
+	 * The request body containing the dataset to store.
 	 */
 	body: IDcatDataset;
 }

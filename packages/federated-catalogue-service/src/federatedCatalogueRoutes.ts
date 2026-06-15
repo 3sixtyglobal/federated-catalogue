@@ -287,7 +287,7 @@ export function generateRestRoutesFederatedCatalogue(
  * @param httpRequestContext The request context for the operation.
  * @param componentName The name of the component to use.
  * @param request The request.
- * @returns The response.
+ * @returns A promise that resolves with the catalog response, including pagination headers and status code.
  */
 async function catalogRequest(
 	httpRequestContext: IHttpRequestContext,
@@ -343,7 +343,7 @@ async function catalogRequest(
  * @param httpRequestContext The request context for the operation.
  * @param componentName The name of the component to use.
  * @param request The request.
- * @returns The response.
+ * @returns A promise that resolves with the dataset response, containing the dataset or a CatalogError.
  */
 async function getDataset(
 	httpRequestContext: IHttpRequestContext,
@@ -383,7 +383,7 @@ async function getDataset(
  * @param httpRequestContext The request context for the operation.
  * @param componentName The name of the component to use.
  * @param request The request.
- * @returns The response.
+ * @returns A promise that resolves with the set response, including a Location header on creation or a CatalogError on failure.
  */
 async function setDataset(
 	httpRequestContext: IHttpRequestContext,
@@ -427,7 +427,7 @@ async function setDataset(
  * @param httpRequestContext The request context for the operation.
  * @param componentName The name of the component to use.
  * @param request The request.
- * @returns The response.
+ * @returns A promise that resolves with the remove response, containing no content on success or a CatalogError on failure.
  */
 async function removeDataset(
 	httpRequestContext: IHttpRequestContext,

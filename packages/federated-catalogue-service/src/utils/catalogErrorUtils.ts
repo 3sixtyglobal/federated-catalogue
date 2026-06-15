@@ -10,10 +10,9 @@ import {
 import { HttpStatusCode } from "@twin.org/web";
 
 /**
- * Transform an error to DS Protocol CatalogError format.
- * Used by both service and route layers to ensure consistent error responses.
+ * Transform an error to Dataspace Protocol CatalogError format.
  * @param error The error to transform.
- * @returns The CatalogError.
+ * @returns A CatalogError object with the error code and flattened reason array.
  */
 export function transformToCatalogError(error: unknown): IDataspaceProtocolCatalogError {
 	const flattened = BaseError.flatten(error);
@@ -33,9 +32,9 @@ export function transformToCatalogError(error: unknown): IDataspaceProtocolCatal
 }
 
 /**
- * Transform the DS Protocol result to an HTTP status code.
- * @param result The result to transform.
- * @returns The transformed status code or undefined if no transformation was found or not an error.
+ * Map a Dataspace Protocol result to an HTTP status code.
+ * @param result The result to evaluate.
+ * @returns The HTTP status code if the result is a CatalogError or an error object, otherwise undefined.
  */
 export function transformErrorToStatusCode(result: unknown): HttpStatusCode | undefined {
 	// Is this an catalog error?

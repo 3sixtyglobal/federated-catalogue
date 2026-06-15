@@ -16,7 +16,7 @@ export interface IFederatedCatalogueComponent extends IComponent {
 	 * Retrieve a dataset by its unique identifier.
 	 * @param datasetId The unique identifier of the dataset.
 	 * @param trustPayload Optional payload for trust evaluation, if applicable.
-	 * @returns The dataset if found, or a CatalogError if not found or an error occurs.
+	 * @returns A promise that resolves with the dataset if found, or a CatalogError if not found or an error occurs.
 	 */
 	get(
 		datasetId: string,
@@ -28,7 +28,7 @@ export interface IFederatedCatalogueComponent extends IComponent {
 	 * This method is internal and should not be exposed via REST endpoints.
 	 * @param dataset The dataset to store.
 	 * @param trustPayload Optional payload for trust evaluation, if applicable.
-	 * @returns The unique identifier of the stored dataset, or a CatalogError if an error occurs.
+	 * @returns A promise that resolves with the unique identifier of the stored dataset, or a CatalogError if an error occurs.
 	 */
 	set(
 		dataset: IDcatDataset,
@@ -37,21 +37,20 @@ export interface IFederatedCatalogueComponent extends IComponent {
 
 	/**
 	 * Execute a query against the catalogue using registered filter plugins.
-	 * Returns a DS Protocol compliant Catalog object with participantId.
+	 * Returns a Dataspace Protocol compliant Catalog object with participantId.
 	 *
 	 * The root catalog's participantId is the requesting participant (from context).
 	 * Own datasets (matching requestingParticipantId) go directly in root dataset[].
 	 * Other participants' datasets are grouped in nested catalog[] entries.
 	 *
 	 * For anonymous requests (no context), uses the first publisher found as fallback.
-	 * Returns CatalogError 404 when no datasets exist.
+	 * Returns a CatalogError with status 404 when no datasets exist.
 	 *
-	 * @param filter The filter criteria containing @type.
+	 * @param filter The filter criteria array, where the first element contains @type.
 	 * @param cursor Optional cursor for pagination.
 	 * @param limit Optional limit for pagination.
 	 * @param trustPayload Optional payload for trust evaluation, if applicable.
-	 * @returns Complete IDataspaceProtocolCatalog with @context, @id, @type, participantId, dataset/catalog,
-	 * or IDataspaceProtocolCatalogError if no datasets found.
+	 * @returns A promise that resolves with the catalog result and optional next-page cursor.
 	 */
 	query(
 		filter: unknown[] | undefined,
@@ -67,7 +66,7 @@ export interface IFederatedCatalogueComponent extends IComponent {
 	 * Remove a dataset from the catalogue by its unique identifier.
 	 * @param datasetId The unique identifier of the dataset to remove.
 	 * @param trustPayload Optional payload for trust evaluation, if applicable.
-	 * @returns Nothing.
+	 * @returns A promise that resolves with undefined on success, or a CatalogError if removal fails.
 	 */
 	remove(
 		datasetId: string,
