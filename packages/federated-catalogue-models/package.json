@@ -1,6 +1,6 @@
 {
 	"name": "@twin.org/federated-catalogue-models",
-	"version": "0.0.3-next.21",
+	"version": "0.0.3-next.22",
 	"description": "Models which define the structure of the Federated Catalogue Service",
 	"repository": {
 		"type": "git",

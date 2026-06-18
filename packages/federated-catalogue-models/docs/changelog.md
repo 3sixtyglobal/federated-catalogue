@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.3-next.22](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-models-v0.0.3-next.21...federated-catalogue-models-v0.0.3-next.22) (2026-06-18)
+
+
+### Miscellaneous Chores
+
+* **federated-catalogue-models:** Synchronize repo versions
+
 ## [0.0.3-next.21](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-models-v0.0.3-next.20...federated-catalogue-models-v0.0.3-next.21) (2026-06-12)
 
 
