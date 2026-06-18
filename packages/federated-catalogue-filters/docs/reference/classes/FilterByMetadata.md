@@ -59,8 +59,7 @@ The class name of the component.
 
 > **query**(`trustInfo`, `filter`, `cursor?`, `limit?`): `Promise`\<\{ `datasets`: `IDcatDataset`[]; `cursor?`: `string`; \}\>
 
-Execute a filter-specific query over the catalogue.
-Uses database-level filtering with query conditions.
+Execute a filter-specific query over the catalogue using database-level filtering.
 
 #### Parameters
 
@@ -74,7 +73,7 @@ The trust verification information for the current request.
 
 `unknown`
 
-The filter criteria (Partial IDataset with example values).
+The filter criteria as a partial dataset object with example values.
 
 ##### cursor?
 
@@ -92,7 +91,7 @@ The maximum number of results to return.
 
 `Promise`\<\{ `datasets`: `IDcatDataset`[]; `cursor?`: `string`; \}\>
 
-Object containing datasets matching the filter criteria and optional cursor for next page.
+A promise that resolves with datasets matching the filter criteria and an optional cursor for the next page.
 
 #### Implementation of
 
@@ -105,8 +104,7 @@ Object containing datasets matching the filter criteria and optional cursor for 
 > **createIndex**(`dataset`): `Promise`\<\{\[`key`: `string`\]: `unknown`; \}\>
 
 Generate filter indexes for a dataset to optimize future queries.
-Creates indexes for common searchable properties.
-Indexes are stored as properties on the dataset entity itself.
+Creates indexes for common searchable properties stored as properties on the entity.
 
 #### Parameters
 
@@ -120,7 +118,7 @@ The dataset to index.
 
 `Promise`\<\{\[`key`: `string`\]: `unknown`; \}\>
 
-Record mapping property names to their values for indexing.
+A promise that resolves with a record mapping property names to their values for indexing.
 
 #### Implementation of
 

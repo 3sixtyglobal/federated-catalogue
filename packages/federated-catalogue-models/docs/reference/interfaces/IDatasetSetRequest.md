@@ -20,4 +20,4 @@ The request headers. Authorization header carries the trust token (Bearer scheme
 
 > **body**: `IDcatDataset`
 
-The response payload containing the dataset or error.
+The request body containing the dataset to store.

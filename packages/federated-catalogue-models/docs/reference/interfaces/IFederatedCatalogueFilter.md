@@ -47,7 +47,7 @@ The maximum number of results to return.
 
 `Promise`\<\{ `datasets`: `IDcatDataset`[]; `cursor?`: `string`; \}\>
 
-Object containing datasets matching the filter criteria and optional cursor for next page.
+A promise that resolves with datasets matching the filter criteria and an optional cursor for the next page.
 
 ***
 
@@ -70,4 +70,4 @@ The dataset to index.
 
 `Promise`\<\{\[`key`: `string`\]: `unknown`; \}\>
 
-Record mapping filter-specific index keys to values.
+A promise that resolves with a record mapping filter-specific index keys to values.

@@ -2,7 +2,7 @@
 
 > **transformErrorToStatusCode**(`result`): `HttpStatusCode` \| `undefined`
 
-Transform the DS Protocol result to an HTTP status code.
+Map a Dataspace Protocol result to an HTTP status code.
 
 ## Parameters
 
@@ -10,10 +10,10 @@ Transform the DS Protocol result to an HTTP status code.
 
 `unknown`
 
-The result to transform.
+The result to evaluate.
 
 ## Returns
 
 `HttpStatusCode` \| `undefined`
 
-The transformed status code or undefined if no transformation was found or not an error.
+The HTTP status code if the result is a CatalogError or an error object, otherwise undefined.

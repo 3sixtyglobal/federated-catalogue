@@ -2,8 +2,7 @@
 
 > **transformToCatalogError**(`error`): `IDataspaceProtocolCatalogError`
 
-Transform an error to DS Protocol CatalogError format.
-Used by both service and route layers to ensure consistent error responses.
+Transform an error to Dataspace Protocol CatalogError format.
 
 ## Parameters
 
@@ -17,4 +16,4 @@ The error to transform.
 
 `IDataspaceProtocolCatalogError`
 
-The CatalogError.
+A CatalogError object with the error code and flattened reason array.

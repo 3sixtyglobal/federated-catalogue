@@ -79,7 +79,7 @@ Optional payload for trust evaluation, if applicable.
 
 `Promise`\<`IDataspaceProtocolCatalogError` \| `IDcatDataset`\>
 
-The dataset if found, or a CatalogError if not found or an error occurs.
+A promise that resolves with the dataset if found, or a CatalogError if not found or an error occurs.
 
 #### Implementation of
 
@@ -111,7 +111,7 @@ Optional payload for trust evaluation, if applicable.
 
 `Promise`\<`string` \| `IDataspaceProtocolCatalogError`\>
 
-The unique identifier of the stored dataset, or a CatalogError if an error occurs.
+A promise that resolves with the unique identifier of the stored dataset, or a CatalogError if an error occurs.
 
 #### Implementation of
 
@@ -144,7 +144,7 @@ Optional payload for trust evaluation, if applicable.
 
 `Promise`\<`IDataspaceProtocolCatalogError` \| `undefined`\>
 
-Nothing, or a CatalogError if an error occurs.
+A promise that resolves with undefined on success, or a CatalogError if removal fails.
 
 #### Implementation of
 
@@ -157,14 +157,14 @@ Nothing, or a CatalogError if an error occurs.
 > **query**(`filter`, `cursor`, `limit`, `trustPayload`): `Promise`\<\{ `result`: `IDataspaceProtocolCatalogError` \| `IDataspaceProtocolCatalog`; `cursor?`: `string`; \}\>
 
 Execute a query against the catalogue using registered filter plugins.
-Returns a DS Protocol compliant Catalog object with participantId.
+Returns a Dataspace Protocol compliant Catalog object with participantId.
 
 The root catalog's participantId is the requesting participant (from context).
 Own datasets (matching requestingParticipantId) go directly in root dataset[].
 Other participants' datasets are grouped in nested catalog[] entries.
 
 For anonymous requests (no context), uses the first publisher found as fallback.
-Returns CatalogError 404 when no datasets exist, CatalogError 400 for invalid requests.
+Returns a CatalogError with status 404 when no datasets exist, or status 400 for invalid requests.
 
 #### Parameters
 
@@ -172,7 +172,7 @@ Returns CatalogError 404 when no datasets exist, CatalogError 400 for invalid re
 
 `unknown`[] \| `undefined`
 
-The filter criteria containing @type, optional cursor and limit properties.
+The filter criteria array, where the first element contains @type.
 
 ##### cursor
 
@@ -196,8 +196,7 @@ Optional payload for trust evaluation, if applicable.
 
 `Promise`\<\{ `result`: `IDataspaceProtocolCatalogError` \| `IDataspaceProtocolCatalog`; `cursor?`: `string`; \}\>
 
-Complete IDataspaceProtocolCatalog with @context, @id, @type, participantId, dataset/catalog,
-or CatalogError if validation fails or an error occurs.
+A promise that resolves with the catalog result and optional next-page cursor.
 
 #### Implementation of
 

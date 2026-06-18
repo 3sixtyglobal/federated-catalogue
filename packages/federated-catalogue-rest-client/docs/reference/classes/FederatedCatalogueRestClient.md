@@ -86,7 +86,7 @@ Optional payload for trust evaluation, if applicable.
 
 `Promise`\<`IDcatDataset` \| `IDataspaceProtocolCatalogError`\>
 
-The dataset if found, or a CatalogError if not found or an error occurs.
+A promise that resolves with the dataset if found, or a CatalogError if not found or an error occurs.
 
 #### Implementation of
 
@@ -119,7 +119,7 @@ Optional payload for trust evaluation, if applicable.
 
 `Promise`\<`string` \| `IDataspaceProtocolCatalogError`\>
 
-The unique identifier of the stored dataset, or a CatalogError if an error occurs.
+A promise that resolves with the unique identifier of the stored dataset, or a CatalogError if an error occurs.
 
 #### Implementation of
 
@@ -152,7 +152,7 @@ Optional payload for trust evaluation, if applicable.
 
 `Promise`\<`IDataspaceProtocolCatalogError` \| `undefined`\>
 
-Nothing.
+A promise that resolves with undefined on success, or a CatalogError if removal fails.
 
 #### Implementation of
 
@@ -196,7 +196,7 @@ Optional payload for trust evaluation, if applicable.
 
 `Promise`\<\{ `result`: `IDataspaceProtocolCatalogError` \| `IDataspaceProtocolCatalog`; `cursor?`: `string`; \}\>
 
-The catalog containing matching datasets (or CatalogError if none found), with cursor if more pages exist.
+A promise that resolves with the catalog result and optional next-page cursor.
 
 #### Implementation of
 
