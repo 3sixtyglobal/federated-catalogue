@@ -26,6 +26,8 @@ import {
 } from "@twin.org/entity-storage-models";
 import {
 	FederatedCatalogueFilterFactory,
+	FederatedCatalogueMetricIds,
+	FederatedCatalogueMetrics,
 	type IFederatedCatalogueComponent
 } from "@twin.org/federated-catalogue-models";
 import type { ILoggingComponent } from "@twin.org/logging-models";
@@ -47,6 +49,7 @@ import {
 	type IDcatDataset
 } from "@twin.org/standards-w3c-dcat";
 import { OdrlContexts } from "@twin.org/standards-w3c-odrl";
+import { MetricHelper, type ITelemetryComponent } from "@twin.org/telemetry-models";
 import { TrustHelper, type ITrustComponent } from "@twin.org/trust-models";
 import type { Dataset } from "../entities/dataset.js";
 import type { IFederatedCatalogueServiceConstructorOptions } from "../models/IFederatedCatalogueServiceConstructorOptions.js";
@@ -82,6 +85,12 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	private readonly _trustComponent: ITrustComponent;
 
 	/**
+	 * The optional telemetry component for event metrics.
+	 * @internal
+	 */
+	private readonly _telemetryComponent?: ITelemetryComponent;
+
+	/**
 	 * Create a new instance of FederatedCatalogueService.
 	 * @param options The options for the service.
 	 */
@@ -94,6 +103,10 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 
 		this._trustComponent = ComponentFactory.get<ITrustComponent>(
 			options?.trustComponentType ?? "trust"
+		);
+
+		this._telemetryComponent = ComponentFactory.getIfExists<ITelemetryComponent>(
+			options?.telemetryComponentType
 		);
 
 		// Register JSON-LD redirects for offline processing
@@ -112,6 +125,14 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	 */
 	public className(): string {
 		return FederatedCatalogueService.CLASS_NAME;
+	}
+
+	/**
+	 * Register all federated catalogue metrics with the telemetry component.
+	 * @returns A promise that resolves when all metrics have been registered.
+	 */
+	public async start(): Promise<void> {
+		await MetricHelper.createMetrics(this._telemetryComponent, FederatedCatalogueMetrics);
 	}
 
 	/**
@@ -151,6 +172,12 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 			);
 
 			const structured = JsonLdHelper.toStructuredObject<IDcatDataset>(normalizedDataset);
+
+			await MetricHelper.metricIncrement(
+				this._telemetryComponent,
+				FederatedCatalogueMetricIds.DatasetsRetrieved
+			);
+
 			return structured;
 		} catch (error) {
 			return transformToCatalogError(error);
@@ -261,6 +288,12 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 							message: "filterIndexPersisted",
 							data: { datasetId, filterType, indexCount: Object.keys(filterIndexes).length }
 						});
+
+						await MetricHelper.metricIncrement(
+							this._telemetryComponent,
+							FederatedCatalogueMetricIds.FilterIndexesCreated,
+							{ filterType, indexCount: Object.keys(filterIndexes).length }
+						);
 					} catch (error) {
 						await this._logging?.log({
 							level: "error",
@@ -270,10 +303,21 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 							data: { datasetId, filterType },
 							error: BaseError.fromError(error)
 						});
+
+						await MetricHelper.metricIncrement(
+							this._telemetryComponent,
+							FederatedCatalogueMetricIds.FilterIndexFailures,
+							{ filterType }
+						);
 					}
 				}
 
 				await this._datasetStorage.set(datasetEntity);
+
+				await MetricHelper.metricIncrement(
+					this._telemetryComponent,
+					FederatedCatalogueMetricIds.DatasetsStored
+				);
 
 				return datasetId;
 			} finally {
@@ -318,6 +362,11 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 				});
 
 				await this._datasetStorage.remove(datasetId);
+
+				await MetricHelper.metricIncrement(
+					this._telemetryComponent,
+					FederatedCatalogueMetricIds.DatasetsRemoved
+				);
 			} finally {
 				Mutex.unlock(datasetId);
 			}
@@ -405,6 +454,12 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 				message: "catalogQueryComplete",
 				data: { resultCount: datasets.length, hasMore: Is.stringValue(resultCursor) }
 			});
+
+			await MetricHelper.metricIncrement(
+				this._telemetryComponent,
+				FederatedCatalogueMetricIds.QueriesExecuted,
+				{ resultCount: datasets.length, hasMore: Is.stringValue(resultCursor) }
+			);
 
 			// Return CatalogError 404 when no datasets exist
 			if (!Is.arrayValue(datasets)) {

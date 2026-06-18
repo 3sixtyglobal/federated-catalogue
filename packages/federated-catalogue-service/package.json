@@ -43,6 +43,7 @@
 		"@twin.org/standards-dublin-core": "next",
 		"@twin.org/standards-foaf": "next",
 		"@twin.org/standards-w3c-dcat": "next",
+		"@twin.org/telemetry-models": "next",
 		"@twin.org/trust-models": "next",
 		"@twin.org/vault-models": "next",
 		"@twin.org/web": "next"

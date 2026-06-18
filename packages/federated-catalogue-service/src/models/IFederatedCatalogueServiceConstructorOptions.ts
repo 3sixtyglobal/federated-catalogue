@@ -24,6 +24,11 @@ export interface IFederatedCatalogueServiceConstructorOptions {
 	trustComponentType?: string;
 
 	/**
+	 * The component type for the optional telemetry component used for event metrics, defaults to no telemetry.
+	 */
+	telemetryComponentType?: string;
+
+	/**
 	 * Configuration for the federated catalogue service.
 	 */
 	config?: IFederatedCatalogueServiceConfig;
