@@ -1,6 +1,7 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 import type { IHttpRequestContext } from "@twin.org/api-models";
+import { HttpContextIdKeys } from "@twin.org/api-models";
 import { ContextIdStore } from "@twin.org/context";
 import { ArrayHelper, ComponentFactory, Is } from "@twin.org/core";
 import {
@@ -65,11 +66,6 @@ describe("Federated Catalogue REST Endpoints", () => {
 
 		// Mock ContextIdStore.getContextIds to return undefined (anonymous) by default
 		ContextIdStore.getContextIds = vi.fn().mockResolvedValue(undefined);
-
-		ComponentFactory.register("hosting", () => ({
-			className: () => "HostingComponent",
-			buildPublicUrl: async (url: string) => url
-		}));
 
 		// Mock trust component: always verifies, returns a fixed identity
 		ComponentFactory.register("trust", () => ({
@@ -670,6 +666,11 @@ describe("Federated Catalogue REST Endpoints", () => {
 				serverRequest: { url: "https://provider.com/catalog/request" }
 			} as IHttpRequestContext;
 
+			// Mock ContextIdStore to return the public origin
+			vi.mocked(ContextIdStore.getContextIds).mockResolvedValueOnce({
+				[HttpContextIdKeys.PublicOrigin]: "https://provider.com/catalog/request"
+			});
+
 			const response = await catalogRequestRoute.handler(mockContext, request);
 
 			// Verify Link header is present
@@ -739,6 +740,11 @@ describe("Federated Catalogue REST Endpoints", () => {
 			const mockContext = {
 				serverRequest: { url: "https://provider.com/catalog/request" }
 			} as IHttpRequestContext;
+
+			// Mock ContextIdStore to return the public origin
+			vi.mocked(ContextIdStore.getContextIds).mockResolvedValue({
+				[HttpContextIdKeys.PublicOrigin]: "https://provider.com/catalog/request"
+			});
 
 			// First request
 			const firstRequest: ICatalogRequestRequest = {
@@ -816,6 +822,11 @@ describe("Federated Catalogue REST Endpoints", () => {
 			const mockContext = {
 				serverRequest: { url: "https://provider.com/catalog/request" }
 			} as IHttpRequestContext;
+
+			// Mock ContextIdStore to return the public origin
+			vi.mocked(ContextIdStore.getContextIds).mockResolvedValueOnce({
+				[HttpContextIdKeys.PublicOrigin]: "https://provider.com/catalog/request"
+			});
 
 			const response = await catalogRequestRoute.handler(mockContext, request);
 

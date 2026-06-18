@@ -1,22 +1,24 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type {
-	IHostingComponent,
-	IHttpRequestContext,
-	IRestRoute,
-	ITag
+import {
+	HttpContextIdKeys,
+	HttpUrlHelper,
+	type IHttpRequestContext,
+	type IRestRoute,
+	type ITag
 } from "@twin.org/api-models";
+import { ContextIdStore } from "@twin.org/context";
 import { Coerce, ComponentFactory, Guards, Is } from "@twin.org/core";
 import type {
 	ICatalogRequestRequest,
 	ICatalogRequestResponse,
-	IFederatedCatalogueComponent,
 	IDatasetGetRequest,
 	IDatasetGetResponse,
 	IDatasetRemoveRequest,
 	IDatasetRemoveResponse,
 	IDatasetSetRequest,
-	IDatasetSetResponse
+	IDatasetSetResponse,
+	IFederatedCatalogueComponent
 } from "@twin.org/federated-catalogue-models";
 import { nameof } from "@twin.org/nameof";
 import {
@@ -301,10 +303,6 @@ async function catalogRequest(
 
 		const trustPayload = HeaderHelper.extractBearer(request.headers?.[HeaderTypes.Authorization]);
 
-		const hostingComponent = ComponentFactory.get<IHostingComponent>(
-			httpRequestContext.hostingComponentType ?? "hosting"
-		);
-
 		const component: IFederatedCatalogueComponent = ComponentFactory.get(componentName);
 
 		const result = await component.query(
@@ -317,8 +315,12 @@ async function catalogRequest(
 		const headers: ICatalogRequestResponse["headers"] = {};
 
 		if (Is.stringValue(result.cursor)) {
+			const contextIds = await ContextIdStore.getContextIds();
 			headers[HeaderTypes.Link] = HeaderHelper.createLinkHeader(
-				await hostingComponent.buildPublicUrl(httpRequestContext.serverRequest.url),
+				HttpUrlHelper.replaceOrigin(
+					httpRequestContext.serverRequest.url,
+					contextIds?.[HttpContextIdKeys.PublicOrigin]
+				),
 				{ cursor: result.cursor },
 				"next"
 			);
