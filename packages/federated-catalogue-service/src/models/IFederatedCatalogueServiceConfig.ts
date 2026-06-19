@@ -4,5 +4,9 @@
 /**
  * Configuration for the FederatedCatalogueService.
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IFederatedCatalogueServiceConfig {}
+export interface IFederatedCatalogueServiceConfig {
+	/**
+	 * Timeout in milliseconds for acquiring a mutex lock, defaults to 5000ms.
+	 */
+	mutexTimeoutMs?: number;
+}

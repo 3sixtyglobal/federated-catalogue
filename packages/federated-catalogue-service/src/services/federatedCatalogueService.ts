@@ -5,6 +5,7 @@ import { ContextIdKeys } from "@twin.org/context";
 import {
 	ArrayHelper,
 	BaseError,
+	Coerce,
 	ComponentFactory,
 	Converter,
 	GeneralError,
@@ -91,6 +92,12 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 	private readonly _telemetryComponent?: ITelemetryComponent;
 
 	/**
+	 * Timeout in milliseconds for acquiring a mutex lock.
+	 * @internal
+	 */
+	private readonly _mutexTimeoutMs?: number;
+
+	/**
 	 * Create a new instance of FederatedCatalogueService.
 	 * @param options The options for the service.
 	 */
@@ -108,6 +115,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 		this._telemetryComponent = ComponentFactory.getIfExists<ITelemetryComponent>(
 			options?.telemetryComponentType
 		);
+		this._mutexTimeoutMs = Coerce.integer(options?.config?.mutexTimeoutMs);
 
 		// Register JSON-LD redirects for offline processing
 		DcatDataTypes.registerRedirects();
@@ -255,7 +263,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 
 			// Serialise the read-check-write cycle so concurrent requests for the
 			// same dataset cannot both pass the ownership check and overwrite each other.
-			await Mutex.lock(datasetId);
+			await Mutex.lock(datasetId, { throwOnTimeout: true, timeoutMs: this._mutexTimeoutMs });
 			try {
 				const existingEntity = await this._datasetStorage.get(datasetId);
 				if (!Is.empty(existingEntity) && existingEntity.ownerId !== trustInfo.identity) {
@@ -344,7 +352,7 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 
 			const trustInfo = await TrustHelper.verifyTrust(this._trustComponent, trustPayload, "remove");
 
-			await Mutex.lock(datasetId);
+			await Mutex.lock(datasetId, { throwOnTimeout: true, timeoutMs: this._mutexTimeoutMs });
 			try {
 				const existingEntity = await this._datasetStorage.get(datasetId);
 				if (!Is.empty(existingEntity) && existingEntity.ownerId !== trustInfo.identity) {
