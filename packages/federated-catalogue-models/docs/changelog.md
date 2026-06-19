@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.3-next.23](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-models-v0.0.3-next.22...federated-catalogue-models-v0.0.3-next.23) (2026-06-19)
+
+
+### Features
+
+* add telemetry metrics to federated catalogue ([#93](https://github.com/iotaledger/twin-federated-catalogue/issues/93)) ([abd8965](https://github.com/iotaledger/twin-federated-catalogue/commit/abd89657d3991e6a50f8ed3845186069549df769))
+
 ## [0.0.3-next.22](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-models-v0.0.3-next.21...federated-catalogue-models-v0.0.3-next.22) (2026-06-18)
 
 

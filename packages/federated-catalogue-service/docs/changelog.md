@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.0.3-next.23](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.22...federated-catalogue-service-v0.0.3-next.23) (2026-06-19)
+
+
+### Features
+
+* add telemetry metrics to federated catalogue ([#93](https://github.com/iotaledger/twin-federated-catalogue/issues/93)) ([abd8965](https://github.com/iotaledger/twin-federated-catalogue/commit/abd89657d3991e6a50f8ed3845186069549df769))
+* configurable timeout for mutex ([b2cd76b](https://github.com/iotaledger/twin-federated-catalogue/commit/b2cd76ba71008e558788eb3fc734b8f02eb7fdc8))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.0.3-next.22 to 0.0.3-next.23
+
 ## [0.0.3-next.22](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.21...federated-catalogue-service-v0.0.3-next.22) (2026-06-18)
 
 
