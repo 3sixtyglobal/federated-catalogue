@@ -55,6 +55,24 @@ The class name of the component.
 
 ***
 
+### start() {#start}
+
+> **start**(): `Promise`\<`void`\>
+
+Register all federated catalogue metrics with the telemetry component.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+A promise that resolves when all metrics have been registered.
+
+#### Implementation of
+
+`IFederatedCatalogueComponent.start`
+
+***
+
 ### get() {#get}
 
 > **get**(`datasetId`, `trustPayload`): `Promise`\<`IDataspaceProtocolCatalogError` \| `IDcatDataset`\>

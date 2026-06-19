@@ -13,6 +13,12 @@
 - [IDatasetSetRequest](interfaces/IDatasetSetRequest.md)
 - [IDatasetSetResponse](interfaces/IDatasetSetResponse.md)
 
+## Type Aliases
+
+- [FederatedCatalogueMetricIds](type-aliases/FederatedCatalogueMetricIds.md)
+
 ## Variables
 
 - [FederatedCatalogueFilterFactory](variables/FederatedCatalogueFilterFactory.md)
+- [FederatedCatalogueMetricIds](variables/FederatedCatalogueMetricIds.md)
+- [FederatedCatalogueMetrics](variables/FederatedCatalogueMetrics.md)
