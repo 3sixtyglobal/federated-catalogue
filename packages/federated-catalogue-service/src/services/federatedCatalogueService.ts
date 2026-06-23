@@ -448,8 +448,12 @@ export class FederatedCatalogueService implements IFederatedCatalogueComponent {
 
 				const selectedFilter = FederatedCatalogueFilterFactory.get(filterType);
 
-				ObjectHelper.propertyDelete(filter, "@type");
-				const result = await selectedFilter.query(trustInfo, filter, cursor, limit);
+				// Pass the filter CRITERIA object (filter[0]) to the handler, not the array wrapper,
+				// and strip the selector "@type" from that object. Passing the array makes
+				// Is.objectValue() false inside the handler, which silently returns ALL datasets
+				// unfiltered, so the criteria (e.g. "dcterms:type") never narrows the result.
+				ObjectHelper.propertyDelete(singleFilter, "@type");
+				const result = await selectedFilter.query(trustInfo, singleFilter, cursor, limit);
 
 				datasets = result.datasets;
 				resultCursor = result.cursor;

@@ -114,9 +114,12 @@ describe("FederatedCatalogueService", () => {
 			"mock-trust-token"
 		);
 		expect(catalog).toBeDefined();
+		// The service must pass the filter CRITERIA object (with the selector "@type" removed) to
+		// the handler, not the array wrapper. Here the only filter key was "@type", so after
+		// stripping it the handler receives an empty object.
 		expect(querySpy).toHaveBeenCalledWith(
 			expect.objectContaining({ identity: "mock-trust-token" }),
-			expect.any(Array),
+			{},
 			undefined,
 			undefined
 		);
@@ -124,6 +127,55 @@ describe("FederatedCatalogueService", () => {
 			(catalog as { dataset?: unknown }).dataset ?? []
 		);
 		expect(Is.array(datasets)).toBe(true);
+	});
+
+	test("Passes the filter criteria object (not the array) to the handler with @type stripped", async () => {
+		// Reproduces the catalogue type-filter bug. The consumer sends
+		// [{ "@type": "FilterByMetadata", "dcterms:type": <type> }]. The service must hand the
+		// criteria OBJECT { "dcterms:type": <type> } to the filter plugin so its Is.objectValue()
+		// gate is true and it narrows by type. Previously it passed the array wrapper, so
+		// Is.objectValue() was false in the handler and it returned every dataset regardless of
+		// the requested type (verified end-to-end: a bogus type still returned the dataset).
+		const querySpy = vi.fn(
+			async (
+				trustInfo: ITrustVerificationInfo,
+				filter: unknown,
+				cursor?: string,
+				limit?: number
+			) => ({
+				datasets: [],
+				cursor: undefined
+			})
+		);
+
+		FederatedCatalogueFilterFactory.register("FilterByMetadata", () => ({
+			className: () => "FilterByMetadata",
+			query: querySpy,
+			createIndex: async () => ({})
+		}));
+
+		const service = new FederatedCatalogueService({
+			datasetEntityStorageType: "dataset"
+		});
+
+		await service.query(
+			[
+				{
+					"@type": "FilterByMetadata",
+					"dcterms:type": "https://vocabulary.uncefact.org/Consignment"
+				}
+			],
+			undefined,
+			undefined,
+			"mock-trust-token"
+		);
+
+		expect(querySpy).toHaveBeenCalledWith(
+			expect.objectContaining({ identity: "mock-trust-token" }),
+			{ "dcterms:type": "https://vocabulary.uncefact.org/Consignment" },
+			undefined,
+			undefined
+		);
 	});
 
 	test("Can set and get a dataset", async () => {
