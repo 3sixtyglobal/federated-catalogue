@@ -25,13 +25,6 @@
 		"packages/federated-catalogue-filters": {
 			"package-name": "federated-catalogue-filters",
 			"changelog-path": "docs/changelog.md"
-		},
-		"apps/federated-catalogue-rest-server": {
-			"package-name": "federated-catalogue-rest-server",
-			"changelog-path": "docs/changelog.md",
-			"extra-files": [
-				"src/index.ts"
-			]
 		}
 	},
 	"plugins": [
@@ -43,8 +36,7 @@
 				"federated-catalogue-models",
 				"federated-catalogue-service",
 				"federated-catalogue-rest-client",
-				"federated-catalogue-filters",
-				"federated-catalogue-rest-server"
+				"federated-catalogue-filters"
 			]
 		}
 	]

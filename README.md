@@ -11,10 +11,6 @@ The packages and app are designed to support protocol-aligned catalogue flows, f
 - [federated-catalogue-rest-client](packages/federated-catalogue-rest-client/README.md) - HTTP client for querying catalogues and retrieving datasets from REST endpoints.
 - [federated-catalogue-filters](packages/federated-catalogue-filters/README.md) - Pluggable dataset filtering implementations for catalogue query pipelines.
 
-## Apps
-
-- [federated-catalogue-rest-server](apps/federated-catalogue-rest-server/README.md) - REST server that exposes catalogue routes with configurable runtime settings.
-
 ## Contributing
 
 To contribute to this package see the guidelines for building and publishing in [CONTRIBUTING](./CONTRIBUTING.md)
