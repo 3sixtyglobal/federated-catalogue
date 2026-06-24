@@ -15,7 +15,7 @@ Filters are registered by name in the FilterFactory and do not need to self-iden
 > **query**(`trustInfo`, `filter`, `cursor?`, `limit?`): `Promise`\<\{ `datasets`: `IDcatDataset`[]; `cursor?`: `string`; \}\>
 
 Execute a filter-specific query over the catalogue.
-Each filter interprets the payload according to its own semantics.
+Each filter interprets its own criteria, but the dispatch shape is fixed (see the filter parameter).
 
 #### Parameters
 
@@ -29,7 +29,11 @@ The trust verification information for the current request.
 
 `unknown`
 
-The filter criteria (structure depends on the filter implementation).
+The filter criteria as an object: this single filter's properties with the
+routing "@type" selector removed by the service. The wire-level catalogue filter is an array
+of such objects; the service selects the handler by "@type", strips it, then passes the
+remaining criteria object here. Implementations must read criteria from this object, not from
+an array wrapper.
 
 ##### cursor?
 

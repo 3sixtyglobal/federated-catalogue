@@ -1,6 +1,6 @@
 {
 	"name": "@twin.org/federated-catalogue-filters",
-	"version": "0.0.3-next.23",
+	"version": "0.0.3-next.24",
 	"description": "Federated Catalogue filter implementations",
 	"repository": {
 		"type": "git",
@@ -34,8 +34,8 @@
 		"@twin.org/entity": "next",
 		"@twin.org/entity-storage-models": "next",
 		"@twin.org/nameof": "next",
-		"@twin.org/federated-catalogue-models": "0.0.3-next.23",
-		"@twin.org/federated-catalogue-service": "0.0.3-next.23",
+		"@twin.org/federated-catalogue-models": "0.0.3-next.24",
+		"@twin.org/federated-catalogue-service": "0.0.3-next.24",
 		"@twin.org/logging-models": "next",
 		"@twin.org/standards-dataspace-protocol": "next",
 		"@twin.org/standards-w3c-dcat": "next",
@@ -48,15 +48,15 @@
 		"@twin.org/nameof-vitest-plugin": "next",
 		"@twin.org/validate-locales": "next",
 		"@twin.org/standards-ld-contexts": "next",
-		"@types/node": "25.9.1",
-		"@vitest/coverage-v8": "4.1.6",
+		"@types/node": "26.0.0",
+		"@vitest/coverage-v8": "4.1.9",
 		"copyfiles": "2.4.1",
 		"rimraf": "6.1.3",
 		"ts-patch": "4.0.1",
 		"typedoc": "0.28.19",
-		"typedoc-plugin-markdown": "4.11.0",
+		"typedoc-plugin-markdown": "4.12.0",
 		"typescript": "6.0.3",
-		"vitest": "4.1.6"
+		"vitest": "4.1.9"
 	},
 	"main": "./dist/es/index.js",
 	"types": "./dist/types/index.d.ts",

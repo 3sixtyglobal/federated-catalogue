@@ -12,9 +12,13 @@ import type { ITrustVerificationInfo } from "@twin.org/trust-models";
 export interface IFederatedCatalogueFilter extends IComponent {
 	/**
 	 * Execute a filter-specific query over the catalogue.
-	 * Each filter interprets the payload according to its own semantics.
+	 * Each filter interprets its own criteria, but the dispatch shape is fixed (see the filter parameter).
 	 * @param trustInfo The trust verification information for the current request.
-	 * @param filter The filter criteria (structure depends on the filter implementation).
+	 * @param filter The filter criteria as an object: this single filter's properties with the
+	 * routing "@type" selector removed by the service. The wire-level catalogue filter is an array
+	 * of such objects; the service selects the handler by "@type", strips it, then passes the
+	 * remaining criteria object here. Implementations must read criteria from this object, not from
+	 * an array wrapper.
 	 * @param cursor The pagination cursor from the previous query, if any.
 	 * @param limit The maximum number of results to return.
 	 * @returns A promise that resolves with datasets matching the filter criteria and an optional cursor for the next page.

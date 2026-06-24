@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.0.3-next.24](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.23...federated-catalogue-service-v0.0.3-next.24) (2026-06-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* filter plugins that read the array shape must update (twin-supply-chain FilterByRole).
+
+### Bug Fixes
+
+* pass filter criteria object (not the array) to catalogue filter handlers ([#97](https://github.com/iotaledger/twin-federated-catalogue/issues/97)) ([6b0cd54](https://github.com/iotaledger/twin-federated-catalogue/commit/6b0cd54626a01910c2a1fb6af9e16027542e4824))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.0.3-next.23 to 0.0.3-next.24
+
 ## [0.0.3-next.23](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.0.3-next.22...federated-catalogue-service-v0.0.3-next.23) (2026-06-19)
 
 
