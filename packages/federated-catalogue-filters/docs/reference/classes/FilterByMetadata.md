@@ -1,0 +1,125 @@
+# Class: FilterByMetadata
+
+Filter plugin that matches datasets by metadata attributes using partial matching.
+Supports nested properties and array matching.
+
+## Implements
+
+- `IFederatedCatalogueFilter`
+
+## Constructors
+
+### Constructor
+
+> **new FilterByMetadata**(`options?`): `FilterByMetadata`
+
+Create a new instance of FilterByMetadata.
+
+#### Parameters
+
+##### options?
+
+[`IFilterByMetadataConstructorOptions`](../interfaces/IFilterByMetadataConstructorOptions.md)
+
+The options for the filter.
+
+#### Returns
+
+`FilterByMetadata`
+
+## Properties
+
+### CLASS\_NAME {#class_name}
+
+> `readonly` `static` **CLASS\_NAME**: `string`
+
+Runtime name for the class.
+
+## Methods
+
+### className() {#classname}
+
+> **className**(): `string`
+
+Returns the class name of the component.
+
+#### Returns
+
+`string`
+
+The class name of the component.
+
+#### Implementation of
+
+`IFederatedCatalogueFilter.className`
+
+***
+
+### query() {#query}
+
+> **query**(`trustInfo`, `filter`, `cursor?`, `limit?`): `Promise`\<\{ `datasets`: `IDcatDataset`[]; `cursor?`: `string`; \}\>
+
+Execute a filter-specific query over the catalogue using database-level filtering.
+
+#### Parameters
+
+##### trustInfo
+
+`ITrustVerificationInfo`
+
+The trust verification information for the current request.
+
+##### filter
+
+`unknown`
+
+The filter criteria as a partial dataset object with example values.
+
+##### cursor?
+
+`string`
+
+The pagination cursor from the previous query, if any.
+
+##### limit?
+
+`number`
+
+The maximum number of results to return.
+
+#### Returns
+
+`Promise`\<\{ `datasets`: `IDcatDataset`[]; `cursor?`: `string`; \}\>
+
+A promise that resolves with datasets matching the filter criteria and an optional cursor for the next page.
+
+#### Implementation of
+
+`IFederatedCatalogueFilter.query`
+
+***
+
+### createIndex() {#createindex}
+
+> **createIndex**(`dataset`): `Promise`\<\{\[`key`: `string`\]: `unknown`; \}\>
+
+Generate filter indexes for a dataset to optimize future queries.
+Creates indexes for common searchable properties stored as properties on the entity.
+
+#### Parameters
+
+##### dataset
+
+`IDcatDataset`
+
+The dataset to index.
+
+#### Returns
+
+`Promise`\<\{\[`key`: `string`\]: `unknown`; \}\>
+
+A promise that resolves with a record mapping property names to their values for indexing.
+
+#### Implementation of
+
+`IFederatedCatalogueFilter.createIndex`

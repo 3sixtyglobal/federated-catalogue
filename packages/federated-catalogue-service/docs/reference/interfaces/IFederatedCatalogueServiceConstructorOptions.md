@@ -1,83 +1,55 @@
 # Interface: IFederatedCatalogueServiceConstructorOptions
 
-Federated Catalogue service options
+Options for the FederatedCatalogueService constructor.
 
 ## Properties
 
-### identityResolverComponentType?
+### datasetEntityStorageType? {#datasetentitystoragetype}
 
-> `optional` **identityResolverComponentType**: `string`
+> `optional` **datasetEntityStorageType?**: `string`
 
-The identity resolver component used.
-
-***
-
-### loggingConnectorType?
-
-> `optional` **loggingConnectorType**: `string`
-
-Logging connector type
-
-***
-
-### config
-
-> **config**: [`IFederatedCatalogueServiceConfig`](IFederatedCatalogueServiceConfig.md)
-
-The configuration of the Federated Catalogue service.
-
-***
-
-### participantEntityStorageType?
-
-> `optional` **participantEntityStorageType**: `string`
-
-The entity storage for participants.
+The entity storage for datasets.
 
 #### Default
 
 ```ts
-participant-entry
+dataset
 ```
 
 ***
 
-### dataResourceEntityStorageType?
+### loggingComponentType? {#loggingcomponenttype}
 
-> `optional` **dataResourceEntityStorageType**: `string`
+> `optional` **loggingComponentType?**: `string`
 
-The entity storage for data resources.
+The logging component for the service.
+
+***
+
+### trustComponentType? {#trustcomponenttype}
+
+> `optional` **trustComponentType?**: `string`
+
+Trust component type for trust verification.
 
 #### Default
 
 ```ts
-data-resource-entry
+trust
 ```
 
 ***
 
-### serviceOfferingEntityStorageType?
+### telemetryComponentType? {#telemetrycomponenttype}
 
-> `optional` **serviceOfferingEntityStorageType**: `string`
+> `optional` **telemetryComponentType?**: `string`
 
-The entity storage for service offerings.
-
-#### Default
-
-```ts
-service-offering-entry
-```
+The component type for the optional telemetry component used for event metrics, defaults to no telemetry.
 
 ***
 
-### dataSpaceConnectorStorageType?
+### config? {#config}
 
-> `optional` **dataSpaceConnectorStorageType**: `string`
+> `optional` **config?**: [`IFederatedCatalogueServiceConfig`](IFederatedCatalogueServiceConfig.md)
 
-The entity storage for data space connectors.
-
-#### Default
-
-```ts
-data-space-connector-entry
-```
+Configuration for the federated catalogue service.

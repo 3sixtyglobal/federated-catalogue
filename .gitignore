@@ -1,8 +1,7 @@
 node_modules
+.eslintcache
 .updatable-packages
 **/dist/es
-**/dist/esm
-**/dist/cjs
 **/dist/types
 **/dist/locales
 coverage
@@ -13,7 +12,6 @@ vitest.config.ts.timestamp*
 
 .env
 .env.local
-packages/federated-catalogue-service/tests/**/.env.*
 .env.local.*
 .local-data
 .local-data-docker

@@ -1,6 +1,6 @@
 # Federated Catalogue Service
 
-Federated Catalogue contract implementation and REST endpoint definitions.
+This package implements the core catalogue runtime, including dataset validation, storage access, filtering and protocol-compatible query responses. It provides the operational behaviour needed to run a catalogue component within a broader data-sharing environment.
 
 ## Installation
 

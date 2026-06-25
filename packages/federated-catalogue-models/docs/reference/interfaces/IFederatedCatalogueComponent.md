@@ -1,6 +1,7 @@
 # Interface: IFederatedCatalogueComponent
 
-Interface describing a Federated Catalogue Contract.
+Interface describing a federated catalogue component.
+Provides Dataspace Protocol-compliant catalog endpoints for dataset registry and query.
 
 ## Extends
 
@@ -8,306 +9,133 @@ Interface describing a Federated Catalogue Contract.
 
 ## Methods
 
-### registerComplianceCredential()
+### get() {#get}
 
-> **registerComplianceCredential**(`credential`): `Promise`\<`string`\>
+> **get**(`datasetId`, `trustPayload`): `Promise`\<`IDcatDataset` \| `IDataspaceProtocolCatalogError`\>
 
-Registers a Participant's compliance Credential to the service.
+Retrieve a dataset by its unique identifier.
 
 #### Parameters
 
-##### credential
+##### datasetId
 
 `string`
 
-The credential as JWT.
+The unique identifier of the dataset.
+
+##### trustPayload
+
+`unknown`
+
+Optional payload for trust evaluation, if applicable.
 
 #### Returns
 
-`Promise`\<`string`\>
+`Promise`\<`IDcatDataset` \| `IDataspaceProtocolCatalogError`\>
 
-The participant Id (usually a DID).
+A promise that resolves with the dataset if found, or a CatalogError if not found or an error occurs.
 
 ***
 
-### queryParticipants()
+### set() {#set}
 
-> **queryParticipants**(`participant?`, `legalRegistrationNumber?`, `lrnType?`, `cursor?`, `pageSize?`): `Promise`\<[`IParticipantList`](IParticipantList.md)\>
+> **set**(`dataset`, `trustPayload`): `Promise`\<`string` \| `IDataspaceProtocolCatalogError`\>
 
-Query the federated catalogue.
+Insert or update a dataset in the catalogue.
+This method is internal and should not be exposed via REST endpoints.
 
 #### Parameters
 
-##### participant?
+##### dataset
 
-`string`
+`IDcatDataset`
 
-The identity of the participant.
+The dataset to store.
 
-##### legalRegistrationNumber?
+##### trustPayload
 
-`string`
+`unknown`
 
-The legal registration number.
-
-##### lrnType?
-
-`string`
-
-The legal registration number type (EORI, VATID, GLEIF, Kenya's PIN, etc.)
-
-##### cursor?
-
-`string`
-
-The cursor to request the next page of entities.
-
-##### pageSize?
-
-`number`
-
-The maximum number of entities in a page.
+Optional payload for trust evaluation, if applicable.
 
 #### Returns
 
-`Promise`\<[`IParticipantList`](IParticipantList.md)\>
+`Promise`\<`string` \| `IDataspaceProtocolCatalogError`\>
 
-All the entities for the storage matching the conditions,
-and a cursor which can be used to request more entities.
-
-#### Throws
-
-NotImplementedError if the implementation does not support retrieval.
+A promise that resolves with the unique identifier of the stored dataset, or a CatalogError if an error occurs.
 
 ***
 
-### registerDataSpaceConnectorCredential()
+### query() {#query}
 
-> **registerDataSpaceConnectorCredential**(`credential`): `Promise`\<`string`\>
+> **query**(`filter`, `cursor`, `limit`, `trustPayload`): `Promise`\<\{ `result`: `IDataspaceProtocolCatalog` \| `IDataspaceProtocolCatalogError`; `cursor?`: `string`; \}\>
 
-Registers a Data Space Connector to the service.
+Execute a query against the catalogue using registered filter plugins.
+Returns a Dataspace Protocol compliant Catalog object with participantId.
+
+The root catalog's participantId is the requesting participant (from context).
+Own datasets (matching requestingParticipantId) go directly in root dataset[].
+Other participants' datasets are grouped in nested catalog[] entries.
+
+For anonymous requests (no context), uses the first publisher found as fallback.
+Returns a CatalogError with status 404 when no datasets exist.
 
 #### Parameters
 
-##### credential
+##### filter
 
-`string`
+`unknown`[] \| `undefined`
 
-The credential as JWT.
+The filter criteria array, where the first element contains @type.
+
+##### cursor
+
+`string` \| `undefined`
+
+Optional cursor for pagination.
+
+##### limit
+
+`number` \| `undefined`
+
+Optional limit for pagination.
+
+##### trustPayload
+
+`unknown`
+
+Optional payload for trust evaluation, if applicable.
 
 #### Returns
 
-`Promise`\<`string`\>
+`Promise`\<\{ `result`: `IDataspaceProtocolCatalog` \| `IDataspaceProtocolCatalogError`; `cursor?`: `string`; \}\>
 
-The Data Space Connector Id registered.
+A promise that resolves with the catalog result and optional next-page cursor.
 
 ***
 
-### queryDataSpaceConnectors()
+### remove() {#remove}
 
-> **queryDataSpaceConnectors**(`id?`, `maintainer?`, `cursor?`, `pageSize?`): `Promise`\<[`IDataSpaceConnectorList`](IDataSpaceConnectorList.md)\>
+> **remove**(`datasetId`, `trustPayload`): `Promise`\<`IDataspaceProtocolCatalogError` \| `undefined`\>
 
-Query the federated catalogue.
-
-#### Parameters
-
-##### id?
-
-`string`
-
-Data Space Connector Id.
-
-##### maintainer?
-
-`string`
-
-The identity of the participant maintaining the Data Space Connector.
-
-##### cursor?
-
-`string`
-
-The cursor to request the next page of entities.
-
-##### pageSize?
-
-`number`
-
-The maximum number of entities in a page.
-
-#### Returns
-
-`Promise`\<[`IDataSpaceConnectorList`](IDataSpaceConnectorList.md)\>
-
-All the entities for the storage matching the conditions,
-and a cursor which can be used to request more entities.
-
-#### Throws
-
-NotImplementedError if the implementation does not support retrieval.
-
-***
-
-### registerServiceOfferingCredential()
-
-> **registerServiceOfferingCredential**(`credential`): `Promise`\<`string`[]\>
-
-Registers a service offering Credential to the service.
+Remove a dataset from the catalogue by its unique identifier.
 
 #### Parameters
 
-##### credential
+##### datasetId
 
 `string`
 
-The credential as JWT.
+The unique identifier of the dataset to remove.
+
+##### trustPayload
+
+`unknown`
+
+Optional payload for trust evaluation, if applicable.
 
 #### Returns
 
-`Promise`\<`string`[]\>
+`Promise`\<`IDataspaceProtocolCatalogError` \| `undefined`\>
 
-The Id of the Service Offerings registered.
-
-***
-
-### registerDataResourceCredential()
-
-> **registerDataResourceCredential**(`credential`): `Promise`\<`string`[]\>
-
-Registers a data resource Credential to the service.
-
-#### Parameters
-
-##### credential
-
-`string`
-
-The credential as JWT.
-
-#### Returns
-
-`Promise`\<`string`[]\>
-
-The Id of the Data Resources registered.
-
-***
-
-### queryServiceOfferings()
-
-> **queryServiceOfferings**(`id?`, `providedBy?`, `cursor?`, `pageSize?`): `Promise`\<[`IServiceOfferingList`](IServiceOfferingList.md)\>
-
-Query the federated catalogue.
-
-#### Parameters
-
-##### id?
-
-`string`
-
-Service Offering id.
-
-##### providedBy?
-
-`string`
-
-The identity of the participant providing the Offering.
-
-##### cursor?
-
-`string`
-
-The cursor to request the next page of entities.
-
-##### pageSize?
-
-`number`
-
-The maximum number of entities in a page.
-
-#### Returns
-
-`Promise`\<[`IServiceOfferingList`](IServiceOfferingList.md)\>
-
-All the entities for the storage matching the conditions,
-and a cursor which can be used to request more entities.
-
-#### Throws
-
-NotImplementedError if the implementation does not support retrieval.
-
-***
-
-### queryDataResources()
-
-> **queryDataResources**(`id?`, `producedBy?`, `cursor?`, `pageSize?`): `Promise`\<[`IDataResourceList`](IDataResourceList.md)\>
-
-Query the federated catalogue.
-
-#### Parameters
-
-##### id?
-
-`string`
-
-The id of the Data Resource.
-
-##### producedBy?
-
-`string`
-
-The identity of the participant producing the data behind the data resource.
-
-##### cursor?
-
-`string`
-
-The cursor to request the next page of entities.
-
-##### pageSize?
-
-`number`
-
-The maximum number of entities in a page.
-
-#### Returns
-
-`Promise`\<[`IDataResourceList`](IDataResourceList.md)\>
-
-All the entities for the storage matching the conditions,
-and a cursor which can be used to request more entities.
-
-#### Throws
-
-NotImplementedError if the implementation does not support retrieval.
-
-***
-
-### getEntry()
-
-> **getEntry**(`entryType`, `entryId`): `Promise`\<[`ICatalogueEntry`](../type-aliases/ICatalogueEntry.md)\>
-
-Returns a Federated Catalogue entry.
-
-#### Parameters
-
-##### entryType
-
-[`FederatedCatalogueEntryType`](../type-aliases/FederatedCatalogueEntryType.md)
-
-The type of entry.
-
-##### entryId
-
-`string`
-
-The entry's id.
-
-#### Returns
-
-`Promise`\<[`ICatalogueEntry`](../type-aliases/ICatalogueEntry.md)\>
-
-Catalogue Entry
-
-#### Throws
-
-NotFoundError if not found.
+A promise that resolves with undefined on success, or a CatalogError if removal fails.

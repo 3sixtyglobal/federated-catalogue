@@ -1,19 +1,12 @@
-// Copyright 2024 IOTA Stiftung.
+// Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 
 /**
- * Federated Catalogue service configuration
+ * Configuration for the FederatedCatalogueService.
  */
 export interface IFederatedCatalogueServiceConfig {
 	/**
-	 * The number of ms that sub-resources can live in the fetch cache.
-	 * 0 means they can live forever.
-	 * undefined means they are never cached.
+	 * Timeout in milliseconds for acquiring a mutex lock, defaults to 5000ms.
 	 */
-	subResourceCacheTtlMs?: number;
-
-	/**
-	 * Clearing House approver list
-	 */
-	clearingHouseApproverList: string[];
+	mutexTimeoutMs?: number;
 }

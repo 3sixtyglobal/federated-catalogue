@@ -10,13 +10,13 @@
 		"**/tests/**",
 		"*.yaml",
 		"package.json",
-		"rollup.config.mjs",
 		"vitest.config.*",
 		"tsconfig.json",
+		"tsconfig.eslint.json",
 		"typedoc.json",
-		".eslintrc.cjs",
+		"eslint.config*",
 		"**/wordlists/**",
-		"**/*.json"
+		"changelog.md"
 	],
 	"words": [
 		"bech",
@@ -32,13 +32,23 @@
 		"EORI",
 		"VATID",
 		"GLEIF",
+		"odrl",
 		"twinfoundation",
 		"buildx",
-		"dcmi"
+		"dcmi",
+		"twindev",
+		"Dataspace",
+		"Dcat",
+		"dcat",
+		"dcterms",
+		"prov",
+		"Foaf",
+		"dspace"
 	],
 	"ignoreRegExpList": [
 		"/from\\s+(['\"]).*\\1/",
 		"/eslint-disable.*/",
+		"/^```(?:typescript|ts)[\\s\\S]*?```$/gm",
 		"/^```shell[\\s\\S]*?```$/gm",
 		"/^```json[\\s\\S]*?```$/gm",
 		"/tst1.*/"

@@ -1,48 +1,35 @@
-// Copyright 2024 IOTA Stiftung.
+// Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-
-import type { IFederatedCatalogueServiceConfig } from "./IFederatedCatalogueServiceConfig";
+import type { IFederatedCatalogueServiceConfig } from "./IFederatedCatalogueServiceConfig.js";
 
 /**
- * Federated Catalogue service options
+ * Options for the FederatedCatalogueService constructor.
  */
 export interface IFederatedCatalogueServiceConstructorOptions {
 	/**
-	 * The identity resolver component used.
+	 * The entity storage for datasets.
+	 * @default dataset
 	 */
-	identityResolverComponentType?: string;
+	datasetEntityStorageType?: string;
 
 	/**
-	 * Logging connector type
+	 * The logging component for the service.
 	 */
-	loggingConnectorType?: string;
+	loggingComponentType?: string;
 
 	/**
-	 * The configuration of the Federated Catalogue service.
+	 * Trust component type for trust verification.
+	 * @default trust
 	 */
-	config: IFederatedCatalogueServiceConfig;
+	trustComponentType?: string;
 
 	/**
-	 * The entity storage for participants.
-	 * @default participant-entry
+	 * The component type for the optional telemetry component used for event metrics, defaults to no telemetry.
 	 */
-	participantEntityStorageType?: string;
+	telemetryComponentType?: string;
 
 	/**
-	 * The entity storage for data resources.
-	 * @default data-resource-entry
+	 * Configuration for the federated catalogue service.
 	 */
-	dataResourceEntityStorageType?: string;
-
-	/**
-	 * The entity storage for service offerings.
-	 * @default service-offering-entry
-	 */
-	serviceOfferingEntityStorageType?: string;
-
-	/**
-	 * The entity storage for data space connectors.
-	 * @default data-space-connector-entry
-	 */
-	dataSpaceConnectorStorageType?: string;
+	config?: IFederatedCatalogueServiceConfig;
 }

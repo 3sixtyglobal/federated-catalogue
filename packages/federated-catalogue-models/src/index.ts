@@ -1,58 +1,15 @@
-// Copyright 2024 IOTA Stiftung.
+// Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-
-export * from "./models/api/IFederatedCatalogueGetRequest";
-export * from "./models/api/ICompliancePresentationRequest";
-export * from "./models/api/IParticipantListRequest";
-export * from "./models/api/IServiceOfferingListRequest";
-export * from "./models/api/IDataResourceListRequest";
-export * from "./models/api/IParticipantListResponse";
-export * from "./models/api/IServiceOfferingListResponse";
-export * from "./models/api/IDataResourceListResponse";
-
-export * from "./models/api/ICatalogueEntryGetRequest";
-export * from "./models/api/IParticipantGetResponse";
-export * from "./models/api/IServiceOfferingGetResponse";
-export * from "./models/api/IDataResourceGetResponse";
-export * from "./models/api/IDataSpaceConnectorGetResponse";
-
-export * from "./models/api/IDataSpaceConnectorListRequest";
-export * from "./models/api/IDataSpaceConnectorListResponse";
-
-export * from "./models/participant/IParticipantEntry";
-export * from "./models/participant/IParticipantList";
-export * from "./models/participant/IParticipantCredential";
-
-export * from "./models/data-resource/IDataResourceEntry";
-export * from "./models/data-resource/IDataResourceList";
-export * from "./models/data-resource/IDataResourceCredential";
-
-export * from "./models/service-offering/IServiceOfferingEntry";
-export * from "./models/service-offering/IServiceOfferingList";
-export * from "./models/service-offering/IServiceOfferingCredential";
-
-export * from "./models/data-space-connector/IDataSpaceConnector";
-export * from "./models/data-space-connector/IDataSpaceConnectorEntry";
-export * from "./models/data-space-connector/IDataSpaceConnectorList";
-export * from "./models/data-space-connector/IDataSpaceConnectorCredential";
-
-export * from "./models/IFederatedCatalogueComponent";
-
-export * from "./models/IComplianceCredential";
-export * from "./models/IComplianceEvidence";
-export * from "./models/IVerificationResult";
-export * from "./models/IComplianceVerificationResult";
-
-export * from "./models/federatedCatalogueTypes";
-export * from "./models/federatedCatalogueContexts";
-export * from "./models/federatedCatalogueContextInstances";
-
-export * from "./models/ICredential";
-
-export * from "./models/verificationFailureReasons";
-
-export * from "./models/federatedCatalogueContextType";
-export * from "./models/federatedCatalogueEntryType";
-export * from "./dataTypes/federatedCatalogueDataTypes";
-
-export * from "./models/ICatalogueEntry";
+export * from "./factories/federatedCatalogueFilterFactory.js";
+export * from "./models/api/ICatalogRequestRequest.js";
+export * from "./models/api/ICatalogRequestResponse.js";
+export * from "./models/api/IDatasetGetRequest.js";
+export * from "./models/api/IDatasetGetResponse.js";
+export * from "./models/api/IDatasetRemoveRequest.js";
+export * from "./models/api/IDatasetRemoveResponse.js";
+export * from "./models/api/IDatasetSetRequest.js";
+export * from "./models/api/IDatasetSetResponse.js";
+export * from "./models/federatedCatalogueMetricIds.js";
+export * from "./models/federatedCatalogueMetrics.js";
+export * from "./models/IFederatedCatalogueComponent.js";
+export * from "./models/IFederatedCatalogueFilter.js";

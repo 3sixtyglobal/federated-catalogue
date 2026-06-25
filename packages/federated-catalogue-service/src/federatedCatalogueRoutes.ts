@@ -1,42 +1,34 @@
-// Copyright 2024 IOTA Stiftung.
+// Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type {
-	ICreatedResponse,
-	IHttpRequestContext,
-	INotFoundResponse,
-	IRestRoute,
-	ITag,
-	IUnprocessableEntityResponse
-} from "@twin.org/api-models";
-import { Coerce, ComponentFactory, Guards } from "@twin.org/core";
 import {
-	type ICatalogueEntryGetRequest,
-	type ICompliancePresentationRequest,
-	type IDataResourceEntry,
-	type IDataResourceGetResponse,
-	type IDataResourceListRequest,
-	type IDataResourceListResponse,
-	type IDataSpaceConnectorEntry,
-	type IDataSpaceConnectorGetResponse,
-	type IDataSpaceConnectorListRequest,
-	type IDataSpaceConnectorListResponse,
-	type IFederatedCatalogueComponent,
-	type IParticipantEntry,
-	type IParticipantGetResponse,
-	type IParticipantListRequest,
-	type IParticipantListResponse,
-	type IServiceOfferingEntry,
-	type IServiceOfferingGetResponse,
-	type IServiceOfferingListRequest,
-	type IServiceOfferingListResponse,
-	FederatedCatalogueContextInstances,
-	FederatedCatalogueTypes
+	HttpContextIdKeys,
+	HttpUrlHelper,
+	type IHttpRequestContext,
+	type IRestRoute,
+	type ITag
+} from "@twin.org/api-models";
+import { ContextIdStore } from "@twin.org/context";
+import { Coerce, ComponentFactory, Guards, Is } from "@twin.org/core";
+import type {
+	ICatalogRequestRequest,
+	ICatalogRequestResponse,
+	IDatasetGetRequest,
+	IDatasetGetResponse,
+	IDatasetRemoveRequest,
+	IDatasetRemoveResponse,
+	IDatasetSetRequest,
+	IDatasetSetResponse,
+	IFederatedCatalogueComponent
 } from "@twin.org/federated-catalogue-models";
 import { nameof } from "@twin.org/nameof";
-import { GaiaXTypes } from "@twin.org/standards-gaia-x";
-import { SchemaOrgTypes } from "@twin.org/standards-schema-org";
-import type { IOdrlPolicy } from "@twin.org/standards-w3c-odrl";
-import { HttpStatusCode, MimeTypes } from "@twin.org/web";
+import {
+	DataspaceProtocolCatalogTypes,
+	DataspaceProtocolContexts
+} from "@twin.org/standards-dataspace-protocol";
+import { DcatClasses, type DcatContextType } from "@twin.org/standards-w3c-dcat";
+import { OdrlPolicyType } from "@twin.org/standards-w3c-odrl";
+import { HeaderHelper, HeaderTypes, HttpStatusCode } from "@twin.org/web";
+import { transformErrorToStatusCode, transformToCatalogError } from "./utils/catalogErrorUtils.js";
 
 /**
  * The source used when communicating about these routes.
@@ -44,216 +36,63 @@ import { HttpStatusCode, MimeTypes } from "@twin.org/web";
 const ROUTES_SOURCE = "federatedCatalogueRoutes";
 
 /**
- * Participants route.
- */
-const PARTICIPANTS_ROUTE = "participants";
-
-/**
- * Service offering route.
- */
-const SERVICE_OFFERING_ROUTE = "service-offerings";
-
-/**
- * Data Resource route.
- */
-const DATA_RESOURCE_ROUTE = "data-resources";
-
-/**
- * Data Space Connector route.
- */
-const DATA_SPACE_CONNECTOR_ROUTE = "data-space-connectors";
-
-/**
  * The tag to associate with the routes.
  */
 export const tagsFederatedCatalogue: ITag[] = [
 	{
 		name: "Federated Catalogue",
-		description: "Endpoints to access a Federated Catalogue."
+		description:
+			"Service providing Dataspace Protocol-compliant catalogue endpoints for dataset discovery and query."
 	}
 ];
 
 /**
- * The REST routes for Federated Catalogue.
+ * The REST routes for federated catalogue.
  * @param baseRouteName Prefix to prepend to the paths.
- * @param factoryServiceName The name of the service to use in the routes store in the ServiceFactory.
+ * @param componentName The name of the component to use in the routes stored in the ComponentFactory.
  * @returns The generated routes.
  */
 export function generateRestRoutesFederatedCatalogue(
 	baseRouteName: string,
-	factoryServiceName: string
+	componentName: string
 ): IRestRoute[] {
-	const createParticipantRoute: IRestRoute<ICompliancePresentationRequest, ICreatedResponse> = {
-		operationId: "compliancePresentationRequest",
-		summary: "Present a Compliance Credential",
+	const catalogRequestRoute: IRestRoute<ICatalogRequestRequest, ICatalogRequestResponse> = {
+		operationId: "catalogRequest",
+		summary: "Query the federated catalogue for datasets",
 		tag: tagsFederatedCatalogue[0].name,
 		method: "POST",
-		path: `${baseRouteName}/participant-credentials`,
+		path: `${baseRouteName}/request`,
 		handler: async (httpRequestContext, request) =>
-			complianceCredentialPresentation(
-				baseRouteName,
-				httpRequestContext,
-				factoryServiceName,
-				request
-			),
+			catalogRequest(httpRequestContext, componentName, request),
 		requestType: {
-			mimeType: MimeTypes.Jwt,
-			type: nameof<ICompliancePresentationRequest>(),
+			type: nameof<ICatalogRequestRequest>(),
 			examples: [
 				{
-					id: "compliancePresentationRequestExample",
+					id: "catalogRequestExample",
 					request: {
-						body: "ey..."
+						headers: {
+							[HeaderTypes.Authorization]: "Bearer <trust-token>"
+						},
+						body: {
+							"@context": [DataspaceProtocolContexts.Context],
+							"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage,
+							filter: [
+								{
+									"dcterms:title": "Energy Consumption Data"
+								}
+							]
+						}
 					}
-				}
-			]
-		},
-		responseType: [
-			{
-				type: nameof<ICreatedResponse>()
-			},
-			{ type: nameof<IUnprocessableEntityResponse>() }
-		]
-	};
-
-	const createServiceOfferingRoute: IRestRoute<ICompliancePresentationRequest, ICreatedResponse> = {
-		operationId: "serviceOfferingPresentationRequest",
-		summary: "Present a Service Offering Credential",
-		tag: tagsFederatedCatalogue[0].name,
-		method: "POST",
-		path: `${baseRouteName}/service-offering-credentials`,
-		handler: async (httpRequestContext, request) =>
-			serviceOfferingCredentialPresentation(
-				baseRouteName,
-				httpRequestContext,
-				factoryServiceName,
-				request
-			),
-		requestType: {
-			mimeType: MimeTypes.Jwt,
-			type: nameof<ICompliancePresentationRequest>(),
-			examples: [
+				},
 				{
-					id: "serviceOfferingPresentationRequestExample",
+					id: "catalogRequestNoFilterExample",
 					request: {
-						body: "ey..."
-					}
-				}
-			]
-		},
-		responseType: [
-			{
-				type: nameof<ICreatedResponse>()
-			},
-			{ type: nameof<IUnprocessableEntityResponse>() }
-		]
-	};
-
-	const createDataSpaceConnectorRoute: IRestRoute<
-		ICompliancePresentationRequest,
-		ICreatedResponse
-	> = {
-		operationId: "dataSpaceConnectorPresentationRequest",
-		summary: "Present a Data Space Connector Credential",
-		tag: tagsFederatedCatalogue[0].name,
-		method: "POST",
-		path: `${baseRouteName}/data-space-connector-credentials`,
-		handler: async (httpRequestContext, request) =>
-			dataSpaceConnectorCredentialPresentation(
-				baseRouteName,
-				httpRequestContext,
-				factoryServiceName,
-				request
-			),
-		requestType: {
-			mimeType: MimeTypes.Jwt,
-			type: nameof<ICompliancePresentationRequest>(),
-			examples: [
-				{
-					id: "dataSpaceConnectorPresentationRequestExample",
-					request: {
-						body: "ey..."
-					}
-				}
-			]
-		},
-		responseType: [
-			{
-				type: nameof<ICreatedResponse>()
-			},
-			{ type: nameof<IUnprocessableEntityResponse>() }
-		]
-	};
-
-	const createDataResourceRoute: IRestRoute<ICompliancePresentationRequest, ICreatedResponse> = {
-		operationId: "dataResourcePresentationRequest",
-		summary: "Present a Data Resource Credential",
-		tag: tagsFederatedCatalogue[0].name,
-		method: "POST",
-		path: `${baseRouteName}/data-resource-credentials`,
-		handler: async (httpRequestContext, request) =>
-			dataResourceCredentialPresentation(
-				baseRouteName,
-				httpRequestContext,
-				factoryServiceName,
-				request
-			),
-		requestType: {
-			mimeType: MimeTypes.Jwt,
-			type: nameof<ICompliancePresentationRequest>(),
-			examples: [
-				{
-					id: "dataResourcePresentationRequestExample",
-					request: {
-						body: "ey..."
-					}
-				}
-			]
-		},
-		responseType: [
-			{
-				type: nameof<ICreatedResponse>()
-			},
-			{ type: nameof<IUnprocessableEntityResponse>() }
-		]
-	};
-
-	const participantEntryExample: IParticipantEntry = {
-		"@context": FederatedCatalogueContextInstances.DEFAULT_LD_CONTEXT_ENTRY,
-		id: "did:iota:xxx",
-		type: GaiaXTypes.Participant,
-		registrationNumber: {
-			type: GaiaXTypes.LocalRegistrationNumber,
-			local: "P1234567"
-		},
-		legalName: "A Inc.",
-		issuer: "did:iota:zzz",
-		legalAddress: {
-			type: GaiaXTypes.Address,
-			countryCode: "KE"
-		},
-		validFrom: "2024-08-01T12:00:00Z",
-		validUntil: "2025-08-01T12:00:00Z",
-		dateCreated: "2024-08-02T13:45:00Z",
-		evidence: ["https://credentials.example.org/1234567"]
-	};
-
-	const listParticipantsRoute: IRestRoute<IParticipantListRequest, IParticipantListResponse> = {
-		operationId: "federatedCatalogueListParticipants",
-		summary: "Get a list of the participant entries",
-		tag: tagsFederatedCatalogue[0].name,
-		method: "GET",
-		path: `${baseRouteName}/${PARTICIPANTS_ROUTE}`,
-		handler: async (httpRequestContext, request) =>
-			participantList(httpRequestContext, factoryServiceName, request),
-		requestType: {
-			type: nameof<IParticipantListRequest>(),
-			examples: [
-				{
-					id: "participantListRequestExample",
-					request: {
-						query: {
-							registrationNumber: "abc"
+						headers: {
+							[HeaderTypes.Authorization]: "Bearer <trust-token>"
+						},
+						body: {
+							"@context": [DataspaceProtocolContexts.Context],
+							"@type": DataspaceProtocolCatalogTypes.CatalogRequestMessage
 						}
 					}
 				}
@@ -261,126 +100,73 @@ export function generateRestRoutesFederatedCatalogue(
 		},
 		responseType: [
 			{
-				type: nameof<IParticipantListResponse>(),
+				type: nameof<ICatalogRequestResponse>(),
 				examples: [
 					{
-						id: "participantListResponseExample",
+						id: "catalogRequestResponseExample",
 						response: {
 							body: {
-								"@context": FederatedCatalogueContextInstances.DEFAULT_LD_CONTEXT_ENTRY_LIST,
-								type: SchemaOrgTypes.ItemList,
-								itemListElement: [participantEntryExample]
+								"@context": [DataspaceProtocolContexts.Context],
+								"@id":
+									"urn:x-catalog:a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2",
+								"@type": "Catalog",
+								participantId: "did:example:node-identity-123",
+								dataset: [
+									{
+										"@id": "urn:uuid:dataset-123",
+										"@type": "Dataset",
+										"dcterms:title": "Energy Consumption Data",
+										"dcterms:description": "Historical energy consumption data",
+										hasPolicy: [
+											{
+												"@id": "urn:uuid:policy-456",
+												"@type": OdrlPolicyType.Offer,
+												assigner: "did:example:data-provider-789"
+											}
+										],
+										distribution: [
+											{
+												"@id": "urn:uuid:distribution-789",
+												"@type": "Distribution",
+												format: "application/json",
+												accessService: {
+													"@id": "urn:uuid:access-service-321",
+													"@type": "DataService",
+													endpointURL: "https://example.com/data-access"
+												}
+											}
+										]
+									}
+								]
 							}
 						}
 					}
 				]
-			}
-		]
-	};
-
-	const getParticipantRoute: IRestRoute<
-		ICatalogueEntryGetRequest,
-		IParticipantGetResponse | INotFoundResponse
-	> = {
-		operationId: "federatedCatalogueGetParticipant",
-		summary: "Get a participant",
-		tag: tagsFederatedCatalogue[0].name,
-		method: "GET",
-		path: `${baseRouteName}/${PARTICIPANTS_ROUTE}/:id`,
-		handler: async (httpRequestContext, request) =>
-			participantGet(httpRequestContext, factoryServiceName, request),
-		requestType: {
-			type: nameof<ICatalogueEntryGetRequest>(),
-			examples: [
-				{
-					id: "participantGetRequestExample",
-					request: {
-						pathParams: {
-							id: "did:iota:123456"
-						}
-					}
-				}
-			]
-		},
-		responseType: [
-			{
-				type: nameof<IParticipantGetResponse>(),
-				examples: [
-					{
-						id: "participantGetResponseExample",
-						response: {
-							body: participantEntryExample
-						}
-					}
-				]
-			}
-		]
-	};
-
-	const servicePolicyExample: IOdrlPolicy = {
-		"@context": [
-			"https://www.w3.org/ns/odrl/2/",
-			{
-				twin: "https://schema.twindev.org/odrl/",
-				jsonPathSelector: "twin:jsonPathSelector"
 			}
 		],
-		"@type": "Agreement",
-		uid: "http://example.com/policy:1010",
-		assigner: "did:iota:testnet:0x1a7bded4d22dc54722435d624e4323e10fcbc570cd57462eabbf3a5ab2ced24f",
-		assignee: "did:iota:testnet:0x119adb64d01d3b0fa0d308c67db90ab1c6e0df6aebe5b7e0250783f57cd10c21",
-		permission: [
-			{
-				target: {
-					type: "https://vocabulary.uncefact.org/Document",
-					refinement: {
-						leftOperand: {
-							"@id": "https://w3id.org/twin/odrl/propertyValue",
-							jsonPathSelector: ".documentTypeCode"
+		skipAuth: true,
+		skipTenant: true
+	};
+
+	const getDatasetRoute: IRestRoute<IDatasetGetRequest, IDatasetGetResponse> = {
+		operationId: "getDataset",
+		summary: "Retrieve a specific dataset by ID",
+		tag: tagsFederatedCatalogue[0].name,
+		method: "GET",
+		path: `${baseRouteName}/datasets/:datasetId`,
+		handler: async (httpRequestContext, request) =>
+			getDataset(httpRequestContext, componentName, request),
+		requestType: {
+			type: nameof<IDatasetGetRequest>(),
+			examples: [
+				{
+					id: "getDatasetRequestExample",
+					request: {
+						headers: {
+							[HeaderTypes.Authorization]: "Bearer <trust-token>"
 						},
-						operator: "eq",
-						rightOperand: "https://vocabulary.uncefact.org/DocumentCodeList#331"
-					}
-				},
-				action: "extract"
-			}
-		]
-	};
-
-	const serviceOfferingEntryExample: IServiceOfferingEntry = {
-		"@context": FederatedCatalogueContextInstances.DEFAULT_LD_CONTEXT_ENTRY,
-		id: "http://example.org/is123456",
-		name: "Service 1",
-		type: GaiaXTypes.ServiceOffering,
-		servicePolicy: [servicePolicyExample],
-		endpoint: {
-			type: GaiaXTypes.Endpoint,
-			endpointURL: "https://endpoint.example.org/api"
-		},
-		issuer: "did:iota:7890",
-		providedBy: "did:iota:1234567",
-		validFrom: "2024-08-01T12:00:00Z",
-		validUntil: "2025-08-01T12:00:00Z",
-		dateCreated: "2024-08-02T13:45:00Z",
-		evidence: ["https://credentials.example.org/1234567"]
-	};
-
-	const listServicesRoute: IRestRoute<IServiceOfferingListRequest, IServiceOfferingListResponse> = {
-		operationId: "federatedCatalogueListServices",
-		summary: "Get a list of the service entries",
-		tag: tagsFederatedCatalogue[0].name,
-		method: "GET",
-		path: `${baseRouteName}/${SERVICE_OFFERING_ROUTE}`,
-		handler: async (httpRequestContext, request) =>
-			serviceOfferingList(httpRequestContext, factoryServiceName, request),
-		requestType: {
-			type: nameof<IServiceOfferingListRequest>(),
-			examples: [
-				{
-					id: "serviceOfferingListRequestExample",
-					request: {
-						query: {
-							providedBy: "did:iota:1234"
+						pathParams: {
+							datasetId: "urn:uuid:dataset-123"
 						}
 					}
 				}
@@ -388,42 +174,91 @@ export function generateRestRoutesFederatedCatalogue(
 		},
 		responseType: [
 			{
-				type: nameof<IServiceOfferingListResponse>(),
+				type: nameof<IDatasetGetResponse>(),
 				examples: [
 					{
-						id: "serviceOfferingListResponseExample",
+						id: "getDatasetResponseExample",
 						response: {
 							body: {
-								"@context": FederatedCatalogueContextInstances.DEFAULT_LD_CONTEXT_ENTRY_LIST,
-								type: SchemaOrgTypes.ItemList,
-								itemListElement: [serviceOfferingEntryExample]
+								"@context": DataspaceProtocolContexts.Context as unknown as DcatContextType,
+								"@id": "urn:uuid:dataset-123",
+								"@type": DcatClasses.Dataset,
+								"dcterms:title": "Energy Consumption Data",
+								"dcterms:description": "Historical energy consumption data"
 							}
 						}
 					}
 				]
 			}
-		]
+		],
+		skipAuth: true,
+		skipTenant: true
 	};
 
-	const getServiceRoute: IRestRoute<
-		ICatalogueEntryGetRequest,
-		IServiceOfferingGetResponse | INotFoundResponse
-	> = {
-		operationId: "federatedCatalogueGetService",
-		summary: "Get a Service Offering entry",
+	const setDatasetRoute: IRestRoute<IDatasetSetRequest, IDatasetSetResponse> = {
+		operationId: "setDataset",
+		summary: "Insert or update a dataset in the catalogue",
 		tag: tagsFederatedCatalogue[0].name,
-		method: "GET",
-		path: `${baseRouteName}/${SERVICE_OFFERING_ROUTE}/:id`,
+		method: "POST",
+		path: `${baseRouteName}/datasets`,
 		handler: async (httpRequestContext, request) =>
-			serviceOfferingGet(httpRequestContext, factoryServiceName, request),
+			setDataset(httpRequestContext, componentName, request),
 		requestType: {
-			type: nameof<ICatalogueEntryGetRequest>(),
+			type: nameof<IDatasetSetRequest>(),
 			examples: [
 				{
-					id: "serviceOfferingGetRequestExample",
+					id: "setDatasetRequestExample",
 					request: {
+						headers: {
+							[HeaderTypes.Authorization]: "Bearer <trust-token>"
+						},
+						body: {
+							"@context": DataspaceProtocolContexts.Context as unknown as DcatContextType,
+							"@id": "urn:uuid:dataset-123",
+							"@type": DcatClasses.Dataset,
+							"dcterms:title": "Energy Consumption Data",
+							"dcterms:description": "Historical energy consumption data"
+						}
+					}
+				}
+			]
+		},
+		responseType: [
+			{
+				type: nameof<IDatasetSetResponse>(),
+				examples: [
+					{
+						id: "setDatasetResponseExample",
+						response: {
+							statusCode: HttpStatusCode.noContent
+						}
+					}
+				]
+			}
+		],
+		skipAuth: true,
+		skipTenant: true
+	};
+
+	const removeDatasetRoute: IRestRoute<IDatasetRemoveRequest, IDatasetRemoveResponse> = {
+		operationId: "removeDataset",
+		summary: "Remove a dataset from the catalogue by ID",
+		tag: tagsFederatedCatalogue[0].name,
+		method: "DELETE",
+		path: `${baseRouteName}/datasets/:datasetId`,
+		handler: async (httpRequestContext, request) =>
+			removeDataset(httpRequestContext, componentName, request),
+		requestType: {
+			type: nameof<IDatasetRemoveRequest>(),
+			examples: [
+				{
+					id: "removeDatasetRequestExample",
+					request: {
+						headers: {
+							[HeaderTypes.Authorization]: "Bearer <trust-token>"
+						},
 						pathParams: {
-							id: "https://my-services.example.org/service1"
+							datasetId: "urn:uuid:dataset-123"
 						}
 					}
 				}
@@ -431,569 +266,200 @@ export function generateRestRoutesFederatedCatalogue(
 		},
 		responseType: [
 			{
-				type: nameof<IServiceOfferingGetResponse>(),
+				type: nameof<IDatasetRemoveResponse>(),
 				examples: [
 					{
-						id: "serviceOfferingGetResponseExample",
+						id: "removeDatasetResponseExample",
 						response: {
-							body: serviceOfferingEntryExample
+							statusCode: HttpStatusCode.noContent
 						}
 					}
 				]
 			}
-		]
+		],
+		skipAuth: true,
+		skipTenant: true
 	};
 
-	const resourcePolicyExample: IOdrlPolicy = {
-		"@context": "https://www.w3.org/ns/odrl/2/",
-		"@type": "Offer",
-		uid: "http://example.com/policy:1010",
-		assigner: "did:iota:testnet:0x1a7bded4d22dc54722435d624e4323e10fcbc570cd57462eabbf3a5ab2ced24f",
-		permission: [
-			{
-				target: {
-					type: "https://vocabulary.uncefact.org/Document"
-				},
-				action: "extract"
-			}
-		]
-	};
-
-	const dataResourceEntryExample: IDataResourceEntry = {
-		"@context": FederatedCatalogueContextInstances.DEFAULT_LD_CONTEXT_ENTRY,
-		id: "http://example.org/is123456",
-		name: "Data Resource 1",
-		type: "DataResource",
-		copyrightOwnedBy: "did:iota:1234",
-		license: "http://licenses.example.org/12345",
-		resourcePolicy: [resourcePolicyExample],
-		exposedThrough: "https://ds-connectors.example.org/ds1",
-		producedBy: "did:iota:1234567",
-		issuer: "did:iota:987654",
-		validFrom: "2024-08-01T12:00:00Z",
-		validUntil: "2025-08-01T12:00:00Z",
-		dateCreated: "2024-08-02T13:45:00Z",
-		evidence: ["https://credentials.example.org/1234567"]
-	};
-
-	const listDataResourcesRoute: IRestRoute<IDataResourceListRequest, IDataResourceListResponse> = {
-		operationId: "federatedCatalogueListResources",
-		summary: "Get a list of the data resource entries",
-		tag: tagsFederatedCatalogue[0].name,
-		method: "GET",
-		path: `${baseRouteName}/${DATA_RESOURCE_ROUTE}`,
-		handler: async (httpRequestContext, request) =>
-			dataResourceList(httpRequestContext, factoryServiceName, request),
-		requestType: {
-			type: nameof<IDataResourceListRequest>(),
-			examples: [
-				{
-					id: "dataResourceListRequestExample",
-					request: {
-						query: {
-							producedBy: "did:iota:1234"
-						}
-					}
-				}
-			]
-		},
-		responseType: [
-			{
-				type: nameof<IDataResourceListResponse>(),
-				examples: [
-					{
-						id: "dataResourceListResponseExample",
-						response: {
-							body: {
-								"@context": FederatedCatalogueContextInstances.DEFAULT_LD_CONTEXT_ENTRY_LIST,
-								type: SchemaOrgTypes.ItemList,
-								itemListElement: [dataResourceEntryExample]
-							}
-						}
-					}
-				]
-			}
-		]
-	};
-
-	const getDataResourceRoute: IRestRoute<
-		ICatalogueEntryGetRequest,
-		IDataResourceGetResponse | INotFoundResponse
-	> = {
-		operationId: "federatedCatalogueGetDataResource",
-		summary: "Get a Data Resource entry",
-		tag: tagsFederatedCatalogue[0].name,
-		method: "GET",
-		path: `${baseRouteName}/${DATA_RESOURCE_ROUTE}/:id`,
-		handler: async (httpRequestContext, request) =>
-			dataResourceGet(httpRequestContext, factoryServiceName, request),
-		requestType: {
-			type: nameof<IDataResourceListRequest>(),
-			examples: [
-				{
-					id: "dataResourceListRequestExample",
-					request: {
-						pathParams: {
-							id: "https://data-resources.example.org/drs1"
-						}
-					}
-				}
-			]
-		},
-		responseType: [
-			{
-				type: nameof<IDataResourceGetResponse>(),
-				examples: [
-					{
-						id: "dataResourceGetResponseExample",
-						response: {
-							body: dataResourceEntryExample
-						}
-					}
-				]
-			}
-		]
-	};
-
-	const dataSpaceConnectorEntryExample: IDataSpaceConnectorEntry = {
-		"@context": FederatedCatalogueContextInstances.DEFAULT_LD_CONTEXT_ENTRY,
-		id: "https://my-ds-connectors.example.org/ds-connector-ABCD",
-		type: [GaiaXTypes.DataExchangeComponent, FederatedCatalogueTypes.DataSpaceConnector],
-		identity: "did:iota:testnet:123456",
-		defaultEndpoint: {
-			type: GaiaXTypes.Endpoint,
-			endpointURL: "https://my-twin-node.example.org:9000/twin-ds-connector"
-		},
-		subscriptionActivityEndpoint: {
-			type: GaiaXTypes.Endpoint,
-			endpointURL: "/subscriptions"
-		},
-		pushActivityEndpoint: {
-			type: GaiaXTypes.Endpoint,
-			endpointURL: "/notify"
-		},
-		pullDataEndpoint: {
-			type: GaiaXTypes.Endpoint,
-			endpointURL: "/data"
-		},
-		maintainer: "did:iota:99999",
-		offeredResource: ["https://my-data-resource.example.org"],
-		issuer: "did:iota:987654",
-		validFrom: "2024-08-01T12:00:00Z",
-		validUntil: "2025-08-01T12:00:00Z",
-		dateCreated: "2024-08-02T13:45:00Z",
-		evidence: ["https://credentials.example.org/1234567"]
-	};
-
-	const listDataSpaceConnectorsRoute: IRestRoute<
-		IDataSpaceConnectorListRequest,
-		IDataSpaceConnectorListResponse
-	> = {
-		operationId: "federatedCatalogueListDataSpaceConnectors",
-		summary: "Get a list of the Data Space connectors entries",
-		tag: tagsFederatedCatalogue[0].name,
-		method: "GET",
-		path: `${baseRouteName}/${DATA_SPACE_CONNECTOR_ROUTE}`,
-		handler: async (httpRequestContext, request) =>
-			dataSpaceConnectorList(httpRequestContext, factoryServiceName, request),
-		requestType: {
-			type: nameof<IDataSpaceConnectorListRequest>(),
-			examples: [
-				{
-					id: "dataSpaceConnectorListRequestExample",
-					request: {
-						query: {
-							maintainedBy: "did:iota:1234"
-						}
-					}
-				}
-			]
-		},
-		responseType: [
-			{
-				type: nameof<IDataSpaceConnectorListResponse>(),
-				examples: [
-					{
-						id: "dataSpaceConnectorListResponseExample",
-						response: {
-							body: {
-								"@context": FederatedCatalogueContextInstances.DEFAULT_LD_CONTEXT_ENTRY_LIST,
-								type: SchemaOrgTypes.ItemList,
-								itemListElement: [dataSpaceConnectorEntryExample]
-							}
-						}
-					}
-				]
-			}
-		]
-	};
-
-	const getDataSpaceConnectorRoute: IRestRoute<
-		ICatalogueEntryGetRequest,
-		IDataSpaceConnectorGetResponse | INotFoundResponse
-	> = {
-		operationId: "federatedCatalogueGetDataSpaceConnector",
-		summary: "Get a Data Space Connector entry",
-		tag: tagsFederatedCatalogue[0].name,
-		method: "GET",
-		path: `${baseRouteName}/${DATA_SPACE_CONNECTOR_ROUTE}/:id`,
-		handler: async (httpRequestContext, request) =>
-			dataSpaceConnectorGet(httpRequestContext, factoryServiceName, request),
-		requestType: {
-			type: nameof<ICatalogueEntryGetRequest>(),
-			examples: [
-				{
-					id: "dataSpaceConnectorGetRequestExample",
-					request: {
-						pathParams: {
-							id: "https://ds-connectors.example.org/ds1"
-						}
-					}
-				}
-			]
-		},
-		responseType: [
-			{
-				type: nameof<IDataSpaceConnectorGetResponse>(),
-				examples: [
-					{
-						id: "dataSpaceConnectorGetResponseExample",
-						response: {
-							body: dataSpaceConnectorEntryExample
-						}
-					}
-				]
-			}
-		]
-	};
-
-	return [
-		createParticipantRoute,
-		createServiceOfferingRoute,
-		createDataResourceRoute,
-		createDataSpaceConnectorRoute,
-		listParticipantsRoute,
-		getParticipantRoute,
-		listServicesRoute,
-		getServiceRoute,
-		listDataResourcesRoute,
-		getDataResourceRoute,
-		listDataSpaceConnectorsRoute,
-		getDataSpaceConnectorRoute
-	];
+	return [catalogRequestRoute, getDatasetRoute, setDatasetRoute, removeDatasetRoute];
 }
 
 /**
- * Register a new participant.
- * @param baseRouteName The base route name.
- * @param httpRequestContext The request context for the API.
- * @param factoryServiceName The name of the service to use in the routes.
+ * Handle the catalog request operation.
+ * @param httpRequestContext The request context for the operation.
+ * @param componentName The name of the component to use.
  * @param request The request.
- * @returns The response object with additional http response properties.
+ * @returns A promise that resolves with the catalog response, including pagination headers and status code.
  */
-export async function complianceCredentialPresentation(
-	baseRouteName: string,
+async function catalogRequest(
 	httpRequestContext: IHttpRequestContext,
-	factoryServiceName: string,
-	request: ICompliancePresentationRequest
-): Promise<ICreatedResponse> {
-	Guards.object<ICompliancePresentationRequest>(ROUTES_SOURCE, nameof(request), request);
-	Guards.stringValue(ROUTES_SOURCE, nameof(request.body), request.body);
+	componentName: string,
+	request: ICatalogRequestRequest
+): Promise<ICatalogRequestResponse> {
+	try {
+		Guards.object<ICatalogRequestRequest>(ROUTES_SOURCE, nameof(request), request);
+		Guards.object(ROUTES_SOURCE, nameof(request.body), request.body);
+		Guards.stringValue(ROUTES_SOURCE, "@type", request.body["@type"]);
 
-	const service = ComponentFactory.get<IFederatedCatalogueComponent>(factoryServiceName);
-	const participantId = await service.registerComplianceCredential(request.body);
+		const trustPayload = HeaderHelper.extractBearer(request.headers?.[HeaderTypes.Authorization]);
 
-	const searchParams = new URLSearchParams();
-	searchParams.append("id", participantId);
-	return {
-		headers: {
-			location: `${baseRouteName}/${PARTICIPANTS_ROUTE}?${searchParams.toString()}`
-		},
-		statusCode: HttpStatusCode.created
-	};
-}
+		const component: IFederatedCatalogueComponent = ComponentFactory.get(componentName);
 
-/**
- * Get a list of the participant entries.
- * @param httpRequestContext The request context for the API.
- * @param factoryServiceName The name of the service to use in the routes.
- * @param request The request.
- * @returns The response object with additional http response properties.
- */
-export async function participantList(
-	httpRequestContext: IHttpRequestContext,
-	factoryServiceName: string,
-	request: IParticipantListRequest
-): Promise<IParticipantListResponse> {
-	const service = ComponentFactory.get<IFederatedCatalogueComponent>(factoryServiceName);
+		const result = await component.query(
+			request.body.filter,
+			request.query?.cursor,
+			Coerce.integer(request.query?.limit),
+			trustPayload
+		);
 
-	const itemsAndCursor = await service.queryParticipants(
-		request?.query?.id,
-		request?.query?.registrationNumber,
-		request?.query?.lrnType,
-		request?.query?.cursor,
-		Coerce.integer(request?.query?.pageSize)
-	);
-	return {
-		body: itemsAndCursor
-	};
-}
+		const headers: ICatalogRequestResponse["headers"] = {};
 
-/**
- * Get a Participant entry.
- * @param httpRequestContext The request context for the API.
- * @param factoryServiceName The name of the service to use in the routes.
- * @param request The request.
- * @returns The response object with additional http response properties.
- */
-export async function participantGet(
-	httpRequestContext: IHttpRequestContext,
-	factoryServiceName: string,
-	request: ICatalogueEntryGetRequest
-): Promise<IParticipantGetResponse | INotFoundResponse> {
-	const service = ComponentFactory.get<IFederatedCatalogueComponent>(factoryServiceName);
+		if (Is.stringValue(result.cursor)) {
+			const contextIds = await ContextIdStore.getContextIds();
+			headers[HeaderTypes.Link] = HeaderHelper.createLinkHeader(
+				HttpUrlHelper.replaceOrigin(
+					httpRequestContext.serverRequest.url,
+					contextIds?.[HttpContextIdKeys.PublicOrigin]
+				),
+				{ cursor: result.cursor },
+				"next"
+			);
+		}
 
-	const id = request?.pathParams.id;
-	Guards.stringValue(ROUTES_SOURCE, nameof(id), id);
-
-	return {
-		body: (await service.getEntry(GaiaXTypes.Participant, id)) as IParticipantEntry
-	};
-}
-
-/**
- * Register a new service offering.
- * @param baseRouteName The base route used.
- * @param httpRequestContext The request context for the API.
- * @param factoryServiceName The name of the service to use in the routes.
- * @param request The request.
- * @returns The response object with additional http response properties.
- */
-export async function serviceOfferingCredentialPresentation(
-	baseRouteName: string,
-	httpRequestContext: IHttpRequestContext,
-	factoryServiceName: string,
-	request: ICompliancePresentationRequest
-): Promise<ICreatedResponse> {
-	Guards.object<ICompliancePresentationRequest>(ROUTES_SOURCE, nameof(request), request);
-	Guards.stringValue(ROUTES_SOURCE, nameof(request.body), request.body);
-
-	const service = ComponentFactory.get<IFederatedCatalogueComponent>(factoryServiceName);
-	const serviceOfferingsCreated = await service.registerServiceOfferingCredential(request.body);
-
-	// Prepare the Ids to be returned
-	const searchParams = new URLSearchParams();
-	for (const serviceOffering of serviceOfferingsCreated) {
-		searchParams.append("id", serviceOffering);
+		return {
+			headers,
+			statusCode: transformErrorToStatusCode(result.result),
+			body: result.result
+		};
+	} catch (error) {
+		const catalogError = transformToCatalogError(error);
+		return {
+			statusCode: transformErrorToStatusCode(catalogError) ?? HttpStatusCode.badRequest,
+			body: catalogError
+		};
 	}
-	return {
-		headers: {
-			location: `${baseRouteName}/${SERVICE_OFFERING_ROUTE}?${searchParams.toString()}`
-		},
-		statusCode: HttpStatusCode.created
-	};
 }
 
 /**
- * Get a list of the service offering entries.
- * @param httpRequestContext The request context for the API.
- * @param factoryServiceName The name of the service to use in the routes.
+ * Handle the get dataset operation.
+ * @param httpRequestContext The request context for the operation.
+ * @param componentName The name of the component to use.
  * @param request The request.
- * @returns The response object with additional http response properties.
+ * @returns A promise that resolves with the dataset response, containing the dataset or a CatalogError.
  */
-export async function serviceOfferingList(
+async function getDataset(
 	httpRequestContext: IHttpRequestContext,
-	factoryServiceName: string,
-	request: IServiceOfferingListRequest
-): Promise<IServiceOfferingListResponse> {
-	const service = ComponentFactory.get<IFederatedCatalogueComponent>(factoryServiceName);
+	componentName: string,
+	request: IDatasetGetRequest
+): Promise<IDatasetGetResponse> {
+	try {
+		Guards.object<IDatasetGetRequest>(ROUTES_SOURCE, nameof(request), request);
+		Guards.object(ROUTES_SOURCE, nameof(request.pathParams), request.pathParams);
+		Guards.stringValue(
+			ROUTES_SOURCE,
+			nameof(request.pathParams.datasetId),
+			request.pathParams.datasetId
+		);
 
-	const itemsAndCursor = await service.queryServiceOfferings(
-		request?.query?.id,
-		request?.query?.providedBy,
-		request?.query?.cursor,
-		Coerce.integer(request?.query?.pageSize)
-	);
-	return {
-		body: itemsAndCursor
-	};
-}
+		const trustPayload = HeaderHelper.extractBearer(request.headers?.[HeaderTypes.Authorization]);
 
-/**
- * Get a Service Offering entry.
- * @param httpRequestContext The request context for the API.
- * @param factoryServiceName The name of the service to use in the routes.
- * @param request The request.
- * @returns The response object with additional http response properties.
- */
-export async function serviceOfferingGet(
-	httpRequestContext: IHttpRequestContext,
-	factoryServiceName: string,
-	request: ICatalogueEntryGetRequest
-): Promise<IServiceOfferingGetResponse | INotFoundResponse> {
-	const service = ComponentFactory.get<IFederatedCatalogueComponent>(factoryServiceName);
+		const component: IFederatedCatalogueComponent = ComponentFactory.get(componentName);
 
-	const id = request?.pathParams.id;
-	Guards.stringValue(ROUTES_SOURCE, nameof(id), id);
+		const result = await component.get(request.pathParams.datasetId, trustPayload);
 
-	return {
-		body: (await service.getEntry(GaiaXTypes.ServiceOffering, id)) as IServiceOfferingEntry
-	};
-}
-
-/**
- * Register a new data resource.
- * @param baseRouteName The base route name.
- * @param httpRequestContext The request context for the API.
- * @param factoryServiceName The name of the service to use in the routes.
- * @param request The request.
- * @returns The response object with additional http response properties.
- */
-export async function dataResourceCredentialPresentation(
-	baseRouteName: string,
-	httpRequestContext: IHttpRequestContext,
-	factoryServiceName: string,
-	request: ICompliancePresentationRequest
-): Promise<ICreatedResponse> {
-	Guards.object<ICompliancePresentationRequest>(ROUTES_SOURCE, nameof(request), request);
-	Guards.stringValue(ROUTES_SOURCE, nameof(request.body), request.body);
-
-	const service = ComponentFactory.get<IFederatedCatalogueComponent>(factoryServiceName);
-	const dataResourcesCreated = await service.registerDataResourceCredential(request.body);
-
-	// Prepare the Ids to be returned
-	const searchParams = new URLSearchParams();
-	for (const dataResource of dataResourcesCreated) {
-		searchParams.append("id", dataResource);
+		return {
+			statusCode: transformErrorToStatusCode(result),
+			body: result
+		};
+	} catch (error) {
+		const catalogError = transformToCatalogError(error);
+		return {
+			statusCode: transformErrorToStatusCode(catalogError) ?? HttpStatusCode.badRequest,
+			body: catalogError
+		};
 	}
-	return {
-		headers: {
-			location: `${baseRouteName}/${DATA_RESOURCE_ROUTE}?${searchParams.toString()}`
-		},
-		statusCode: HttpStatusCode.created
-	};
 }
 
 /**
- * Get a list of the data resource entries.
- * @param httpRequestContext The request context for the API.
- * @param factoryServiceName The name of the service to use in the routes.
+ * Handle the set dataset operation.
+ * @param httpRequestContext The request context for the operation.
+ * @param componentName The name of the component to use.
  * @param request The request.
- * @returns The response object with additional http response properties.
+ * @returns A promise that resolves with the set response, including a Location header on creation or a CatalogError on failure.
  */
-export async function dataResourceList(
+async function setDataset(
 	httpRequestContext: IHttpRequestContext,
-	factoryServiceName: string,
-	request: IDataResourceListRequest
-): Promise<IDataResourceListResponse> {
-	const service = ComponentFactory.get<IFederatedCatalogueComponent>(factoryServiceName);
+	componentName: string,
+	request: IDatasetSetRequest
+): Promise<IDatasetSetResponse> {
+	try {
+		Guards.object<IDatasetSetRequest>(ROUTES_SOURCE, nameof(request), request);
+		Guards.object(ROUTES_SOURCE, nameof(request.body), request.body);
 
-	const itemsAndCursor = await service.queryDataResources(
-		request?.query?.id,
-		request?.query?.producedBy,
-		request?.query?.cursor,
-		Coerce.integer(request?.query?.pageSize)
-	);
-	return {
-		body: itemsAndCursor
-	};
+		const trustPayload = HeaderHelper.extractBearer(request.headers?.[HeaderTypes.Authorization]);
+
+		const component: IFederatedCatalogueComponent = ComponentFactory.get(componentName);
+
+		const result = await component.set(request.body, trustPayload);
+
+		if (Is.stringValue(result)) {
+			return {
+				statusCode: HttpStatusCode.created,
+				headers: {
+					[HeaderTypes.Location]: Coerce.string(result)
+				}
+			};
+		}
+
+		return {
+			statusCode: transformErrorToStatusCode(result),
+			body: result
+		};
+	} catch (error) {
+		const catalogError = transformToCatalogError(error);
+		return {
+			statusCode: transformErrorToStatusCode(catalogError) ?? HttpStatusCode.badRequest,
+			body: catalogError
+		};
+	}
 }
 
 /**
- * Get a Data Resource entry.
- * @param httpRequestContext The request context for the API.
- * @param factoryServiceName The name of the service to use in the routes.
+ * Handle the remove dataset operation.
+ * @param httpRequestContext The request context for the operation.
+ * @param componentName The name of the component to use.
  * @param request The request.
- * @returns The response object with additional http response properties.
+ * @returns A promise that resolves with the remove response, containing no content on success or a CatalogError on failure.
  */
-export async function dataResourceGet(
+async function removeDataset(
 	httpRequestContext: IHttpRequestContext,
-	factoryServiceName: string,
-	request: ICatalogueEntryGetRequest
-): Promise<IDataResourceGetResponse | INotFoundResponse> {
-	const service = ComponentFactory.get<IFederatedCatalogueComponent>(factoryServiceName);
+	componentName: string,
+	request: IDatasetRemoveRequest
+): Promise<IDatasetRemoveResponse> {
+	try {
+		Guards.object<IDatasetRemoveRequest>(ROUTES_SOURCE, nameof(request), request);
+		Guards.object(ROUTES_SOURCE, nameof(request.pathParams), request.pathParams);
+		Guards.stringValue(
+			ROUTES_SOURCE,
+			nameof(request.pathParams.datasetId),
+			request.pathParams.datasetId
+		);
 
-	const id = request?.pathParams.id;
-	Guards.stringValue(ROUTES_SOURCE, nameof(id), id);
+		const trustPayload = HeaderHelper.extractBearer(request.headers?.[HeaderTypes.Authorization]);
 
-	return {
-		body: (await service.getEntry(GaiaXTypes.DataResource, id)) as IDataResourceEntry
-	};
-}
+		const component: IFederatedCatalogueComponent = ComponentFactory.get(componentName);
 
-/**
- * Register a new data space connector.
- * @param baseRouteName the base route name.
- * @param httpRequestContext The request context for the API.
- * @param factoryServiceName The name of the service to use in the routes.
- * @param request The request.
- * @returns The response object with additional http response properties.
- */
-export async function dataSpaceConnectorCredentialPresentation(
-	baseRouteName: string,
-	httpRequestContext: IHttpRequestContext,
-	factoryServiceName: string,
-	request: ICompliancePresentationRequest
-): Promise<ICreatedResponse> {
-	Guards.object<ICompliancePresentationRequest>(ROUTES_SOURCE, nameof(request), request);
-	Guards.stringValue(ROUTES_SOURCE, nameof(request.body), request.body);
+		const result = await component.remove(request.pathParams.datasetId, trustPayload);
 
-	const service = ComponentFactory.get<IFederatedCatalogueComponent>(factoryServiceName);
-	const dataSpaceConnectorId = await service.registerDataSpaceConnectorCredential(request.body);
-
-	const searchParams = new URLSearchParams();
-	searchParams.append("id", dataSpaceConnectorId);
-	return {
-		headers: {
-			location: `${baseRouteName}/${DATA_SPACE_CONNECTOR_ROUTE}?${searchParams.toString()}`
-		},
-		statusCode: HttpStatusCode.created
-	};
-}
-
-/**
- * Get a list of the data space connector entries.
- * @param httpRequestContext The request context for the API.
- * @param factoryServiceName The name of the service to use in the routes.
- * @param request The request.
- * @returns The response object with additional http response properties.
- */
-export async function dataSpaceConnectorList(
-	httpRequestContext: IHttpRequestContext,
-	factoryServiceName: string,
-	request: IDataSpaceConnectorListRequest
-): Promise<IDataSpaceConnectorListResponse> {
-	const service = ComponentFactory.get<IFederatedCatalogueComponent>(factoryServiceName);
-
-	const itemsAndCursor = await service.queryDataSpaceConnectors(
-		request?.query?.id,
-		request?.query?.maintainedBy,
-		request?.query?.cursor,
-		Coerce.integer(request?.query?.pageSize)
-	);
-	return {
-		body: itemsAndCursor
-	};
-}
-
-/**
- * Get a Data Space Connector entry.
- * @param httpRequestContext The request context for the API.
- * @param factoryServiceName The name of the service to use in the routes.
- * @param request The request.
- * @returns The response object with additional http response properties.
- */
-export async function dataSpaceConnectorGet(
-	httpRequestContext: IHttpRequestContext,
-	factoryServiceName: string,
-	request: ICatalogueEntryGetRequest
-): Promise<IDataSpaceConnectorGetResponse | INotFoundResponse> {
-	const service = ComponentFactory.get<IFederatedCatalogueComponent>(factoryServiceName);
-
-	const id = request?.pathParams.id;
-	Guards.stringValue(ROUTES_SOURCE, nameof(id), id);
-
-	return {
-		body: (await service.getEntry(GaiaXTypes.DataExchangeComponent, id)) as IDataSpaceConnectorEntry
-	};
+		return {
+			statusCode: transformErrorToStatusCode(result) ?? HttpStatusCode.noContent,
+			body: result
+		};
+	} catch (error) {
+		const catalogError = transformToCatalogError(error);
+		return {
+			statusCode: transformErrorToStatusCode(catalogError) ?? HttpStatusCode.badRequest,
+			body: catalogError
+		};
+	}
 }

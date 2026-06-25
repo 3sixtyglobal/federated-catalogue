@@ -2,7 +2,7 @@
 
 > **initSchema**(): `void`
 
-Inits schemas.
+Initialize the schema for the federated catalogue entity storage.
 
 ## Returns
 

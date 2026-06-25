@@ -1,121 +1,75 @@
-// Copyright 2024 IOTA Stiftung.
+// Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 import type { IComponent } from "@twin.org/core";
-import type { IDataResourceList } from "./data-resource/IDataResourceList";
-import type { IDataSpaceConnectorList } from "./data-space-connector/IDataSpaceConnectorList";
-import type { FederatedCatalogueEntryType } from "./federatedCatalogueEntryType";
-import type { ICatalogueEntry } from "./ICatalogueEntry";
-import type { IParticipantList } from "./participant/IParticipantList";
-import type { IServiceOfferingList } from "./service-offering/IServiceOfferingList";
+import type {
+	IDataspaceProtocolCatalog,
+	IDataspaceProtocolCatalogError
+} from "@twin.org/standards-dataspace-protocol";
+import type { IDcatDataset } from "@twin.org/standards-w3c-dcat";
 
 /**
- * Interface describing a Federated Catalogue Contract.
+ * Interface describing a federated catalogue component.
+ * Provides Dataspace Protocol-compliant catalog endpoints for dataset registry and query.
  */
 export interface IFederatedCatalogueComponent extends IComponent {
 	/**
-	 * Registers a Participant's compliance Credential to the service.
-	 * @param credential The credential as JWT.
-	 * @returns The participant Id (usually a DID).
+	 * Retrieve a dataset by its unique identifier.
+	 * @param datasetId The unique identifier of the dataset.
+	 * @param trustPayload Optional payload for trust evaluation, if applicable.
+	 * @returns A promise that resolves with the dataset if found, or a CatalogError if not found or an error occurs.
 	 */
-	registerComplianceCredential(credential: string): Promise<string>;
+	get(
+		datasetId: string,
+		trustPayload: unknown
+	): Promise<IDcatDataset | IDataspaceProtocolCatalogError>;
 
 	/**
-	 * Query the federated catalogue.
-	 * @param participant The identity of the participant.
-	 * @param legalRegistrationNumber The legal registration number.
-	 * @param lrnType The legal registration number type (EORI, VATID, GLEIF, Kenya's PIN, etc.)
-	 * @param cursor The cursor to request the next page of entities.
-	 * @param pageSize The maximum number of entities in a page.
-	 * @returns All the entities for the storage matching the conditions,
-	 * and a cursor which can be used to request more entities.
-	 * @throws NotImplementedError if the implementation does not support retrieval.
+	 * Insert or update a dataset in the catalogue.
+	 * This method is internal and should not be exposed via REST endpoints.
+	 * @param dataset The dataset to store.
+	 * @param trustPayload Optional payload for trust evaluation, if applicable.
+	 * @returns A promise that resolves with the unique identifier of the stored dataset, or a CatalogError if an error occurs.
 	 */
-	queryParticipants(
-		participant?: string,
-		legalRegistrationNumber?: string,
-		lrnType?: string,
-		cursor?: string,
-		pageSize?: number
-	): Promise<IParticipantList>;
+	set(
+		dataset: IDcatDataset,
+		trustPayload: unknown
+	): Promise<string | IDataspaceProtocolCatalogError>;
 
 	/**
-	 * Registers a Data Space Connector to the service.
-	 * @param credential The credential as JWT.
-	 * @returns The Data Space Connector Id registered.
+	 * Execute a query against the catalogue using registered filter plugins.
+	 * Returns a Dataspace Protocol compliant Catalog object with participantId.
+	 *
+	 * The root catalog's participantId is the requesting participant (from context).
+	 * Own datasets (matching requestingParticipantId) go directly in root dataset[].
+	 * Other participants' datasets are grouped in nested catalog[] entries.
+	 *
+	 * For anonymous requests (no context), uses the first publisher found as fallback.
+	 * Returns a CatalogError with status 404 when no datasets exist.
+	 *
+	 * @param filter The filter criteria array, where the first element contains @type.
+	 * @param cursor Optional cursor for pagination.
+	 * @param limit Optional limit for pagination.
+	 * @param trustPayload Optional payload for trust evaluation, if applicable.
+	 * @returns A promise that resolves with the catalog result and optional next-page cursor.
 	 */
-	registerDataSpaceConnectorCredential(credential: string): Promise<string>;
+	query(
+		filter: unknown[] | undefined,
+		cursor: string | undefined,
+		limit: number | undefined,
+		trustPayload: unknown
+	): Promise<{
+		result: IDataspaceProtocolCatalog | IDataspaceProtocolCatalogError;
+		cursor?: string;
+	}>;
 
 	/**
-	 * Query the federated catalogue.
-	 * @param id Data Space Connector Id.
-	 * @param maintainer The identity of the participant maintaining the Data Space Connector.
-	 * @param cursor The cursor to request the next page of entities.
-	 * @param pageSize The maximum number of entities in a page.
-	 * @returns All the entities for the storage matching the conditions,
-	 * and a cursor which can be used to request more entities.
-	 * @throws NotImplementedError if the implementation does not support retrieval.
+	 * Remove a dataset from the catalogue by its unique identifier.
+	 * @param datasetId The unique identifier of the dataset to remove.
+	 * @param trustPayload Optional payload for trust evaluation, if applicable.
+	 * @returns A promise that resolves with undefined on success, or a CatalogError if removal fails.
 	 */
-	queryDataSpaceConnectors(
-		id?: string,
-		maintainer?: string,
-		cursor?: string,
-		pageSize?: number
-	): Promise<IDataSpaceConnectorList>;
-
-	/**
-	 * Registers a service offering Credential to the service.
-	 * @param credential The credential as JWT.
-	 * @returns The Id of the Service Offerings registered.
-	 */
-	registerServiceOfferingCredential(credential: string): Promise<string[]>;
-
-	/**
-	 * Registers a data resource Credential to the service.
-	 * @param credential The credential as JWT.
-	 * @returns The Id of the Data Resources registered.
-	 */
-	registerDataResourceCredential(credential: string): Promise<string[]>;
-
-	/**
-	 * Query the federated catalogue.
-	 * @param id Service Offering id.
-	 * @param providedBy The identity of the participant providing the Offering.
-	 * @param cursor The cursor to request the next page of entities.
-	 * @param pageSize The maximum number of entities in a page.
-	 * @returns All the entities for the storage matching the conditions,
-	 * and a cursor which can be used to request more entities.
-	 * @throws NotImplementedError if the implementation does not support retrieval.
-	 */
-	queryServiceOfferings(
-		id?: string,
-		providedBy?: string,
-		cursor?: string,
-		pageSize?: number
-	): Promise<IServiceOfferingList>;
-
-	/**
-	 * Query the federated catalogue.
-	 * @param id The id of the Data Resource.
-	 * @param producedBy The identity of the participant producing the data behind the data resource.
-	 * @param cursor The cursor to request the next page of entities.
-	 * @param pageSize The maximum number of entities in a page.
-	 * @returns All the entities for the storage matching the conditions,
-	 * and a cursor which can be used to request more entities.
-	 * @throws NotImplementedError if the implementation does not support retrieval.
-	 */
-	queryDataResources(
-		id?: string,
-		producedBy?: string,
-		cursor?: string,
-		pageSize?: number
-	): Promise<IDataResourceList>;
-
-	/**
-	 * Returns a Federated Catalogue entry.
-	 * @param entryType The type of entry.
-	 * @param entryId The entry's id.
-	 * @returns Catalogue Entry
-	 * @throws NotFoundError if not found.
-	 */
-	getEntry(entryType: FederatedCatalogueEntryType, entryId: string): Promise<ICatalogueEntry>;
+	remove(
+		datasetId: string,
+		trustPayload: unknown
+	): Promise<IDataspaceProtocolCatalogError | undefined>;
 }

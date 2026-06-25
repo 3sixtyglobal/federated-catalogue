@@ -1,6 +1,7 @@
 # Class: FederatedCatalogueService
 
-Service for performing logging operations to a connector.
+Service for managing federated catalogue operations.
+Provides Dataspace Protocol-compliant catalog endpoints for dataset registry and query.
 
 ## Implements
 
@@ -10,17 +11,17 @@ Service for performing logging operations to a connector.
 
 ### Constructor
 
-> **new FederatedCatalogueService**(`options`): `FederatedCatalogueService`
+> **new FederatedCatalogueService**(`options?`): `FederatedCatalogueService`
 
-Create a new instance of FederatedCatalogue service.
+Create a new instance of FederatedCatalogueService.
 
 #### Parameters
 
-##### options
+##### options?
 
 [`IFederatedCatalogueServiceConstructorOptions`](../interfaces/IFederatedCatalogueServiceConstructorOptions.md)
 
-The options for the connector.
+The options for the service.
 
 #### Returns
 
@@ -28,362 +29,193 @@ The options for the connector.
 
 ## Properties
 
-### NAMESPACE
+### CLASS\_NAME {#class_name}
 
-> `readonly` `static` **NAMESPACE**: `string` = `"fedcat"`
-
-The namespace for the service.
-
-***
-
-### CLASS\_NAME
-
-> `readonly` **CLASS\_NAME**: `string`
+> `readonly` `static` **CLASS\_NAME**: `string`
 
 Runtime name for the class.
 
-#### Implementation of
-
-`IFederatedCatalogueComponent.CLASS_NAME`
-
 ## Methods
 
-### registerComplianceCredential()
+### className() {#classname}
 
-> **registerComplianceCredential**(`credentialJwt`): `Promise`\<`string`\>
+> **className**(): `string`
 
-Registers a Participant's compliance Credential.
-
-#### Parameters
-
-##### credentialJwt
-
-`string`
-
-The credential (wrapped into a presentation) as JWT.
+Returns the class name of the component.
 
 #### Returns
 
-`Promise`\<`string`\>
+`string`
 
-The Id of the Participant (DID usually).
+The class name of the component.
 
 #### Implementation of
 
-`IFederatedCatalogueComponent.registerComplianceCredential`
+`IFederatedCatalogueComponent.className`
 
 ***
 
-### queryParticipants()
+### start() {#start}
 
-> **queryParticipants**(`id?`, `legalRegistrationNumber?`, `lrnType?`, `cursor?`, `pageSize?`): `Promise`\<`IParticipantList`\>
+> **start**(): `Promise`\<`void`\>
 
-Query the federated catalogue.
-
-#### Parameters
-
-##### id?
-
-`string`
-
-The identity of the participant.
-
-##### legalRegistrationNumber?
-
-`string`
-
-The legal registration number.
-
-##### lrnType?
-
-`string`
-
-The legal registration number type (EORI, VATID, GLEIF, KENYA_PIN, etc.)
-
-##### cursor?
-
-`string`
-
-The cursor to request the next page of entities.
-
-##### pageSize?
-
-`number`
-
-The maximum number of entities in a page.
+Register all federated catalogue metrics with the telemetry component.
 
 #### Returns
 
-`Promise`\<`IParticipantList`\>
+`Promise`\<`void`\>
 
-All the entities for the storage matching the conditions,
-and a cursor which can be used to request more entities.
-
-#### Throws
-
-NotImplementedError if the implementation does not support retrieval.
+A promise that resolves when all metrics have been registered.
 
 #### Implementation of
 
-`IFederatedCatalogueComponent.queryParticipants`
+`IFederatedCatalogueComponent.start`
 
 ***
 
-### getEntry()
+### get() {#get}
 
-> **getEntry**(`entryType`, `entryId`): `Promise`\<`ICatalogueEntry`\>
+> **get**(`datasetId`, `trustPayload`): `Promise`\<`IDataspaceProtocolCatalogError` \| `IDcatDataset`\>
 
-Returns a Federated Catalogue entry.
+Retrieve a dataset by its unique identifier.
 
 #### Parameters
 
-##### entryType
-
-`FederatedCatalogueEntryType`
-
-The type of entry.
-
-##### entryId
+##### datasetId
 
 `string`
 
-The entry's id.
+The unique identifier of the dataset.
+
+##### trustPayload
+
+`unknown`
+
+Optional payload for trust evaluation, if applicable.
 
 #### Returns
 
-`Promise`\<`ICatalogueEntry`\>
+`Promise`\<`IDataspaceProtocolCatalogError` \| `IDcatDataset`\>
 
-Catalogue Entry
-
-#### Throws
-
-NotFoundError if not found.
+A promise that resolves with the dataset if found, or a CatalogError if not found or an error occurs.
 
 #### Implementation of
 
-`IFederatedCatalogueComponent.getEntry`
+`IFederatedCatalogueComponent.get`
 
 ***
 
-### registerDataSpaceConnectorCredential()
+### set() {#set}
 
-> **registerDataSpaceConnectorCredential**(`credentialJwt`): `Promise`\<`string`\>
+> **set**(`dataset`, `trustPayload`): `Promise`\<`string` \| `IDataspaceProtocolCatalogError`\>
 
-Registers a compliance Credential concerning a Data Space Connector.
+Insert or update a dataset in the catalogue.
 
 #### Parameters
 
-##### credentialJwt
+##### dataset
 
-`string`
+`IDcatDataset`
 
-The credential (wrapped into a presentation) as JWT.
+The dataset to store.
+
+##### trustPayload
+
+`unknown`
+
+Optional payload for trust evaluation, if applicable.
 
 #### Returns
 
-`Promise`\<`string`\>
+`Promise`\<`string` \| `IDataspaceProtocolCatalogError`\>
 
-The identifier of the Data Space Connector registered.
+A promise that resolves with the unique identifier of the stored dataset, or a CatalogError if an error occurs.
 
 #### Implementation of
 
-`IFederatedCatalogueComponent.registerDataSpaceConnectorCredential`
+`IFederatedCatalogueComponent.set`
 
 ***
 
-### registerDataResourceCredential()
+### remove() {#remove}
 
-> **registerDataResourceCredential**(`credentialJwt`): `Promise`\<`string`[]\>
+> **remove**(`datasetId`, `trustPayload`): `Promise`\<`IDataspaceProtocolCatalogError` \| `undefined`\>
 
-Registers a data resource Credential concerning a Data Space Connector.
+Remove a dataset from the catalogue by its unique identifier.
+Indexes are automatically removed as they are stored with the dataset.
 
 #### Parameters
 
-##### credentialJwt
+##### datasetId
 
 `string`
 
-The credential (wrapped into a presentation) as JWT.
+The unique identifier of the dataset to remove.
+
+##### trustPayload
+
+`unknown`
+
+Optional payload for trust evaluation, if applicable.
 
 #### Returns
 
-`Promise`\<`string`[]\>
+`Promise`\<`IDataspaceProtocolCatalogError` \| `undefined`\>
 
-The list of Data Resources created.
+A promise that resolves with undefined on success, or a CatalogError if removal fails.
 
 #### Implementation of
 
-`IFederatedCatalogueComponent.registerDataResourceCredential`
+`IFederatedCatalogueComponent.remove`
 
 ***
 
-### queryDataSpaceConnectors()
+### query() {#query}
 
-> **queryDataSpaceConnectors**(`id?`, `maintainer?`, `cursor?`, `pageSize?`): `Promise`\<`IDataSpaceConnectorList`\>
+> **query**(`filter`, `cursor`, `limit`, `trustPayload`): `Promise`\<\{ `result`: `IDataspaceProtocolCatalogError` \| `IDataspaceProtocolCatalog`; `cursor?`: `string`; \}\>
 
-Query the federated catalogue.
+Execute a query against the catalogue using registered filter plugins.
+Returns a Dataspace Protocol compliant Catalog object with participantId.
 
-#### Parameters
+The root catalog's participantId is the requesting participant (from context).
+Own datasets (matching requestingParticipantId) go directly in root dataset[].
+Other participants' datasets are grouped in nested catalog[] entries.
 
-##### id?
-
-`string`
-
-The identity of the participant.
-
-##### maintainer?
-
-`string`
-
-The DS Connector maintainer.
-
-##### cursor?
-
-`string`
-
-The cursor to request the next page of entities.
-
-##### pageSize?
-
-`number`
-
-The maximum number of entities in a page.
-
-#### Returns
-
-`Promise`\<`IDataSpaceConnectorList`\>
-
-All the entities for the storage matching the conditions,
-and a cursor which can be used to request more entities.
-
-#### Throws
-
-NotImplementedError if the implementation does not support retrieval.
-
-#### Implementation of
-
-`IFederatedCatalogueComponent.queryDataSpaceConnectors`
-
-***
-
-### registerServiceOfferingCredential()
-
-> **registerServiceOfferingCredential**(`credentialJwt`): `Promise`\<`string`[]\>
-
-Registers a Service Offering Credential.
+For anonymous requests (no context), uses the first publisher found as fallback.
+Returns a CatalogError with status 404 when no datasets exist, or status 400 for invalid requests.
 
 #### Parameters
 
-##### credentialJwt
+##### filter
 
-`string`
+`unknown`[] \| `undefined`
 
-The credential (wrapped into a presentation) as JWT.
+The filter criteria array, where the first element contains @type.
 
-#### Returns
+##### cursor
 
-`Promise`\<`string`[]\>
+`string` \| `undefined`
 
-Nothing.
+Optional cursor for pagination.
 
-#### Implementation of
+##### limit
 
-`IFederatedCatalogueComponent.registerServiceOfferingCredential`
+`number` \| `undefined`
 
-***
+Optional limit for pagination.
 
-### queryServiceOfferings()
+##### trustPayload
 
-> **queryServiceOfferings**(`id?`, `providedBy?`, `cursor?`, `pageSize?`): `Promise`\<`IServiceOfferingList`\>
+`unknown`
 
-Query the federated catalogue.
-
-#### Parameters
-
-##### id?
-
-`string`
-
-Service Id.
-
-##### providedBy?
-
-`string`
-
-The identity of the participant.
-
-##### cursor?
-
-`string`
-
-The cursor to request the next page of entities.
-
-##### pageSize?
-
-`number`
-
-The maximum number of entities in a page.
+Optional payload for trust evaluation, if applicable.
 
 #### Returns
 
-`Promise`\<`IServiceOfferingList`\>
+`Promise`\<\{ `result`: `IDataspaceProtocolCatalogError` \| `IDataspaceProtocolCatalog`; `cursor?`: `string`; \}\>
 
-All the entities for the storage matching the conditions,
-and a cursor which can be used to request more entities.
-
-#### Throws
-
-NotImplementedError if the implementation does not support retrieval.
+A promise that resolves with the catalog result and optional next-page cursor.
 
 #### Implementation of
 
-`IFederatedCatalogueComponent.queryServiceOfferings`
-
-***
-
-### queryDataResources()
-
-> **queryDataResources**(`id?`, `producedBy?`, `cursor?`, `pageSize?`): `Promise`\<`IDataResourceList`\>
-
-Query the federated catalogue.
-
-#### Parameters
-
-##### id?
-
-`string`
-
-The identity of the DataResource.
-
-##### producedBy?
-
-`string`
-
-The identity of the participant.
-
-##### cursor?
-
-`string`
-
-The cursor to request the next page of entities.
-
-##### pageSize?
-
-`number`
-
-The maximum number of entities in a page.
-
-#### Returns
-
-`Promise`\<`IDataResourceList`\>
-
-All the entities for the storage matching the conditions,
-and a cursor which can be used to request more entities.
-
-#### Throws
-
-NotImplementedError if the implementation does not support retrieval.
-
-#### Implementation of
-
-`IFederatedCatalogueComponent.queryDataResources`
+`IFederatedCatalogueComponent.query`
