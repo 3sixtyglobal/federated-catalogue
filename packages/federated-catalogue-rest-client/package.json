@@ -42,6 +42,7 @@
 	},
 	"devDependencies": {
 		"@twin.org/nameof-transformer": "next",
+		"@twin.org/standards-dublin-core": "next",
 		"@twin.org/nameof-vitest-plugin": "next",
 		"@twin.org/validate-locales": "next",
 		"@vitest/coverage-v8": "4.1.9",

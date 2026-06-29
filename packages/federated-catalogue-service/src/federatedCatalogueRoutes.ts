@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0.
 import {
 	HttpContextIdKeys,
-	HttpUrlHelper,
+	HttpHeaderHelper,
 	type IHttpRequestContext,
 	type IRestRoute,
 	type ITag
@@ -27,7 +27,7 @@ import {
 } from "@twin.org/standards-dataspace-protocol";
 import { DcatClasses, type DcatContextType } from "@twin.org/standards-w3c-dcat";
 import { OdrlPolicyType } from "@twin.org/standards-w3c-odrl";
-import { HeaderHelper, HeaderTypes, HttpStatusCode } from "@twin.org/web";
+import { HeaderHelper, HeaderTypes, HttpStatusCode, type IHttpHeaders } from "@twin.org/web";
 import { transformErrorToStatusCode, transformToCatalogError } from "./utils/catalogErrorUtils.js";
 
 /**
@@ -314,17 +314,13 @@ async function catalogRequest(
 
 		const headers: ICatalogRequestResponse["headers"] = {};
 
-		if (Is.stringValue(result.cursor)) {
-			const contextIds = await ContextIdStore.getContextIds();
-			headers[HeaderTypes.Link] = HeaderHelper.createLinkHeader(
-				HttpUrlHelper.replaceOrigin(
-					httpRequestContext.serverRequest.url,
-					contextIds?.[HttpContextIdKeys.PublicOrigin]
-				),
-				{ cursor: result.cursor },
-				"next"
-			);
-		}
+		const contextIds = await ContextIdStore.getContextIds();
+		HttpHeaderHelper.buildCursor(
+			headers,
+			httpRequestContext.serverRequest.url,
+			contextIds?.[HttpContextIdKeys.PublicOrigin],
+			result.cursor
+		);
 
 		return {
 			headers,
@@ -403,11 +399,12 @@ async function setDataset(
 		const result = await component.set(request.body, trustPayload);
 
 		if (Is.stringValue(result)) {
+			const headers: IHttpHeaders = {};
+			HttpHeaderHelper.buildId(headers, result);
+
 			return {
 				statusCode: HttpStatusCode.created,
-				headers: {
-					[HeaderTypes.Location]: Coerce.string(result)
-				}
+				headers
 			};
 		}
 

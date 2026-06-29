@@ -1,7 +1,7 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 import { BaseRestClient } from "@twin.org/api-core";
-import type { IBaseRestClientConfig } from "@twin.org/api-models";
+import { HttpHeaderHelper, type IBaseRestClientConfig } from "@twin.org/api-models";
 import { Coerce, Guards } from "@twin.org/core";
 import type {
 	ICatalogRequestRequest,
@@ -22,7 +22,7 @@ import {
 	type IDataspaceProtocolCatalogError
 } from "@twin.org/standards-dataspace-protocol";
 import type { IDcatDataset } from "@twin.org/standards-w3c-dcat";
-import { HeaderHelper, HeaderTypes } from "@twin.org/web";
+import { HeaderHelper, HeaderTypes, HttpMethod, HttpStatusCode } from "@twin.org/web";
 
 /**
  * Client for performing federated catalogue operations through REST endpoints.
@@ -67,7 +67,7 @@ export class FederatedCatalogueRestClient
 
 		const response = await this.fetch<IDatasetGetRequest, IDatasetGetResponse>(
 			"/datasets/:datasetId",
-			"GET",
+			HttpMethod.GET,
 			{
 				headers: {
 					[HeaderTypes.Authorization]: HeaderHelper.createBearer(trustPayload)
@@ -97,7 +97,7 @@ export class FederatedCatalogueRestClient
 
 		const response = await this.fetch<IDatasetSetRequest, IDatasetSetResponse>(
 			"/datasets",
-			"POST",
+			HttpMethod.POST,
 			{
 				headers: {
 					[HeaderTypes.Authorization]: HeaderHelper.createBearer(trustPayload)
@@ -106,7 +106,9 @@ export class FederatedCatalogueRestClient
 			}
 		);
 
-		return response.headers?.[HeaderTypes.Location] ?? response.body ?? "";
+		return response.statusCode === HttpStatusCode.created
+			? HttpHeaderHelper.extractId(response.headers)
+			: (response.body ?? "");
 	}
 
 	/**
@@ -125,7 +127,7 @@ export class FederatedCatalogueRestClient
 
 		const result = await this.fetch<IDatasetRemoveRequest, IDatasetRemoveResponse>(
 			"/datasets/:datasetId",
-			"DELETE",
+			HttpMethod.DELETE,
 			{
 				headers: {
 					[HeaderTypes.Authorization]: HeaderHelper.createBearer(trustPayload)
@@ -159,7 +161,7 @@ export class FederatedCatalogueRestClient
 		Guards.stringValue(FederatedCatalogueRestClient.CLASS_NAME, nameof(trustPayload), trustPayload);
 		const response = await this.fetch<ICatalogRequestRequest, ICatalogRequestResponse>(
 			"/request",
-			"POST",
+			HttpMethod.POST,
 			{
 				headers: {
 					[HeaderTypes.Authorization]: HeaderHelper.createBearer(trustPayload)
@@ -178,8 +180,7 @@ export class FederatedCatalogueRestClient
 
 		return {
 			result: response.body,
-			cursor: HeaderHelper.extractLinkHeaderRelation(response.headers?.[HeaderTypes.Link], "next")
-				?.urlQueryParams?.cursor
+			cursor: HttpHeaderHelper.extractCursor(response.headers)
 		};
 	}
 }
