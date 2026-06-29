@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.9.1-next.2](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.9.1-next.1...federated-catalogue-service-v0.9.1-next.2) (2026-06-29)
+
+
+### Features
+
+* enhanced rest testing ([#107](https://github.com/iotaledger/twin-federated-catalogue/issues/107)) ([c017f6c](https://github.com/iotaledger/twin-federated-catalogue/commit/c017f6c8717353da1f2c95f8de3635e9c481ef02))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.9.1-next.1 to 0.9.1-next.2
+
 ## [0.9.1-next.1](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.9.1-next.0...federated-catalogue-service-v0.9.1-next.1) (2026-06-26)
 
 

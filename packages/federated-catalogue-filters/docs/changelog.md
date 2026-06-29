@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.9.1-next.2](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-filters-v0.9.1-next.1...federated-catalogue-filters-v0.9.1-next.2) (2026-06-29)
+
+
+### Miscellaneous Chores
+
+* **federated-catalogue-filters:** Synchronize repo versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.9.1-next.1 to 0.9.1-next.2
+    * @twin.org/federated-catalogue-service bumped from 0.9.1-next.1 to 0.9.1-next.2
+
 ## [0.9.1-next.1](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-filters-v0.9.1-next.0...federated-catalogue-filters-v0.9.1-next.1) (2026-06-26)
 
 
