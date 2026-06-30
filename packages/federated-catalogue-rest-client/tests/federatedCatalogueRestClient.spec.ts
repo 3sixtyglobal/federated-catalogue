@@ -149,7 +149,7 @@ describe("FederatedCatalogueRestClient", () => {
 
 			const result = await client.set(TEST_DATASET, TRUST_PAYLOAD);
 
-			expect(result).toBe(LOCATION);
+			expect(result).toBe(DATASET_ID);
 		});
 
 		test("returns the response body when no Location header is present", async () => {

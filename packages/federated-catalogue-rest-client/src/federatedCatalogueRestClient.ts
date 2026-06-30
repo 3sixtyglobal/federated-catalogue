@@ -107,7 +107,7 @@ export class FederatedCatalogueRestClient
 		);
 
 		return response.statusCode === HttpStatusCode.created
-			? HttpHeaderHelper.extractId(response.headers)
+			? HttpHeaderHelper.extractId(response.headers, `${this.getPathPrefix()}/datasets/:id`)
 			: (response.body ?? "");
 	}
 

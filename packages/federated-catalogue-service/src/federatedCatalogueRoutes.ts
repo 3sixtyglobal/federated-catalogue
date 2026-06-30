@@ -3,6 +3,7 @@
 import {
 	HttpContextIdKeys,
 	HttpHeaderHelper,
+	HttpUrlHelper,
 	type IHttpRequestContext,
 	type IRestRoute,
 	type ITag
@@ -202,7 +203,7 @@ export function generateRestRoutesFederatedCatalogue(
 		method: "POST",
 		path: `${baseRouteName}/datasets`,
 		handler: async (httpRequestContext, request) =>
-			setDataset(httpRequestContext, componentName, request),
+			setDataset(httpRequestContext, componentName, request, baseRouteName),
 		requestType: {
 			type: nameof<IDatasetSetRequest>(),
 			examples: [
@@ -381,12 +382,14 @@ async function getDataset(
  * @param httpRequestContext The request context for the operation.
  * @param componentName The name of the component to use.
  * @param request The request.
+ * @param baseRouteName The base route name for constructing the Location header.
  * @returns A promise that resolves with the set response, including a Location header on creation or a CatalogError on failure.
  */
 async function setDataset(
 	httpRequestContext: IHttpRequestContext,
 	componentName: string,
-	request: IDatasetSetRequest
+	request: IDatasetSetRequest,
+	baseRouteName: string
 ): Promise<IDatasetSetResponse> {
 	try {
 		Guards.object<IDatasetSetRequest>(ROUTES_SOURCE, nameof(request), request);
@@ -399,8 +402,15 @@ async function setDataset(
 		const result = await component.set(request.body, trustPayload);
 
 		if (Is.stringValue(result)) {
+			const contextIds = await ContextIdStore.getContextIds();
+			const publicOrigin = contextIds?.[HttpContextIdKeys.PublicOrigin];
+
 			const headers: IHttpHeaders = {};
-			HttpHeaderHelper.buildId(headers, result);
+			HttpHeaderHelper.buildId(
+				headers,
+				result,
+				HttpUrlHelper.combineOriginPath(publicOrigin, `${baseRouteName}/datasets/:id`)
+			);
 
 			return {
 				statusCode: HttpStatusCode.created,
