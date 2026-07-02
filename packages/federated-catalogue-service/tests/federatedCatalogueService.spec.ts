@@ -1982,6 +1982,89 @@ describe("FederatedCatalogueService", () => {
 		expect(result).toBeUndefined();
 	});
 
+	// verify @id is preserved through JSON-LD compaction as the storage primary key.
+	// datasetModelToEntity() maps normalizedDataset["@id"] → entity.id; if compact() were to
+	// drop or transform @id, every republish would write a new row instead of upserting.
+	test("Set preserves @id as storage primary key after JSON-LD compaction", async () => {
+		const service = new FederatedCatalogueService({ datasetEntityStorageType: "dataset" });
+
+		const datasetId = "https://example.com/datasets/id-preservation-test";
+		const dataset = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": datasetId,
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "ID Preservation Test",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/id-pres-dist",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.Context,
+				"@type": "Offer",
+				uid: "https://example.com/policies/id-pres-policy",
+				assigner: "https://example.com/participants/test-publisher",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		const returnedId = await service.set(dataset, "mock-trust-token");
+		expect(returnedId).toBe(datasetId);
+
+		const stored = await datasetEntityStorage.get(datasetId);
+		expect(stored).toBeDefined();
+		expect(stored?.id).toBe(datasetId);
+	});
+
+	// verify set() is idempotent when a caller republishes the same dataset unchanged.
+	// datasetModelToEntity() maps @id to the primary key, so repeated set() calls with the
+	// same @id must upsert a single row. If set() created a new row instead, any caller that
+	// republishes (live create/update sync or a future reconciliation job) would multiply
+	// the catalogue table over time.
+	test("Set is idempotent — repeated calls with same @id produce exactly one storage entry", async () => {
+		const service = new FederatedCatalogueService({ datasetEntityStorageType: "dataset" });
+
+		const datasetId = "https://example.com/datasets/restart-replay-test";
+		const dataset = {
+			"@context": {
+				dcat: DcatContexts.Namespace,
+				dcterms: DublinCoreContexts.NamespaceTerms,
+				odrl: OdrlContexts.Namespace
+			},
+			"@id": datasetId,
+			"@type": DcatClasses.Dataset,
+			"dcterms:title": "Restart Replay Test",
+			"dcterms:publisher": "https://example.com/participants/test-publisher",
+			"dcat:distribution": {
+				"@type": "dcat:Distribution",
+				"@id": "https://example.com/distributions/restart-dist",
+				"dcterms:format": "application/json",
+				"dcat:accessService": "https://example.com/services/test-service"
+			},
+			"odrl:hasPolicy": {
+				"@context": OdrlContexts.Context,
+				"@type": "Offer",
+				uid: "https://example.com/policies/restart-policy",
+				assigner: "https://example.com/participants/test-publisher",
+				permission: [{ action: "use" }]
+			}
+		} as unknown as IDcatDataset;
+
+		for (let i = 0; i < 5; i++) {
+			await service.set(dataset, "mock-trust-token");
+		}
+
+		const all = await datasetEntityStorage.query();
+		const matchingEntries = all.entities.filter(e => e.id === datasetId);
+		expect(matchingEntries).toHaveLength(1);
+	});
+
 	afterAll(() => {
 		FederatedCatalogueFilterFactory.clear();
 		ComponentFactory.clear();
