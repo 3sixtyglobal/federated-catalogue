@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.9.1-next.4](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.9.1-next.3...federated-catalogue-service-v0.9.1-next.4) (2026-07-02)
+
+
+### Bug Fixes
+
+* add [@id](https://github.com/id) upsert idempotency regression tests for federated catalogue set ([#110](https://github.com/iotaledger/twin-federated-catalogue/issues/110)) ([4051af8](https://github.com/iotaledger/twin-federated-catalogue/commit/4051af8630636810bc1f6b84211a4e22ca424ff8))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.9.1-next.3 to 0.9.1-next.4
+
 ## [0.9.1-next.3](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.9.1-next.2...federated-catalogue-service-v0.9.1-next.3) (2026-06-30)
 
 
