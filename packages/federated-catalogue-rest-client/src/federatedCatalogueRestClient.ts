@@ -41,7 +41,7 @@ export class FederatedCatalogueRestClient
 	 * @param config The configuration for the client.
 	 */
 	constructor(config: IBaseRestClientConfig) {
-		super(nameof<FederatedCatalogueRestClient>(), config, "federated-catalogue");
+		super(nameof<FederatedCatalogueRestClient>(), config, "catalog");
 	}
 
 	/**
@@ -83,7 +83,6 @@ export class FederatedCatalogueRestClient
 
 	/**
 	 * Insert or update a dataset in the catalogue.
-	 * This method is internal and is not exposed via REST endpoints.
 	 * @param dataset The dataset to store.
 	 * @param trustPayload Optional payload for trust evaluation, if applicable.
 	 * @returns A promise that resolves with the unique identifier of the stored dataset, or a CatalogError if an error occurs.
@@ -113,7 +112,6 @@ export class FederatedCatalogueRestClient
 
 	/**
 	 * Remove a dataset from the catalogue by its unique identifier.
-	 * This method is internal and is not exposed via REST endpoints.
 	 * @param datasetId The unique identifier of the dataset to remove.
 	 * @param trustPayload Optional payload for trust evaluation, if applicable.
 	 * @returns A promise that resolves with undefined on success, or a CatalogError if removal fails.

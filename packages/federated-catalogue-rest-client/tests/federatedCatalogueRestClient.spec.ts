@@ -22,7 +22,7 @@ import {
 
 // OpenAPI spec: ../../federated-catalogue-service/docs/open-api/spec.json
 const ENDPOINT = "http://localhost:8080";
-const PREFIX = "federated-catalogue";
+const PREFIX = "catalog";
 
 const DATASET_ID = "dataset-001";
 const TRUST_PAYLOAD = "test-trust-token";
