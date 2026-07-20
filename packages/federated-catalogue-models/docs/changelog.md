@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.1-next.5](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-models-v0.9.1-next.4...federated-catalogue-models-v0.9.1-next.5) (2026-07-20)
+
+
+### Bug Fixes
+
+* default rest path ([#115](https://github.com/iotaledger/twin-federated-catalogue/issues/115)) ([08c386c](https://github.com/iotaledger/twin-federated-catalogue/commit/08c386c01f978397a6c07d6c47889102d2cf87cc))
+
 ## [0.9.1-next.4](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-models-v0.9.1-next.3...federated-catalogue-models-v0.9.1-next.4) (2026-07-02)
 
 
