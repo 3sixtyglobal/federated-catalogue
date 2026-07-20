@@ -42,7 +42,6 @@ A promise that resolves with the dataset if found, or a CatalogError if not foun
 > **set**(`dataset`, `trustPayload`): `Promise`\<`string` \| `IDataspaceProtocolCatalogError`\>
 
 Insert or update a dataset in the catalogue.
-This method is internal and should not be exposed via REST endpoints.
 
 #### Parameters
 

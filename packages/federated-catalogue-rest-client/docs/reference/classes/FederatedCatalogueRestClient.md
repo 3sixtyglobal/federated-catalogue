@@ -99,7 +99,6 @@ A promise that resolves with the dataset if found, or a CatalogError if not foun
 > **set**(`dataset`, `trustPayload`): `Promise`\<`string` \| `IDataspaceProtocolCatalogError`\>
 
 Insert or update a dataset in the catalogue.
-This method is internal and is not exposed via REST endpoints.
 
 #### Parameters
 
@@ -132,7 +131,6 @@ A promise that resolves with the unique identifier of the stored dataset, or a C
 > **remove**(`datasetId`, `trustPayload`): `Promise`\<`IDataspaceProtocolCatalogError` \| `undefined`\>
 
 Remove a dataset from the catalogue by its unique identifier.
-This method is internal and is not exposed via REST endpoints.
 
 #### Parameters
 
