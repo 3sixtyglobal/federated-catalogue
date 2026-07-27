@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0.
 import {
 	HttpContextIdKeys,
+	HttpHeaderHelper,
 	HttpUrlHelper,
 	type IHttpRequestContext,
 	type IRestRoute,
@@ -27,7 +28,7 @@ import {
 } from "@twin.org/standards-dataspace-protocol";
 import { DcatClasses, type DcatContextType } from "@twin.org/standards-w3c-dcat";
 import { OdrlPolicyType } from "@twin.org/standards-w3c-odrl";
-import { HeaderHelper, HeaderTypes, HttpStatusCode } from "@twin.org/web";
+import { HeaderHelper, HeaderTypes, HttpStatusCode, type IHttpHeaders } from "@twin.org/web";
 import { transformErrorToStatusCode, transformToCatalogError } from "./utils/catalogErrorUtils.js";
 
 /**
@@ -202,7 +203,7 @@ export function generateRestRoutesFederatedCatalogue(
 		method: "POST",
 		path: `${baseRouteName}/datasets`,
 		handler: async (httpRequestContext, request) =>
-			setDataset(httpRequestContext, componentName, request),
+			setDataset(httpRequestContext, componentName, request, baseRouteName),
 		requestType: {
 			type: nameof<IDatasetSetRequest>(),
 			examples: [
@@ -314,17 +315,13 @@ async function catalogRequest(
 
 		const headers: ICatalogRequestResponse["headers"] = {};
 
-		if (Is.stringValue(result.cursor)) {
-			const contextIds = await ContextIdStore.getContextIds();
-			headers[HeaderTypes.Link] = HeaderHelper.createLinkHeader(
-				HttpUrlHelper.replaceOrigin(
-					httpRequestContext.serverRequest.url,
-					contextIds?.[HttpContextIdKeys.PublicOrigin]
-				),
-				{ cursor: result.cursor },
-				"next"
-			);
-		}
+		const contextIds = await ContextIdStore.getContextIds();
+		HttpHeaderHelper.buildCursor(
+			headers,
+			httpRequestContext.serverRequest.url,
+			contextIds?.[HttpContextIdKeys.PublicOrigin],
+			result.cursor
+		);
 
 		return {
 			headers,
@@ -385,12 +382,14 @@ async function getDataset(
  * @param httpRequestContext The request context for the operation.
  * @param componentName The name of the component to use.
  * @param request The request.
+ * @param baseRouteName The base route name for constructing the Location header.
  * @returns A promise that resolves with the set response, including a Location header on creation or a CatalogError on failure.
  */
 async function setDataset(
 	httpRequestContext: IHttpRequestContext,
 	componentName: string,
-	request: IDatasetSetRequest
+	request: IDatasetSetRequest,
+	baseRouteName: string
 ): Promise<IDatasetSetResponse> {
 	try {
 		Guards.object<IDatasetSetRequest>(ROUTES_SOURCE, nameof(request), request);
@@ -403,11 +402,19 @@ async function setDataset(
 		const result = await component.set(request.body, trustPayload);
 
 		if (Is.stringValue(result)) {
+			const contextIds = await ContextIdStore.getContextIds();
+			const publicOrigin = contextIds?.[HttpContextIdKeys.PublicOrigin];
+
+			const headers: IHttpHeaders = {};
+			HttpHeaderHelper.buildId(
+				headers,
+				result,
+				HttpUrlHelper.combineOriginPath(publicOrigin, `${baseRouteName}/datasets/:id`)
+			);
+
 			return {
 				statusCode: HttpStatusCode.created,
-				headers: {
-					[HeaderTypes.Location]: Coerce.string(result)
-				}
+				headers
 			};
 		}
 

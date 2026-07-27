@@ -25,7 +25,6 @@ export interface IFederatedCatalogueComponent extends IComponent {
 
 	/**
 	 * Insert or update a dataset in the catalogue.
-	 * This method is internal and should not be exposed via REST endpoints.
 	 * @param dataset The dataset to store.
 	 * @param trustPayload Optional payload for trust evaluation, if applicable.
 	 * @returns A promise that resolves with the unique identifier of the stored dataset, or a CatalogError if an error occurs.

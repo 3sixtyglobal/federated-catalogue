@@ -150,7 +150,10 @@ describe("Federated Catalogue REST Endpoints", () => {
 				}
 			};
 
-			const response = (await route?.handler({} as never, request)) as ICatalogRequestResponse;
+			const response = (await route?.handler(
+				{ serverRequest: { url: "" } } as never,
+				request
+			)) as ICatalogRequestResponse;
 			expect(response.statusCode).toBe(401);
 			expect(response.body["@type"]).toBe(DataspaceProtocolCatalogTypes.CatalogError);
 		});
@@ -179,7 +182,10 @@ describe("Federated Catalogue REST Endpoints", () => {
 				pathParams: { datasetId: "urn:uuid:any-id" }
 			};
 
-			const response = (await route?.handler({} as never, request)) as IDatasetGetResponse;
+			const response = (await route?.handler(
+				{ serverRequest: { url: "" } } as never,
+				request
+			)) as IDatasetGetResponse;
 			expect(response.statusCode).toBe(401);
 			expect(response.body["@type"]).toBe(DataspaceProtocolCatalogTypes.CatalogError);
 		});
@@ -223,7 +229,10 @@ describe("Federated Catalogue REST Endpoints", () => {
 				}
 			};
 
-			const response = (await route?.handler({} as never, request)) as ICatalogRequestResponse;
+			const response = (await route?.handler(
+				{ serverRequest: { url: "" } } as never,
+				request
+			)) as ICatalogRequestResponse;
 			// Valid token → catalog response, not 401
 			expect(response.statusCode).not.toBe(401);
 			expect(response.body["@type"]).not.toBe(DataspaceProtocolCatalogTypes.CatalogError);
@@ -369,7 +378,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			};
 
 			const response = (await catalogRequestRoute.handler(
-				{} as never,
+				{ serverRequest: { url: "" } } as never,
 				request
 			)) as ICatalogRequestResponse;
 
@@ -400,7 +409,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			const invalidRequest = {} as ICatalogRequestRequest;
 
 			const response = (await catalogRequestRoute.handler(
-				{} as never,
+				{ serverRequest: { url: "" } } as never,
 				invalidRequest
 			)) as ICatalogRequestResponse;
 
@@ -472,7 +481,10 @@ describe("Federated Catalogue REST Endpoints", () => {
 			};
 
 			// Execute handler
-			const response = (await getDatasetRoute.handler({} as never, request)) as IDatasetGetResponse;
+			const response = (await getDatasetRoute.handler(
+				{ serverRequest: { url: "" } } as never,
+				request
+			)) as IDatasetGetResponse;
 
 			// Verify response
 			expect(response).toBeDefined();
@@ -510,7 +522,10 @@ describe("Federated Catalogue REST Endpoints", () => {
 			};
 
 			// Execute handler - should return CatalogError
-			const response = (await getDatasetRoute.handler({} as never, request)) as IDatasetGetResponse;
+			const response = (await getDatasetRoute.handler(
+				{ serverRequest: { url: "" } } as never,
+				request
+			)) as IDatasetGetResponse;
 
 			// Verify it's a CatalogError with 404 status
 			expect(response.statusCode).toBe(404);
@@ -905,7 +920,10 @@ describe("Federated Catalogue REST Endpoints", () => {
 			};
 
 			// Execute handler - should return CatalogError with 404 status
-			const response = (await getDatasetRoute.handler({} as never, request)) as IDatasetGetResponse;
+			const response = (await getDatasetRoute.handler(
+				{ serverRequest: { url: "" } } as never,
+				request
+			)) as IDatasetGetResponse;
 
 			// Verify it's a CatalogError
 			expect(response.body["@type"]).toBe(DataspaceProtocolCatalogTypes.CatalogError);
@@ -1040,7 +1058,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			};
 
 			const result = (await catalogRoute?.handler(
-				{} as IHttpRequestContext,
+				{ serverRequest: { url: "" } } as IHttpRequestContext,
 				request
 			)) as ICatalogRequestResponse;
 
@@ -1079,7 +1097,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			};
 
 			const result = (await catalogRoute?.handler(
-				{} as IHttpRequestContext,
+				{ serverRequest: { url: "" } } as IHttpRequestContext,
 				request
 			)) as ICatalogRequestResponse;
 
@@ -1120,7 +1138,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			};
 
 			const result = (await catalogRoute?.handler(
-				{} as IHttpRequestContext,
+				{ serverRequest: { url: "" } } as IHttpRequestContext,
 				request
 			)) as ICatalogRequestResponse;
 
@@ -1159,7 +1177,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			};
 
 			const result = (await getDatasetRoute?.handler(
-				{} as IHttpRequestContext,
+				{ serverRequest: { url: "" } } as IHttpRequestContext,
 				request
 			)) as IDatasetGetResponse;
 
@@ -1209,7 +1227,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			};
 
 			const result = (await catalogRoute?.handler(
-				{} as IHttpRequestContext,
+				{ serverRequest: { url: "" } } as IHttpRequestContext,
 				request
 			)) as ICatalogRequestResponse;
 
@@ -1249,7 +1267,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 			};
 
 			const result = (await catalogRoute?.handler(
-				{} as IHttpRequestContext,
+				{ serverRequest: { url: "" } } as IHttpRequestContext,
 				request
 			)) as ICatalogRequestResponse;
 
@@ -1317,7 +1335,10 @@ describe("Federated Catalogue REST Endpoints", () => {
 				}
 			};
 
-			const result = await catalogRoute?.handler({} as IHttpRequestContext, request);
+			const result = await catalogRoute?.handler(
+				{ serverRequest: { url: "" } } as IHttpRequestContext,
+				request
+			);
 
 			expect(result.body).toBeDefined();
 			// DS Protocol context compacts dcat:Catalog to just Catalog
