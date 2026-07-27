@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.9.1](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-filters-v0.9.1...federated-catalogue-filters-v0.9.1) (2026-07-27)
+
+
+### Features
+
+* release to production ([c9b5702](https://github.com/iotaledger/twin-federated-catalogue/commit/c9b570207fae4b31d43fa99e4df99be4baa34db2))
+* release to production ([#103](https://github.com/iotaledger/twin-federated-catalogue/issues/103)) ([2a36084](https://github.com/iotaledger/twin-federated-catalogue/commit/2a36084a70bd51014e93fb5502443a460928301d))
+* release to production ([#120](https://github.com/iotaledger/twin-federated-catalogue/issues/120)) ([d137bc4](https://github.com/iotaledger/twin-federated-catalogue/commit/d137bc49bd1e563e469005825a2da6705c6c350a))
+
 ## [0.9.1-next.5](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-filters-v0.9.1-next.4...federated-catalogue-filters-v0.9.1-next.5) (2026-07-20)
 
 
