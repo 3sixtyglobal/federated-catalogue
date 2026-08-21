@@ -330,19 +330,19 @@ describe("FederatedCatalogueService", () => {
 		expect(datasets.length).toBeGreaterThanOrEqual(2);
 		expect(
 			datasets.some(d => {
-				if (!d || typeof d !== "object") {
+				if (!d || !Is.object(d)) {
 					return false;
 				}
-				const dataset = d as { [key: string]: unknown };
+				const dataset = d;
 				return dataset["@id"] === dataset1["@id"];
 			})
 		).toBe(true);
 		expect(
 			datasets.some(d => {
-				if (!d || typeof d !== "object") {
+				if (!d || !Is.object(d)) {
 					return false;
 				}
-				const dataset = d as { [key: string]: unknown };
+				const dataset = d;
 				return dataset["@id"] === dataset2["@id"];
 			})
 		).toBe(true);
@@ -671,10 +671,10 @@ describe("FederatedCatalogueService", () => {
 		expect(datasets.length).toBeGreaterThanOrEqual(1);
 		expect(
 			datasets.some(d => {
-				if (!d || typeof d !== "object") {
+				if (!d || !Is.object(d)) {
 					return false;
 				}
-				const datasetObj = d as { [key: string]: unknown };
+				const datasetObj = d;
 				return datasetObj["@id"] === dataset["@id"];
 			})
 		).toBe(true);
@@ -945,8 +945,8 @@ describe("FederatedCatalogueService", () => {
 			(queryResult.result as { dataset?: unknown }).dataset ?? []
 		);
 		expect(datasets.length).toBe(1);
-		if (datasets[0] && typeof datasets[0] === "object") {
-			const datasetObj = datasets[0] as { [key: string]: unknown };
+		if (datasets[0] && Is.object(datasets[0])) {
+			const datasetObj = datasets[0];
 			expect(datasetObj["@id"]).toBe(dataset1["@id"]);
 		}
 	});
