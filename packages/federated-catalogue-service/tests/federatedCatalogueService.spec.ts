@@ -330,19 +330,19 @@ describe("FederatedCatalogueService", () => {
 		expect(datasets.length).toBeGreaterThanOrEqual(2);
 		expect(
 			datasets.some(d => {
-				if (!d || typeof d !== "object") {
+				if (!d || !Is.object(d)) {
 					return false;
 				}
-				const dataset = d as { [key: string]: unknown };
+				const dataset = d;
 				return dataset["@id"] === dataset1["@id"];
 			})
 		).toBe(true);
 		expect(
 			datasets.some(d => {
-				if (!d || typeof d !== "object") {
+				if (!d || !Is.object(d)) {
 					return false;
 				}
-				const dataset = d as { [key: string]: unknown };
+				const dataset = d;
 				return dataset["@id"] === dataset2["@id"];
 			})
 		).toBe(true);
@@ -479,7 +479,7 @@ describe("FederatedCatalogueService", () => {
 			createIndex: async () => ({})
 		}));
 
-		// Request as publisher1 — publisher1's datasets appear at root, publisher2's in nested catalog
+		// Request as publisher1 - publisher1's datasets appear at root, publisher2's in nested catalog
 		const queryResult = await service.query(
 			[{ "@type": "FilterByMetadata" }],
 			undefined,
@@ -671,10 +671,10 @@ describe("FederatedCatalogueService", () => {
 		expect(datasets.length).toBeGreaterThanOrEqual(1);
 		expect(
 			datasets.some(d => {
-				if (!d || typeof d !== "object") {
+				if (!d || !Is.object(d)) {
 					return false;
 				}
-				const datasetObj = d as { [key: string]: unknown };
+				const datasetObj = d;
 				return datasetObj["@id"] === dataset["@id"];
 			})
 		).toBe(true);
@@ -945,8 +945,8 @@ describe("FederatedCatalogueService", () => {
 			(queryResult.result as { dataset?: unknown }).dataset ?? []
 		);
 		expect(datasets.length).toBe(1);
-		if (datasets[0] && typeof datasets[0] === "object") {
-			const datasetObj = datasets[0] as { [key: string]: unknown };
+		if (datasets[0] && Is.object(datasets[0])) {
+			const datasetObj = datasets[0];
 			expect(datasetObj["@id"]).toBe(dataset1["@id"]);
 		}
 	});
@@ -1538,7 +1538,7 @@ describe("FederatedCatalogueService", () => {
 		expect(setSpy).toHaveBeenCalledTimes(1);
 		setSpy.mockRestore();
 
-		// Verify the new title is persisted — DS Protocol normalisation compacts dcterms:title → dct:title
+		// Verify the new title is persisted - DS Protocol normalisation compacts dcterms:title → dct:title
 		const retrieved = await service.get(
 			"https://example.com/datasets/changed-test",
 			"mock-trust-token"
@@ -1711,7 +1711,7 @@ describe("FederatedCatalogueService", () => {
 				dcterms: DublinCoreContexts.NamespaceTerms,
 				odrl: OdrlContexts.Namespace
 			},
-			// No "@id" — should be derived from dcterms:identifier
+			// No "@id" - should be derived from dcterms:identifier
 			"@type": DcatClasses.Dataset,
 			"dcterms:identifier": datasetId,
 			"dcterms:publisher": "https://example.com/participants/test-publisher",
@@ -1859,7 +1859,7 @@ describe("FederatedCatalogueService", () => {
 		expect(bakedUrl).toContain(endpointUrl);
 	});
 
-	test("Set ownerId is identity — different identity causes mismatch on update", async () => {
+	test("Set ownerId is identity - different identity causes mismatch on update", async () => {
 		const service = new FederatedCatalogueService({ datasetEntityStorageType: "dataset" });
 
 		const dataset = {
@@ -1889,7 +1889,7 @@ describe("FederatedCatalogueService", () => {
 		// Set with identity-a
 		await service.set(dataset, JSON.stringify({ identity: "did:node:owner-a" }));
 
-		// Try to update with a different identity — ownerId differs, so update is rejected
+		// Try to update with a different identity - ownerId differs, so update is rejected
 		const result = await service.set(
 			{ ...dataset, "dcterms:title": "Modified" },
 			JSON.stringify({ identity: "did:node:owner-b" })
@@ -1931,7 +1931,7 @@ describe("FederatedCatalogueService", () => {
 		await service.set(makeDataset("https://example.com/datasets/nofilter-1"), "mock-trust-token");
 		await service.set(makeDataset("https://example.com/datasets/nofilter-2"), "mock-trust-token");
 
-		// No filter registered — passing undefined bypasses the filter path entirely
+		// No filter registered - passing undefined bypasses the filter path entirely
 		const result = await service.query(
 			undefined,
 			undefined,
@@ -2027,7 +2027,7 @@ describe("FederatedCatalogueService", () => {
 	// same @id must upsert a single row. If set() created a new row instead, any caller that
 	// republishes (live create/update sync or a future reconciliation job) would multiply
 	// the catalogue table over time.
-	test("Set is idempotent — repeated calls with same @id produce exactly one storage entry", async () => {
+	test("Set is idempotent - repeated calls with same @id produce exactly one storage entry", async () => {
 		const service = new FederatedCatalogueService({ datasetEntityStorageType: "dataset" });
 
 		const datasetId = "https://example.com/datasets/restart-replay-test";

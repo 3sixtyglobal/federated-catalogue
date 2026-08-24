@@ -95,7 +95,7 @@ function makeDataset(id: string): IDcatDataset {
 
 let datasetEntityStorage: MemoryEntityStorageConnector<Dataset>;
 
-describe("FederatedCatalogueService — metrics", () => {
+describe("FederatedCatalogueService - metrics", () => {
 	beforeAll(async () => {
 		initSchema();
 		DataspaceProtocolDataTypes.registerTypes();
@@ -163,7 +163,7 @@ describe("FederatedCatalogueService — metrics", () => {
 		expect(ids).toContain("fc_filter_index_failures");
 	});
 
-	test("start() is idempotent — AlreadyExistsError is swallowed", async () => {
+	test("start() is idempotent - AlreadyExistsError is swallowed", async () => {
 		let callCount = 0;
 		const component: ITelemetryComponent = {
 			...makeMockTelemetry().component,
@@ -317,7 +317,7 @@ describe("FederatedCatalogueService — metrics", () => {
 		expect(typeof queries[0].customData?.hasMore).toBe("boolean");
 	});
 
-	test("service works without telemetry component — no errors", async () => {
+	test("service works without telemetry component - no errors", async () => {
 		const service = new FederatedCatalogueService({
 			datasetEntityStorageType: "dataset"
 		});
