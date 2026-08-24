@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.9.2](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.9.2...federated-catalogue-service-v0.9.2) (2026-08-24)
+
+
+### Features
+
+* release to production ([c9b5702](https://github.com/iotaledger/twin-federated-catalogue/commit/c9b570207fae4b31d43fa99e4df99be4baa34db2))
+* release to production ([#103](https://github.com/iotaledger/twin-federated-catalogue/issues/103)) ([2a36084](https://github.com/iotaledger/twin-federated-catalogue/commit/2a36084a70bd51014e93fb5502443a460928301d))
+* release to production ([#120](https://github.com/iotaledger/twin-federated-catalogue/issues/120)) ([d137bc4](https://github.com/iotaledger/twin-federated-catalogue/commit/d137bc49bd1e563e469005825a2da6705c6c350a))
+* release to production ([#128](https://github.com/iotaledger/twin-federated-catalogue/issues/128)) ([9ccf18e](https://github.com/iotaledger/twin-federated-catalogue/commit/9ccf18e193d4ecd1bb90a46961b00764bce58a0f))
+* version 0 federated catalogue ([#2](https://github.com/iotaledger/twin-federated-catalogue/issues/2)) ([93fb8bd](https://github.com/iotaledger/twin-federated-catalogue/commit/93fb8bdbb03aa781ef9e8dc4053beea1b397cc36))
+
 ## [0.9.2-next.2](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.9.2-next.1...federated-catalogue-service-v0.9.2-next.2) (2026-08-07)
 
 
