@@ -1,20 +1,19 @@
-// Copyright 2025 IOTA Stiftung.
+// Copyright 2026 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 import { entity, property } from "@twin.org/entity";
 import type { IDcatDataset } from "@twin.org/standards-w3c-dcat";
 
 /**
- * Class describing a DCAT dataset for entity storage.
+ * Class describing a DCAT dataset for entity storage, version 0.
  * This wrapper enables efficient database indexing and querying while preserving
  * the full IDcatDataset JSON-LD structure.
  */
-@entity({ version: 1 })
-export class Dataset {
+@entity({ version: 0 })
+export class DatasetV0 {
 	/**
 	 * The unique identifier for the dataset (mapped from JSON-LD identifier).
-	 * Bounded so storage backends index it in full rather than by prefix.
 	 */
-	@property({ type: "string", isPrimary: true, maxLength: 255 })
+	@property({ type: "string", isPrimary: true })
 	public id!: string;
 
 	/**

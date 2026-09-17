@@ -3,6 +3,7 @@
 import { ContextIdKeys, ContextIdStore } from "@twin.org/context";
 import { ArrayHelper, ComponentFactory, Is } from "@twin.org/core";
 import { JsonLdDataTypes, JsonLdHelper } from "@twin.org/data-json-ld";
+import { EntitySchemaHelper } from "@twin.org/entity";
 import { MemoryEntityStorageConnector } from "@twin.org/entity-storage-connector-memory";
 import { EntityStorageConnectorFactory } from "@twin.org/entity-storage-models";
 import { FederatedCatalogueFilterFactory } from "@twin.org/federated-catalogue-models";
@@ -16,11 +17,42 @@ import { addAllContextsToDocumentCache } from "@twin.org/standards-ld-contexts";
 import { DcatClasses, DcatContexts, type IDcatDataset } from "@twin.org/standards-w3c-dcat";
 import { OdrlContexts, OdrlDataTypes, OdrlPolicyType } from "@twin.org/standards-w3c-odrl";
 import type { ITrustVerificationInfo } from "@twin.org/trust-models";
-import type { Dataset } from "../src/entities/dataset.js";
+import { Dataset } from "../src/entities/dataset.js";
 import { initSchema } from "../src/schema.js";
 import { FederatedCatalogueService } from "../src/services/federatedCatalogueService.js";
 
 let datasetEntityStorage: MemoryEntityStorageConnector<Dataset>;
+
+/**
+ * Build a minimal valid dataset carrying the supplied id.
+ * @param datasetId The id to assign to the dataset.
+ * @returns The dataset.
+ */
+function datasetWithId(datasetId: string): IDcatDataset {
+	return {
+		"@context": {
+			dcat: DcatContexts.Namespace,
+			dcterms: DublinCoreContexts.NamespaceTerms,
+			odrl: OdrlContexts.Namespace
+		},
+		"@id": datasetId,
+		"@type": DcatClasses.Dataset,
+		"dcterms:publisher": "https://example.com/participants/test-publisher",
+		"dcat:distribution": {
+			"@type": "dcat:Distribution",
+			"@id": "https://example.com/distributions/bound-dist",
+			"dcterms:format": "application/json",
+			"dcat:accessService": "https://example.com/services/test-service"
+		},
+		"odrl:hasPolicy": {
+			"@context": OdrlContexts.Context,
+			"@type": "Offer",
+			uid: "https://example.com/policies/bound-policy",
+			assigner: "https://example.com/participants/test-publisher",
+			permission: [{ action: "use" }]
+		}
+	} as unknown as IDcatDataset;
+}
 
 describe("FederatedCatalogueService", () => {
 	beforeAll(async () => {
@@ -80,6 +112,14 @@ describe("FederatedCatalogueService", () => {
 		});
 
 		expect(service).toBeDefined();
+	});
+
+	test("Dataset schema bounds the id so the storage layer can index it in full", () => {
+		const schema = EntitySchemaHelper.getSchema(Dataset);
+		const idProperty = schema.properties?.find(property => property.property === "id");
+
+		expect(idProperty?.isPrimary).toEqual(true);
+		expect(idProperty?.maxLength).toEqual(255);
 	});
 
 	test("Can register filter in factory and use in service", async () => {
@@ -1768,6 +1808,33 @@ describe("FederatedCatalogueService", () => {
 			"@type": "CatalogError",
 			code: expect.stringContaining("datasetIdInvalidUri")
 		});
+	});
+
+	test("Set returns CatalogError when the dataset id exceeds the storage bound", async () => {
+		const service = new FederatedCatalogueService({ datasetEntityStorageType: "dataset" });
+
+		const datasetId = `urn:uuid:${"a".repeat(256 - "urn:uuid:".length)}`;
+		const result = await service.set(datasetWithId(datasetId), "mock-trust-token");
+
+		expect(datasetId).toHaveLength(256);
+		expect(result).toMatchObject({
+			"@type": "CatalogError",
+			code: expect.stringContaining("maxLengthExceeded")
+		});
+	});
+
+	test("Set accepts a dataset id exactly at the storage bound", async () => {
+		const service = new FederatedCatalogueService({ datasetEntityStorageType: "dataset" });
+
+		const datasetId = `urn:uuid:${"a".repeat(255 - "urn:uuid:".length)}`;
+
+		expect(datasetId).toHaveLength(255);
+		await expect(service.set(datasetWithId(datasetId), "mock-trust-token")).resolves.toBe(
+			datasetId
+		);
+
+		const retrieved = await service.get(datasetId, "mock-trust-token");
+		expect((retrieved as IDcatDataset)["@id"]).toBe(datasetId);
 	});
 
 	test("Set bakes organization into distribution accessService URL", async () => {

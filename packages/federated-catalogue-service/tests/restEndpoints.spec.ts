@@ -17,7 +17,9 @@ import {
 	type ICatalogRequestResponse,
 	type IFederatedCatalogueComponent,
 	type IDatasetGetRequest,
-	type IDatasetGetResponse
+	type IDatasetGetResponse,
+	type IDatasetSetRequest,
+	type IDatasetSetResponse
 } from "@twin.org/federated-catalogue-models";
 import { nameof } from "@twin.org/nameof";
 import {
@@ -946,6 +948,52 @@ describe("Federated Catalogue REST Endpoints", () => {
 					}
 				]
 			});
+		});
+
+		test("POST /datasets returns CatalogError with 400 status when the id exceeds the storage bound", async () => {
+			const routes = generateRestRoutesFederatedCatalogue("/catalog", "federated-catalogue");
+			const setDatasetRoute = routes.find(r => r.operationId === "setDataset");
+
+			if (!setDatasetRoute) {
+				throw new Error("setDataset route not found");
+			}
+
+			const datasetId = `urn:uuid:${"a".repeat(256 - "urn:uuid:".length)}`;
+			const request: IDatasetSetRequest = {
+				headers: { [HeaderTypes.Authorization]: "Bearer mock-trust-token" },
+				body: {
+					"@context": {
+						dcat: DcatContexts.Namespace,
+						dcterms: DublinCoreContexts.NamespaceTerms,
+						odrl: OdrlContexts.Namespace
+					},
+					"@id": datasetId,
+					"@type": DcatClasses.Dataset,
+					"dcterms:publisher": "https://example.com/participants/test-publisher",
+					"dcat:distribution": {
+						"@type": "dcat:Distribution",
+						"@id": "https://example.com/distributions/bound-dist",
+						"dcterms:format": "application/json",
+						"dcat:accessService": "https://example.com/services/test-service"
+					},
+					"odrl:hasPolicy": {
+						"@context": OdrlContexts.Context,
+						"@type": "Offer",
+						uid: "https://example.com/policies/bound-policy",
+						assigner: "https://example.com/participants/test-publisher",
+						permission: [{ action: "use" }]
+					}
+				} as unknown as IDcatDataset
+			};
+
+			const response = (await setDatasetRoute.handler(
+				{ serverRequest: { url: "" } } as never,
+				request
+			)) as IDatasetSetResponse;
+
+			expect(response.statusCode).toBe(400);
+			expect(response.body?.["@type"]).toBe(DataspaceProtocolCatalogTypes.CatalogError);
+			expect(response.body?.code).toContain("maxLengthExceeded");
 		});
 
 		test("POST /request with missing @context returns CatalogError", async () => {

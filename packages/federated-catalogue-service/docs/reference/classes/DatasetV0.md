@@ -1,6 +1,6 @@
-# Class: Dataset
+# Class: DatasetV0
 
-Class describing a DCAT dataset for entity storage.
+Class describing a DCAT dataset for entity storage, version 0.
 This wrapper enables efficient database indexing and querying while preserving
 the full IDcatDataset JSON-LD structure.
 
@@ -8,11 +8,11 @@ the full IDcatDataset JSON-LD structure.
 
 ### Constructor
 
-> **new Dataset**(): `Dataset`
+> **new DatasetV0**(): `DatasetV0`
 
 #### Returns
 
-`Dataset`
+`DatasetV0`
 
 ## Properties
 
@@ -21,7 +21,6 @@ the full IDcatDataset JSON-LD structure.
 > **id**: `string`
 
 The unique identifier for the dataset (mapped from JSON-LD identifier).
-Bounded so storage backends index it in full rather than by prefix.
 
 ***
 
