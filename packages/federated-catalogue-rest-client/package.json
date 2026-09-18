@@ -1,6 +1,6 @@
 {
 	"name": "@twin.org/federated-catalogue-rest-client",
-	"version": "0.10.1-next.1",
+	"version": "0.10.1-next.2",
 	"description": "Federated Catalogue contract implementation which can connect to REST endpoints",
 	"repository": {
 		"type": "git",
@@ -33,7 +33,7 @@
 		"@twin.org/context": "next",
 		"@twin.org/core": "next",
 		"@twin.org/data-json-ld": "next",
-		"@twin.org/federated-catalogue-models": "0.10.1-next.1",
+		"@twin.org/federated-catalogue-models": "0.10.1-next.2",
 		"@twin.org/nameof": "next",
 		"@twin.org/standards-dataspace-protocol": "next",
 		"@twin.org/standards-w3c-dcat": "next",

@@ -1,6 +1,6 @@
 {
 	"name": "@twin.org/federated-catalogue-filters",
-	"version": "0.10.1-next.1",
+	"version": "0.10.1-next.2",
 	"description": "Federated Catalogue filter implementations",
 	"repository": {
 		"type": "git",
@@ -33,8 +33,8 @@
 		"@twin.org/data-json-ld": "next",
 		"@twin.org/entity": "next",
 		"@twin.org/entity-storage-models": "next",
-		"@twin.org/federated-catalogue-models": "0.10.1-next.1",
-		"@twin.org/federated-catalogue-service": "0.10.1-next.1",
+		"@twin.org/federated-catalogue-models": "0.10.1-next.2",
+		"@twin.org/federated-catalogue-service": "0.10.1-next.2",
 		"@twin.org/logging-models": "next",
 		"@twin.org/nameof": "next",
 		"@twin.org/standards-dataspace-protocol": "next",

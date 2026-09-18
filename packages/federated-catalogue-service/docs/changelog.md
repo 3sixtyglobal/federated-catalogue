@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.10.1-next.2](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.10.1-next.1...federated-catalogue-service-v0.10.1-next.2) (2026-09-18)
+
+
+### Features
+
+* improve entity schemas ([#139](https://github.com/iotaledger/twin-federated-catalogue/issues/139)) ([58d5051](https://github.com/iotaledger/twin-federated-catalogue/commit/58d50515cdf63ddda8aea145fd802aa5f4d86fa6))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.10.1-next.1 to 0.10.1-next.2
+
 ## [0.10.1-next.1](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-service-v0.10.1-next.0...federated-catalogue-service-v0.10.1-next.1) (2026-09-17)
 
 
