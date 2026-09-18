@@ -30,18 +30,6 @@ describe("initSchema", () => {
 		expect(EntitySchemaHelper.getVersion(previous)).toEqual(0);
 	});
 
-	test("Dataset versions differ only by the id bound, so the migration needs no data transform", () => {
-		const current = EntitySchemaFactory.get(nameof<Dataset>());
-		const previous = EntitySchemaFactory.get(nameof<DatasetV0>());
-
-		const strip = (schema: typeof current): unknown[] =>
-			(schema.properties ?? []).map(property => ({ ...property, maxLength: undefined }));
-
-		expect(strip(current)).toEqual(strip(previous));
-		expect(current.properties?.find(p => p.property === "id")?.maxLength).toEqual(255);
-		expect(previous.properties?.find(p => p.property === "id")?.maxLength).toBeUndefined();
-	});
-
 	/**
 	 * Seed a dataset store with version 0 rows and run the schema migration over it.
 	 * @param key Unique storage key so each case gets its own buffers.

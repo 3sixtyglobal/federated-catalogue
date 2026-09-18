@@ -20,7 +20,7 @@ export class Dataset {
 	/**
 	 * The owner of the dataset.
 	 */
-	@property({ type: "string", isSecondary: true })
+	@property({ type: "string", maxLength: 255, isSecondary: true })
 	public ownerId!: string;
 
 	/**
@@ -32,7 +32,7 @@ export class Dataset {
 	/**
 	 * The type of the resource (typically "Dataset").
 	 */
-	@property({ type: "string" })
+	@property({ type: "string", maxLength: 128 })
 	public "@type"!: IDcatDataset["@type"];
 
 	/**
@@ -56,13 +56,13 @@ export class Dataset {
 	/**
 	 * Date of formal issuance (publication) of the resource.
 	 */
-	@property({ type: "string", optional: true })
+	@property({ type: "string", format: "date-time", optional: true })
 	public "dcterms:issued"?: IDcatDataset["dcterms:issued"];
 
 	/**
 	 * Most recent date on which the resource was changed, updated or modified.
 	 */
-	@property({ type: "string", optional: true })
+	@property({ type: "string", format: "date-time", optional: true })
 	public "dcterms:modified"?: IDcatDataset["dcterms:modified"];
 
 	/**
@@ -110,7 +110,7 @@ export class Dataset {
 	/**
 	 * The nature or genre of the resource.
 	 */
-	@property({ type: "string", optional: true })
+	@property({ type: "string", maxLength: 255, optional: true })
 	public "dcterms:type"?: IDcatDataset["dcterms:type"];
 
 	/**
@@ -158,13 +158,13 @@ export class Dataset {
 	/**
 	 * The frequency at which the dataset is published.
 	 */
-	@property({ type: "string", optional: true })
+	@property({ type: "string", maxLength: 128, optional: true })
 	public "dcterms:accrualPeriodicity"?: IDcatDataset["dcterms:accrualPeriodicity"];
 
 	/**
 	 * A dataset series of which the dataset is part.
 	 */
-	@property({ type: "string", optional: true })
+	@property({ type: "string", maxLength: 255, optional: true })
 	public "dcat:inSeries"?: IDcatDataset["dcat:inSeries"];
 
 	/**
