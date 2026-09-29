@@ -3,6 +3,7 @@
 ## Classes
 
 - [Dataset](classes/Dataset.md)
+- [DatasetV0](classes/DatasetV0.md)
 - [FederatedCatalogueService](classes/FederatedCatalogueService.md)
 
 ## Interfaces

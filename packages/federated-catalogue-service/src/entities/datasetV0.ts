@@ -1,26 +1,25 @@
-// Copyright 2025 IOTA Stiftung.
+// Copyright 2026 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 import { entity, property } from "@twin.org/entity";
 import type { IDcatDataset } from "@twin.org/standards-w3c-dcat";
 
 /**
- * Class describing a DCAT dataset for entity storage.
+ * Class describing a DCAT dataset for entity storage, version 0.
  * This wrapper enables efficient database indexing and querying while preserving
  * the full IDcatDataset JSON-LD structure.
  */
-@entity({ version: 1 })
-export class Dataset {
+@entity({ version: 0 })
+export class DatasetV0 {
 	/**
 	 * The unique identifier for the dataset (mapped from JSON-LD identifier).
-	 * Bounded so storage backends index it in full rather than by prefix.
 	 */
-	@property({ type: "string", isPrimary: true, maxLength: 255 })
+	@property({ type: "string", isPrimary: true })
 	public id!: string;
 
 	/**
 	 * The owner of the dataset.
 	 */
-	@property({ type: "string", maxLength: 255, isSecondary: true })
+	@property({ type: "string", isSecondary: true })
 	public ownerId!: string;
 
 	/**
@@ -32,7 +31,7 @@ export class Dataset {
 	/**
 	 * The type of the resource (typically "Dataset").
 	 */
-	@property({ type: "string", maxLength: 128 })
+	@property({ type: "string" })
 	public "@type"!: IDcatDataset["@type"];
 
 	/**
@@ -56,13 +55,13 @@ export class Dataset {
 	/**
 	 * Date of formal issuance (publication) of the resource.
 	 */
-	@property({ type: "string", format: "date-time", optional: true })
+	@property({ type: "string", optional: true })
 	public "dcterms:issued"?: IDcatDataset["dcterms:issued"];
 
 	/**
 	 * Most recent date on which the resource was changed, updated or modified.
 	 */
-	@property({ type: "string", format: "date-time", optional: true })
+	@property({ type: "string", optional: true })
 	public "dcterms:modified"?: IDcatDataset["dcterms:modified"];
 
 	/**
@@ -110,7 +109,7 @@ export class Dataset {
 	/**
 	 * The nature or genre of the resource.
 	 */
-	@property({ type: "string", maxLength: 255, optional: true })
+	@property({ type: "string", optional: true })
 	public "dcterms:type"?: IDcatDataset["dcterms:type"];
 
 	/**
@@ -158,13 +157,13 @@ export class Dataset {
 	/**
 	 * The frequency at which the dataset is published.
 	 */
-	@property({ type: "string", maxLength: 128, optional: true })
+	@property({ type: "string", optional: true })
 	public "dcterms:accrualPeriodicity"?: IDcatDataset["dcterms:accrualPeriodicity"];
 
 	/**
 	 * A dataset series of which the dataset is part.
 	 */
-	@property({ type: "string", maxLength: 255, optional: true })
+	@property({ type: "string", optional: true })
 	public "dcat:inSeries"?: IDcatDataset["dcat:inSeries"];
 
 	/**

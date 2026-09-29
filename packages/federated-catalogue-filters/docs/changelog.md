@@ -1,5 +1,49 @@
 # Changelog
 
+## [0.10.1-next.2](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-filters-v0.10.1-next.1...federated-catalogue-filters-v0.10.1-next.2) (2026-09-18)
+
+
+### Miscellaneous Chores
+
+* **federated-catalogue-filters:** Synchronize repo versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.10.1-next.1 to 0.10.1-next.2
+    * @twin.org/federated-catalogue-service bumped from 0.10.1-next.1 to 0.10.1-next.2
+
+## [0.10.1-next.1](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-filters-v0.10.1-next.0...federated-catalogue-filters-v0.10.1-next.1) (2026-09-17)
+
+
+### Features
+
+* implement Dataspace Protocol federated catalogue ([#36](https://github.com/iotaledger/twin-federated-catalogue/issues/36)) ([4765aba](https://github.com/iotaledger/twin-federated-catalogue/commit/4765aba4485ef8ad61e7ec1affbf0e454d974d36))
+* integrate synchronised storage with federated catalogue ([#53](https://github.com/iotaledger/twin-federated-catalogue/issues/53)) ([d1cdf06](https://github.com/iotaledger/twin-federated-catalogue/commit/d1cdf066adff8fb2266ccaaebcf57da391e03d3f))
+* linting and dependency update ([8bab3cb](https://github.com/iotaledger/twin-federated-catalogue/commit/8bab3cb09ede448cca0e9849287839ef8bbbd692))
+* organization identifiers ([#84](https://github.com/iotaledger/twin-federated-catalogue/issues/84)) ([1e02971](https://github.com/iotaledger/twin-federated-catalogue/commit/1e02971a12e40bd20a0034ee1de0988a689d3dc8))
+* replace sync storage with shared DB and trust-token auth ([#79](https://github.com/iotaledger/twin-federated-catalogue/issues/79)) ([3a07f02](https://github.com/iotaledger/twin-federated-catalogue/commit/3a07f02aba8d6f3540a23e5c2cebc7b0e579ef30))
+* typescript 6 update ([ead042d](https://github.com/iotaledger/twin-federated-catalogue/commit/ead042d09f4e6b03a2db46ace2ea95d197f0f4b0))
+* update dependencies ([9534767](https://github.com/iotaledger/twin-federated-catalogue/commit/9534767b6aa85468ab5094512886246814edce9a))
+* update json-ld patterns ([172aff0](https://github.com/iotaledger/twin-federated-catalogue/commit/172aff07d0f0b780f72d1be3a4896bbf12f6173a))
+* updates standards dependencies ([62f5d9c](https://github.com/iotaledger/twin-federated-catalogue/commit/62f5d9c6180bc27497ac43624ffd714e7ce65ce6))
+
+
+### Bug Fixes
+
+* pagination and ld context ([#45](https://github.com/iotaledger/twin-federated-catalogue/issues/45)) ([e36f096](https://github.com/iotaledger/twin-federated-catalogue/commit/e36f096aa4fdc61eb5b929a0fc4403247dbd41ce))
+* use async getStore in tests ([1fe8654](https://github.com/iotaledger/twin-federated-catalogue/commit/1fe8654ecfb3437a4157fd63eb7fcb17bbee040b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @twin.org/federated-catalogue-models bumped from 0.10.1-next.0 to 0.10.1-next.1
+    * @twin.org/federated-catalogue-service bumped from 0.10.1-next.0 to 0.10.1-next.1
+
 ## [0.10.0](https://github.com/iotaledger/twin-federated-catalogue/compare/federated-catalogue-filters-v0.10.0...federated-catalogue-filters-v0.10.0) (2026-09-16)
 
 
