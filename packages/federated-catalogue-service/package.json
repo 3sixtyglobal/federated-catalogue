@@ -1,6 +1,6 @@
 {
 	"name": "@twin.org/federated-catalogue-service",
-	"version": "0.10.1-next.2",
+	"version": "0.11.1-next.0",
 	"description": "Federated Catalogue contract implementation and REST endpoint definitions",
 	"repository": {
 		"type": "git",
@@ -36,7 +36,7 @@
 		"@twin.org/data-json-ld": "next",
 		"@twin.org/entity": "next",
 		"@twin.org/entity-storage-models": "next",
-		"@twin.org/federated-catalogue-models": "0.10.1-next.2",
+		"@twin.org/federated-catalogue-models": "0.11.1-next.0",
 		"@twin.org/logging-models": "next",
 		"@twin.org/nameof": "next",
 		"@twin.org/standards-dataspace-protocol": "next",
