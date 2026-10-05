@@ -4,7 +4,7 @@
 	"description": "Federated Catalogue contract implementation and REST endpoint definitions",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/iotaledger/twin-federated-catalogue.git",
+		"url": "git+https://github.com/3sixtyglobal/twin-federated-catalogue.git",
 		"directory": "packages/federated-catalogue-service"
 	},
 	"author": "cornel.filip@iota.org",
@@ -98,7 +98,7 @@
 		"business-logic"
 	],
 	"bugs": {
-		"url": "git+https://github.com/iotaledger/twin-federated-catalogue/issues"
+		"url": "git+https://github.com/3sixtyglobal/twin-federated-catalogue/issues"
 	},
 	"homepage": "https://twindev.org"
 }

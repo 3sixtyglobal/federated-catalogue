@@ -4,7 +4,7 @@
 	"description": "Federated Catalogue filter implementations",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/iotaledger/twin-federated-catalogue.git",
+		"url": "git+https://github.com/3sixtyglobal/twin-federated-catalogue.git",
 		"directory": "packages/federated-catalogue-filters"
 	},
 	"author": "cornel.filip@iota.org",
@@ -90,7 +90,7 @@
 		"business-logic"
 	],
 	"bugs": {
-		"url": "git+https://github.com/iotaledger/twin-federated-catalogue/issues"
+		"url": "git+https://github.com/3sixtyglobal/twin-federated-catalogue/issues"
 	},
 	"homepage": "https://twindev.org"
 }

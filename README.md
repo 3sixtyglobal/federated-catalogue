@@ -14,3 +14,7 @@ The packages and app are designed to support protocol-aligned catalogue flows, f
 ## Contributing
 
 To contribute to this package see the guidelines for building and publishing in [CONTRIBUTING](./CONTRIBUTING.md)
+
+## Origin
+
+This repository is derived from the original [iotaledger/twin-federated-catalogue](https://github.com/iotaledger/twin-federated-catalogue) repository.
