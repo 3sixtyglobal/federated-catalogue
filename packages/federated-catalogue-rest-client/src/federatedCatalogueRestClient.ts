@@ -1,8 +1,8 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import { BaseRestClient } from "@twin.org/api-core";
-import { HttpHeaderHelper, type IBaseRestClientConfig } from "@twin.org/api-models";
-import { Coerce, Guards } from "@twin.org/core";
+import { BaseRestClient } from "@3sixty/api-core";
+import { HttpHeaderHelper, type IBaseRestClientConfig } from "@3sixty/api-models";
+import { Coerce, Guards } from "@3sixty/core";
 import type {
 	ICatalogRequestRequest,
 	ICatalogRequestResponse,
@@ -13,16 +13,16 @@ import type {
 	IDatasetSetRequest,
 	IDatasetSetResponse,
 	IFederatedCatalogueComponent
-} from "@twin.org/federated-catalogue-models";
-import { nameof } from "@twin.org/nameof";
+} from "@3sixty/federated-catalogue-models";
+import { nameof } from "@3sixty/nameof";
 import {
 	DataspaceProtocolCatalogTypes,
 	DataspaceProtocolContexts,
 	type IDataspaceProtocolCatalog,
 	type IDataspaceProtocolCatalogError
-} from "@twin.org/standards-dataspace-protocol";
-import type { IDcatDataset } from "@twin.org/standards-w3c-dcat";
-import { HeaderHelper, HeaderTypes, HttpMethod, HttpStatusCode } from "@twin.org/web";
+} from "@3sixty/standards-dataspace-protocol";
+import type { IDcatDataset } from "@3sixty/standards-w3c-dcat";
+import { HeaderHelper, HeaderTypes, HttpMethod, HttpStatusCode } from "@3sixty/web";
 
 /**
  * Client for performing federated catalogue operations through REST endpoints.

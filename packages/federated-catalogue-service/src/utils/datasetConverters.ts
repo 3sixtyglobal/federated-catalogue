@@ -1,6 +1,6 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { IDcatDataset } from "@twin.org/standards-w3c-dcat";
+import type { IDcatDataset } from "@3sixty/standards-w3c-dcat";
 import type { Dataset } from "../entities/dataset.js";
 
 /**

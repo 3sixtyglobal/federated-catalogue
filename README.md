@@ -1,4 +1,4 @@
-# TWIN Federated Catalogue
+# 3Sixty Federated Catalogue
 
 This repository provides a modular catalogue stack for publishing, querying and integrating dataset metadata across distributed environments. The workspace is organised so shared contracts, core service behaviour, client access and filtering extensions can evolve independently while still working together as a coherent platform.
 

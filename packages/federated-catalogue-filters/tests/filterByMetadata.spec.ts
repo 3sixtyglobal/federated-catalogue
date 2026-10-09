@@ -1,13 +1,13 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import { Is } from "@twin.org/core";
-import { MemoryEntityStorageConnector } from "@twin.org/entity-storage-connector-memory";
-import { EntityStorageConnectorFactory } from "@twin.org/entity-storage-models";
-import { type Dataset, initSchema } from "@twin.org/federated-catalogue-service";
-import { nameof } from "@twin.org/nameof";
-import { DublinCoreContexts } from "@twin.org/standards-dublin-core";
-import { DcatClasses, DcatContexts } from "@twin.org/standards-w3c-dcat";
-import type { ITrustVerificationInfo } from "@twin.org/trust-models";
+import { Is } from "@3sixty/core";
+import { MemoryEntityStorageConnector } from "@3sixty/entity-storage-connector-memory";
+import { EntityStorageConnectorFactory } from "@3sixty/entity-storage-models";
+import { type Dataset, initSchema } from "@3sixty/federated-catalogue-service";
+import { nameof } from "@3sixty/nameof";
+import { DublinCoreContexts } from "@3sixty/standards-dublin-core";
+import { DcatClasses, DcatContexts } from "@3sixty/standards-w3c-dcat";
+import type { ITrustVerificationInfo } from "@3sixty/trust-models";
 import { FilterByMetadata } from "../src/filterByMetadata.js";
 
 let datasetEntityStorage: MemoryEntityStorageConnector<Dataset>;

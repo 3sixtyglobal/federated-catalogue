@@ -5,7 +5,7 @@ Use these snippets to call catalogue endpoints consistently, including paged que
 ## FederatedCatalogueRestClient
 
 ```typescript
-import { FederatedCatalogueRestClient } from '@twin.org/federated-catalogue-rest-client';
+import { FederatedCatalogueRestClient } from '@3sixty/federated-catalogue-rest-client';
 
 const client = new FederatedCatalogueRestClient({
   endpoint: 'http://localhost:3000'
@@ -15,7 +15,7 @@ console.log(client.className() === FederatedCatalogueRestClient.CLASS_NAME); // 
 ```
 
 ```typescript
-import { FederatedCatalogueRestClient } from '@twin.org/federated-catalogue-rest-client';
+import { FederatedCatalogueRestClient } from '@3sixty/federated-catalogue-rest-client';
 
 const client = new FederatedCatalogueRestClient({
   endpoint: 'http://localhost:3000'
@@ -39,7 +39,7 @@ console.log(typeof queryResponse.cursor === 'string' || queryResponse.cursor ===
 ```
 
 ```typescript
-import { FederatedCatalogueRestClient } from '@twin.org/federated-catalogue-rest-client';
+import { FederatedCatalogueRestClient } from '@3sixty/federated-catalogue-rest-client';
 
 const client = new FederatedCatalogueRestClient({
   endpoint: 'http://localhost:3000'
@@ -51,7 +51,7 @@ console.log(dataset['@id']); // urn:dataset:air-quality-2026
 ```
 
 ```typescript
-import { FederatedCatalogueRestClient } from '@twin.org/federated-catalogue-rest-client';
+import { FederatedCatalogueRestClient } from '@3sixty/federated-catalogue-rest-client';
 
 const client = new FederatedCatalogueRestClient({
   endpoint: 'http://localhost:3000'

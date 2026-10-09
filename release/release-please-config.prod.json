@@ -8,6 +8,7 @@
 	"release-type": "node",
 	"initial-version": "0.0.1",
 	"versioning": "default",
+	"last-release-sha": "23be01d3f731448b8e263c04c25f8e2abfb761e9",
 	"packages": {
 		"packages/federated-catalogue-models": {
 			"package-name": "federated-catalogue-models",

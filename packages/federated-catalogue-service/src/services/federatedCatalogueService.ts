@@ -1,7 +1,7 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import { HttpUrlHelper } from "@twin.org/api-models";
-import { ContextIdKeys } from "@twin.org/context";
+import { HttpUrlHelper } from "@3sixty/api-models";
+import { ContextIdKeys } from "@3sixty/context";
 import {
 	ArrayHelper,
 	BaseError,
@@ -18,21 +18,21 @@ import {
 	Url,
 	Urn,
 	Validation
-} from "@twin.org/core";
-import { Blake2b } from "@twin.org/crypto";
-import { JsonLdHelper, JsonLdProcessor } from "@twin.org/data-json-ld";
+} from "@3sixty/core";
+import { Blake2b } from "@3sixty/crypto";
+import { JsonLdHelper, JsonLdProcessor } from "@3sixty/data-json-ld";
 import {
 	EntityStorageConnectorFactory,
 	type IEntityStorageConnector
-} from "@twin.org/entity-storage-models";
+} from "@3sixty/entity-storage-models";
 import {
 	FederatedCatalogueFilterFactory,
 	FederatedCatalogueMetricIds,
 	FederatedCatalogueMetrics,
 	type IFederatedCatalogueComponent
-} from "@twin.org/federated-catalogue-models";
-import type { ILoggingComponent } from "@twin.org/logging-models";
-import { nameof } from "@twin.org/nameof";
+} from "@3sixty/federated-catalogue-models";
+import type { ILoggingComponent } from "@3sixty/logging-models";
+import { nameof } from "@3sixty/nameof";
 import {
 	DataspaceProtocolCatalogTypes,
 	DataspaceProtocolContexts,
@@ -40,18 +40,18 @@ import {
 	DataspaceProtocolHelper,
 	type IDataspaceProtocolCatalog,
 	type IDataspaceProtocolCatalogError
-} from "@twin.org/standards-dataspace-protocol";
-import { DublinCoreContexts, DublinCoreDataTypes } from "@twin.org/standards-dublin-core";
-import { FoafDataTypes } from "@twin.org/standards-foaf";
+} from "@3sixty/standards-dataspace-protocol";
+import { DublinCoreContexts, DublinCoreDataTypes } from "@3sixty/standards-dublin-core";
+import { FoafDataTypes } from "@3sixty/standards-foaf";
 import {
 	DcatContexts,
 	DcatDataTypes,
 	type DcatContextType,
 	type IDcatDataset
-} from "@twin.org/standards-w3c-dcat";
-import { OdrlContexts } from "@twin.org/standards-w3c-odrl";
-import { MetricHelper, type ITelemetryComponent } from "@twin.org/telemetry-models";
-import { TrustHelper, type ITrustComponent } from "@twin.org/trust-models";
+} from "@3sixty/standards-w3c-dcat";
+import { OdrlContexts } from "@3sixty/standards-w3c-odrl";
+import { MetricHelper, type ITelemetryComponent } from "@3sixty/telemetry-models";
+import { TrustHelper, type ITrustComponent } from "@3sixty/trust-models";
 import type { Dataset } from "../entities/dataset.js";
 import type { IFederatedCatalogueServiceConstructorOptions } from "../models/IFederatedCatalogueServiceConstructorOptions.js";
 import { transformToCatalogError } from "../utils/catalogErrorUtils.js";

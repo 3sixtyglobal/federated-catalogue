@@ -1,11 +1,11 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { IComponent } from "@twin.org/core";
+import type { IComponent } from "@3sixty/core";
 import type {
 	IDataspaceProtocolCatalog,
 	IDataspaceProtocolCatalogError
-} from "@twin.org/standards-dataspace-protocol";
-import type { IDcatDataset } from "@twin.org/standards-w3c-dcat";
+} from "@3sixty/standards-dataspace-protocol";
+import type { IDcatDataset } from "@3sixty/standards-w3c-dcat";
 
 /**
  * Interface describing a federated catalogue component.

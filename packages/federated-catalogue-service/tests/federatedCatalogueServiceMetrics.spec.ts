@@ -1,22 +1,22 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import { ContextIdStore } from "@twin.org/context";
-import { AlreadyExistsError, ComponentFactory, Is } from "@twin.org/core";
-import { JsonLdDataTypes } from "@twin.org/data-json-ld";
-import { MemoryEntityStorageConnector } from "@twin.org/entity-storage-connector-memory";
-import { EntityStorageConnectorFactory } from "@twin.org/entity-storage-models";
-import { FederatedCatalogueFilterFactory } from "@twin.org/federated-catalogue-models";
-import { nameof } from "@twin.org/nameof";
-import { DataspaceProtocolDataTypes } from "@twin.org/standards-dataspace-protocol";
-import { DublinCoreContexts } from "@twin.org/standards-dublin-core";
-import { addAllContextsToDocumentCache } from "@twin.org/standards-ld-contexts";
-import { DcatClasses, DcatContexts, type IDcatDataset } from "@twin.org/standards-w3c-dcat";
-import { OdrlContexts, OdrlDataTypes, OdrlPolicyType } from "@twin.org/standards-w3c-odrl";
+import { ContextIdStore } from "@3sixty/context";
+import { AlreadyExistsError, ComponentFactory, Is } from "@3sixty/core";
+import { JsonLdDataTypes } from "@3sixty/data-json-ld";
+import { MemoryEntityStorageConnector } from "@3sixty/entity-storage-connector-memory";
+import { EntityStorageConnectorFactory } from "@3sixty/entity-storage-models";
+import { FederatedCatalogueFilterFactory } from "@3sixty/federated-catalogue-models";
+import { nameof } from "@3sixty/nameof";
+import { DataspaceProtocolDataTypes } from "@3sixty/standards-dataspace-protocol";
+import { DublinCoreContexts } from "@3sixty/standards-dublin-core";
+import { addAllContextsToDocumentCache } from "@3sixty/standards-ld-contexts";
+import { DcatClasses, DcatContexts, type IDcatDataset } from "@3sixty/standards-w3c-dcat";
+import { OdrlContexts, OdrlDataTypes, OdrlPolicyType } from "@3sixty/standards-w3c-odrl";
 import {
 	MetricType,
 	type ITelemetryComponent,
 	type ITelemetryMetric
-} from "@twin.org/telemetry-models";
+} from "@3sixty/telemetry-models";
 import type { Dataset } from "../src/entities/dataset.js";
 import { initSchema } from "../src/schema.js";
 import { FederatedCatalogueService } from "../src/services/federatedCatalogueService.js";

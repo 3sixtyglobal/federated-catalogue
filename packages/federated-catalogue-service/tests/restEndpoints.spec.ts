@@ -1,16 +1,16 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { IHttpRequestContext } from "@twin.org/api-models";
-import { HttpContextIdKeys } from "@twin.org/api-models";
-import { ContextIdStore } from "@twin.org/context";
-import { ArrayHelper, ComponentFactory, Is } from "@twin.org/core";
+import type { IHttpRequestContext } from "@3sixty/api-models";
+import { HttpContextIdKeys } from "@3sixty/api-models";
+import { ContextIdStore } from "@3sixty/context";
+import { ArrayHelper, ComponentFactory, Is } from "@3sixty/core";
 import {
 	JsonLdDataTypes,
 	JsonLdHelper,
 	type IJsonLdContextDefinitionRoot
-} from "@twin.org/data-json-ld";
-import { MemoryEntityStorageConnector } from "@twin.org/entity-storage-connector-memory";
-import { EntityStorageConnectorFactory } from "@twin.org/entity-storage-models";
+} from "@3sixty/data-json-ld";
+import { MemoryEntityStorageConnector } from "@3sixty/entity-storage-connector-memory";
+import { EntityStorageConnectorFactory } from "@3sixty/entity-storage-models";
 import {
 	FederatedCatalogueFilterFactory,
 	type ICatalogRequestRequest,
@@ -20,24 +20,24 @@ import {
 	type IDatasetGetResponse,
 	type IDatasetSetRequest,
 	type IDatasetSetResponse
-} from "@twin.org/federated-catalogue-models";
-import { nameof } from "@twin.org/nameof";
+} from "@3sixty/federated-catalogue-models";
+import { nameof } from "@3sixty/nameof";
 import {
 	DataspaceProtocolCatalogTypes,
 	DataspaceProtocolContexts,
 	DataspaceProtocolDataTypes,
 	type IDataspaceProtocolCatalog
-} from "@twin.org/standards-dataspace-protocol";
-import { DublinCoreContexts } from "@twin.org/standards-dublin-core";
-import { addAllContextsToDocumentCache } from "@twin.org/standards-ld-contexts";
+} from "@3sixty/standards-dataspace-protocol";
+import { DublinCoreContexts } from "@3sixty/standards-dublin-core";
+import { addAllContextsToDocumentCache } from "@3sixty/standards-ld-contexts";
 import {
 	DcatClasses,
 	DcatContexts,
 	type DcatContextType,
 	type IDcatDataset
-} from "@twin.org/standards-w3c-dcat";
-import { OdrlContexts, OdrlDataTypes } from "@twin.org/standards-w3c-odrl";
-import { HeaderTypes } from "@twin.org/web";
+} from "@3sixty/standards-w3c-dcat";
+import { OdrlContexts, OdrlDataTypes } from "@3sixty/standards-w3c-odrl";
+import { HeaderTypes } from "@3sixty/web";
 import type { Dataset } from "../src/entities/dataset.js";
 import {
 	generateRestRoutesFederatedCatalogue,

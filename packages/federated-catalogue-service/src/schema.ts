@@ -1,7 +1,7 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import { EntitySchemaFactory, EntitySchemaHelper } from "@twin.org/entity";
-import { nameof } from "@twin.org/nameof";
+import { EntitySchemaFactory, EntitySchemaHelper } from "@3sixty/entity";
+import { nameof } from "@3sixty/nameof";
 import { Dataset } from "./entities/dataset.js";
 import { DatasetV0 } from "./entities/datasetV0.js";
 

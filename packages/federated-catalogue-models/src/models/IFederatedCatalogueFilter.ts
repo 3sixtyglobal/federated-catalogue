@@ -1,8 +1,8 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { IComponent } from "@twin.org/core";
-import type { IDcatDataset } from "@twin.org/standards-w3c-dcat";
-import type { ITrustVerificationInfo } from "@twin.org/trust-models";
+import type { IComponent } from "@3sixty/core";
+import type { IDcatDataset } from "@3sixty/standards-w3c-dcat";
+import type { ITrustVerificationInfo } from "@3sixty/trust-models";
 
 /**
  * Interface describing a filter plugin for the federated catalogue.

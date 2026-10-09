@@ -3,8 +3,8 @@
 import type {
 	IDataspaceProtocolCatalog,
 	IDataspaceProtocolCatalogError
-} from "@twin.org/standards-dataspace-protocol";
-import type { HeaderTypes, HttpStatusCode } from "@twin.org/web";
+} from "@3sixty/standards-dataspace-protocol";
+import type { HeaderTypes, HttpStatusCode } from "@3sixty/web";
 
 /**
  * The response payload for the catalog request method.

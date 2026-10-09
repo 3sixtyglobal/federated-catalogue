@@ -1,4 +1,4 @@
-# @twin.org/federated-catalogue-models
+# @3sixty/federated-catalogue-models
 
 ## Interfaces
 

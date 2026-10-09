@@ -1,4 +1,4 @@
-# @twin.org/federated-catalogue-filters
+# @3sixty/federated-catalogue-filters
 
 ## Classes
 

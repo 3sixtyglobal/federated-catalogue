@@ -5,7 +5,7 @@ This package implements the core catalogue runtime, including dataset validation
 ## Installation
 
 ```shell
-npm install @twin.org/federated-catalogue-service
+npm install @3sixty/federated-catalogue-service
 ```
 
 ## Examples

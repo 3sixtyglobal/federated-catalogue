@@ -1,4 +1,4 @@
-# @twin.org/federated-catalogue-rest-client
+# @3sixty/federated-catalogue-rest-client
 
 ## Classes
 

@@ -5,9 +5,9 @@ Use these snippets when you want practical filtering behaviour for dataset looku
 ## FilterByMetadata
 
 ```typescript
-import { MemoryEntityStorageConnector } from '@twin.org/entity-storage-connector-memory';
-import { EntityStorageConnectorFactory } from '@twin.org/entity-storage-models';
-import { FilterByMetadata } from '@twin.org/federated-catalogue-filters';
+import { MemoryEntityStorageConnector } from '@3sixty/entity-storage-connector-memory';
+import { EntityStorageConnectorFactory } from '@3sixty/entity-storage-models';
+import { FilterByMetadata } from '@3sixty/federated-catalogue-filters';
 
 EntityStorageConnectorFactory.register('dataset', () => new MemoryEntityStorageConnector());
 
@@ -19,9 +19,9 @@ console.log(filter.className() === FilterByMetadata.CLASS_NAME); // true
 ```
 
 ```typescript
-import { MemoryEntityStorageConnector } from '@twin.org/entity-storage-connector-memory';
-import { EntityStorageConnectorFactory } from '@twin.org/entity-storage-models';
-import { FilterByMetadata } from '@twin.org/federated-catalogue-filters';
+import { MemoryEntityStorageConnector } from '@3sixty/entity-storage-connector-memory';
+import { EntityStorageConnectorFactory } from '@3sixty/entity-storage-models';
+import { FilterByMetadata } from '@3sixty/federated-catalogue-filters';
 
 EntityStorageConnectorFactory.register('dataset', () => new MemoryEntityStorageConnector());
 
@@ -43,9 +43,9 @@ console.log(Object.keys(index).length); // 4
 ```
 
 ```typescript
-import { MemoryEntityStorageConnector } from '@twin.org/entity-storage-connector-memory';
-import { EntityStorageConnectorFactory } from '@twin.org/entity-storage-models';
-import { FilterByMetadata } from '@twin.org/federated-catalogue-filters';
+import { MemoryEntityStorageConnector } from '@3sixty/entity-storage-connector-memory';
+import { EntityStorageConnectorFactory } from '@3sixty/entity-storage-models';
+import { FilterByMetadata } from '@3sixty/federated-catalogue-filters';
 
 EntityStorageConnectorFactory.register('dataset', () => new MemoryEntityStorageConnector());
 

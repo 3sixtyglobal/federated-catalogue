@@ -10,6 +10,7 @@
 	"versioning": "prerelease",
 	"prerelease": true,
 	"prerelease-type": "next",
+	"last-release-sha": "672af36fdc2ce02049e49b644160568c4a570c12",
 	"packages": {
 		"packages/federated-catalogue-models": {
 			"package-name": "federated-catalogue-models",

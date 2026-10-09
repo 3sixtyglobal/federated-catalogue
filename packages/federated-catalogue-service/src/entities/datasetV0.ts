@@ -1,7 +1,7 @@
 // Copyright 2026 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import { entity, property } from "@twin.org/entity";
-import type { IDcatDataset } from "@twin.org/standards-w3c-dcat";
+import { entity, property } from "@3sixty/entity";
+import type { IDcatDataset } from "@3sixty/standards-w3c-dcat";
 
 /**
  * Class describing a DCAT dataset for entity storage, version 0.

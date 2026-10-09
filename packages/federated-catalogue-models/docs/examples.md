@@ -5,7 +5,7 @@ These examples show how to register, discover and resolve filter components so c
 ## FederatedCatalogueFilterFactory
 
 ```typescript
-import { FederatedCatalogueFilterFactory } from '@twin.org/federated-catalogue-models';
+import { FederatedCatalogueFilterFactory } from '@3sixty/federated-catalogue-models';
 
 FederatedCatalogueFilterFactory.clear();
 
@@ -41,7 +41,7 @@ console.log(filterNames.includes('PublisherFilter')); // true
 ```
 
 ```typescript
-import { FederatedCatalogueFilterFactory } from '@twin.org/federated-catalogue-models';
+import { FederatedCatalogueFilterFactory } from '@3sixty/federated-catalogue-models';
 
 const filter = FederatedCatalogueFilterFactory.get('PublisherFilter');
 const queryResult = await filter.query([

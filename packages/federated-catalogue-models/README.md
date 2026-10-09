@@ -5,7 +5,7 @@ This package defines shared data contracts for catalogue interactions, including
 ## Installation
 
 ```shell
-npm install @twin.org/federated-catalogue-models
+npm install @3sixty/federated-catalogue-models
 ```
 
 ## Examples

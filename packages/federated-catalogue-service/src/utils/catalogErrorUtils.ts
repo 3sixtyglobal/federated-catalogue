@@ -1,13 +1,13 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import { HttpErrorHelper } from "@twin.org/api-models";
-import { BaseError, type IError, Is } from "@twin.org/core";
+import { HttpErrorHelper } from "@3sixty/api-models";
+import { BaseError, type IError, Is } from "@3sixty/core";
 import {
 	DataspaceProtocolCatalogTypes,
 	DataspaceProtocolContexts,
 	type IDataspaceProtocolCatalogError
-} from "@twin.org/standards-dataspace-protocol";
-import { HttpStatusCode } from "@twin.org/web";
+} from "@3sixty/standards-dataspace-protocol";
+import { HttpStatusCode } from "@3sixty/web";
 
 /**
  * Transform an error to Dataspace Protocol CatalogError format.

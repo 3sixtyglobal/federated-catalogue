@@ -5,7 +5,7 @@ This package provides a client interface for calling catalogue REST endpoints an
 ## Installation
 
 ```shell
-npm install @twin.org/federated-catalogue-rest-client
+npm install @3sixty/federated-catalogue-rest-client
 ```
 
 ## Examples

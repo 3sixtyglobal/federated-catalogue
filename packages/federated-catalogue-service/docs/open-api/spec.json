@@ -1,8 +1,8 @@
 {
 	"openapi": "3.1.1",
 	"info": {
-		"title": "TWIN - Test Endpoints",
-		"description": "REST API for TWIN - Test Endpoints.",
+		"title": "3Sixty - Test Endpoints",
+		"description": "REST API for 3Sixty - Test Endpoints.",
 		"version": "1.0.0",
 		"license": {
 			"name": "Apache 2.0 License",
@@ -64,7 +64,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "https://schema.twindev.org/dataspace-protocol/DataspaceProtocolCatalogRequestMessage"
+								"$ref": "https://schema.3sixty.global/dataspace-protocol/DataspaceProtocolCatalogRequestMessage"
 							},
 							"examples": {
 								"catalogRequestExample": {
@@ -312,7 +312,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "https://schema.twindev.org/dataspace-protocol/DataspaceProtocolCatalogError"
+									"$ref": "https://schema.3sixty.global/dataspace-protocol/DataspaceProtocolCatalogError"
 								}
 							}
 						}
@@ -384,7 +384,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "https://schema.twindev.org/dcat/DcatDataset"
+								"$ref": "https://schema.3sixty.global/dcat/DcatDataset"
 							},
 							"examples": {
 								"setDatasetRequestExample": {
@@ -406,7 +406,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "https://schema.twindev.org/dataspace-protocol/DataspaceProtocolCatalogError"
+									"$ref": "https://schema.3sixty.global/dataspace-protocol/DataspaceProtocolCatalogError"
 								}
 							}
 						}
@@ -459,10 +459,10 @@
 			"CatalogRequestResponse": {
 				"anyOf": [
 					{
-						"$ref": "https://schema.twindev.org/dataspace-protocol/DataspaceProtocolCatalog"
+						"$ref": "https://schema.3sixty.global/dataspace-protocol/DataspaceProtocolCatalog"
 					},
 					{
-						"$ref": "https://schema.twindev.org/dataspace-protocol/DataspaceProtocolCatalogError"
+						"$ref": "https://schema.3sixty.global/dataspace-protocol/DataspaceProtocolCatalogError"
 					}
 				],
 				"description": "The response payload containing the DS Protocol compliant catalog with participantId,\nor a CatalogError if no datasets are found (404).\nPer DS Protocol: Single participant returns flat catalog, multiple participants return nested catalogs."
@@ -470,10 +470,10 @@
 			"DatasetGetResponse": {
 				"anyOf": [
 					{
-						"$ref": "https://schema.twindev.org/dcat/DcatDataset"
+						"$ref": "https://schema.3sixty.global/dcat/DcatDataset"
 					},
 					{
-						"$ref": "https://schema.twindev.org/dataspace-protocol/DataspaceProtocolCatalogError"
+						"$ref": "https://schema.3sixty.global/dataspace-protocol/DataspaceProtocolCatalogError"
 					}
 				],
 				"description": "The response payload containing the dataset or error."

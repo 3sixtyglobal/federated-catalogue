@@ -5,9 +5,9 @@ These snippets show a realistic service flow for bootstrapping, storing and quer
 ## FederatedCatalogueService
 
 ```typescript
-import { MemoryEntityStorageConnector } from '@twin.org/entity-storage-connector-memory';
-import { EntityStorageConnectorFactory } from '@twin.org/entity-storage-models';
-import { FederatedCatalogueService } from '@twin.org/federated-catalogue-service';
+import { MemoryEntityStorageConnector } from '@3sixty/entity-storage-connector-memory';
+import { EntityStorageConnectorFactory } from '@3sixty/entity-storage-models';
+import { FederatedCatalogueService } from '@3sixty/federated-catalogue-service';
 
 EntityStorageConnectorFactory.register('dataset', () => new MemoryEntityStorageConnector());
 
@@ -19,10 +19,10 @@ console.log(service.className() === FederatedCatalogueService.CLASS_NAME); // tr
 ```
 
 ```typescript
-import { ContextIdKeys, ContextIdStore } from '@twin.org/context';
-import { MemoryEntityStorageConnector } from '@twin.org/entity-storage-connector-memory';
-import { EntityStorageConnectorFactory } from '@twin.org/entity-storage-models';
-import { FederatedCatalogueService } from '@twin.org/federated-catalogue-service';
+import { ContextIdKeys, ContextIdStore } from '@3sixty/context';
+import { MemoryEntityStorageConnector } from '@3sixty/entity-storage-connector-memory';
+import { EntityStorageConnectorFactory } from '@3sixty/entity-storage-models';
+import { FederatedCatalogueService } from '@3sixty/federated-catalogue-service';
 
 EntityStorageConnectorFactory.register('dataset', () => new MemoryEntityStorageConnector());
 
@@ -56,10 +56,10 @@ console.log(dataset['@id']); // urn:dataset:air-quality-2026
 ```
 
 ```typescript
-import { ContextIdKeys, ContextIdStore } from '@twin.org/context';
-import { MemoryEntityStorageConnector } from '@twin.org/entity-storage-connector-memory';
-import { EntityStorageConnectorFactory } from '@twin.org/entity-storage-models';
-import { FederatedCatalogueService } from '@twin.org/federated-catalogue-service';
+import { ContextIdKeys, ContextIdStore } from '@3sixty/context';
+import { MemoryEntityStorageConnector } from '@3sixty/entity-storage-connector-memory';
+import { EntityStorageConnectorFactory } from '@3sixty/entity-storage-models';
+import { FederatedCatalogueService } from '@3sixty/federated-catalogue-service';
 
 EntityStorageConnectorFactory.register('dataset', () => new MemoryEntityStorageConnector());
 
@@ -92,9 +92,9 @@ console.log(typeof queryResult.cursor === 'string' || queryResult.cursor === und
 ```
 
 ```typescript
-import { MemoryEntityStorageConnector } from '@twin.org/entity-storage-connector-memory';
-import { EntityStorageConnectorFactory } from '@twin.org/entity-storage-models';
-import { FederatedCatalogueService } from '@twin.org/federated-catalogue-service';
+import { MemoryEntityStorageConnector } from '@3sixty/entity-storage-connector-memory';
+import { EntityStorageConnectorFactory } from '@3sixty/entity-storage-models';
+import { FederatedCatalogueService } from '@3sixty/federated-catalogue-service';
 
 EntityStorageConnectorFactory.register('dataset', () => new MemoryEntityStorageConnector());
 
@@ -110,7 +110,7 @@ console.log('removed'.toUpperCase()); // REMOVED
 ## Dataset
 
 ```typescript
-import { Dataset } from '@twin.org/federated-catalogue-service';
+import { Dataset } from '@3sixty/federated-catalogue-service';
 
 const datasetEntity = new Dataset();
 datasetEntity.id = 'urn:dataset:air-quality-2026';

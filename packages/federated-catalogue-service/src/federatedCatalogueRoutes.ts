@@ -7,9 +7,9 @@ import {
 	type IHttpRequestContext,
 	type IRestRoute,
 	type ITag
-} from "@twin.org/api-models";
-import { ContextIdStore } from "@twin.org/context";
-import { Coerce, ComponentFactory, Guards, Is } from "@twin.org/core";
+} from "@3sixty/api-models";
+import { ContextIdStore } from "@3sixty/context";
+import { Coerce, ComponentFactory, Guards, Is } from "@3sixty/core";
 import type {
 	ICatalogRequestRequest,
 	ICatalogRequestResponse,
@@ -20,15 +20,15 @@ import type {
 	IDatasetSetRequest,
 	IDatasetSetResponse,
 	IFederatedCatalogueComponent
-} from "@twin.org/federated-catalogue-models";
-import { nameof } from "@twin.org/nameof";
+} from "@3sixty/federated-catalogue-models";
+import { nameof } from "@3sixty/nameof";
 import {
 	DataspaceProtocolCatalogTypes,
 	DataspaceProtocolContexts
-} from "@twin.org/standards-dataspace-protocol";
-import { DcatClasses, type DcatContextType } from "@twin.org/standards-w3c-dcat";
-import { OdrlPolicyType } from "@twin.org/standards-w3c-odrl";
-import { HeaderHelper, HeaderTypes, HttpStatusCode, type IHttpHeaders } from "@twin.org/web";
+} from "@3sixty/standards-dataspace-protocol";
+import { DcatClasses, type DcatContextType } from "@3sixty/standards-w3c-dcat";
+import { OdrlPolicyType } from "@3sixty/standards-w3c-odrl";
+import { HeaderHelper, HeaderTypes, HttpStatusCode, type IHttpHeaders } from "@3sixty/web";
 import { transformErrorToStatusCode, transformToCatalogError } from "./utils/catalogErrorUtils.js";
 
 /**

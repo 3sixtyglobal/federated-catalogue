@@ -1,16 +1,16 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import { ArrayHelper, Guards, Is, ObjectHelper } from "@twin.org/core";
-import { ComparisonOperator } from "@twin.org/entity";
+import { ArrayHelper, Guards, Is, ObjectHelper } from "@3sixty/core";
+import { ComparisonOperator } from "@3sixty/entity";
 import {
 	EntityStorageConnectorFactory,
 	type IEntityStorageConnector
-} from "@twin.org/entity-storage-models";
-import type { IFederatedCatalogueFilter } from "@twin.org/federated-catalogue-models";
-import { type Dataset, datasetEntityToModel } from "@twin.org/federated-catalogue-service";
-import { nameof } from "@twin.org/nameof";
-import type { IDcatDataset } from "@twin.org/standards-w3c-dcat";
-import type { ITrustVerificationInfo } from "@twin.org/trust-models";
+} from "@3sixty/entity-storage-models";
+import type { IFederatedCatalogueFilter } from "@3sixty/federated-catalogue-models";
+import { type Dataset, datasetEntityToModel } from "@3sixty/federated-catalogue-service";
+import { nameof } from "@3sixty/nameof";
+import type { IDcatDataset } from "@3sixty/standards-w3c-dcat";
+import type { ITrustVerificationInfo } from "@3sixty/trust-models";
 import type { IFilterByMetadataConstructorOptions } from "./models/IFilterByMetadataConstructorOptions.js";
 
 /**
