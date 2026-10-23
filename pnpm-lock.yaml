@@ -243,19 +243,19 @@ importers:
     dependencies:
       '@3sixty/api-models':
         specifier: next
-        version: 0.20.0-next.0
+        version: 0.20.0-next.1
       '@3sixty/core':
         specifier: next
         version: 0.20.0-next.2
       '@3sixty/data-json-ld':
         specifier: next
-        version: 0.20.0-next.2
+        version: 0.20.0-next.3
       '@3sixty/entity':
         specifier: next
         version: 0.20.0-next.2
       '@3sixty/entity-storage-models':
         specifier: next
-        version: 0.20.0-next.0
+        version: 0.20.0-next.1
       '@3sixty/federated-catalogue-models':
         specifier: 0.20.0-next.0
         version: link:../federated-catalogue-models
@@ -264,26 +264,26 @@ importers:
         version: link:../federated-catalogue-service
       '@3sixty/logging-models':
         specifier: next
-        version: 0.20.0-next.0
+        version: 0.20.0-next.1
       '@3sixty/nameof':
         specifier: next
         version: 0.20.0-next.2
       '@3sixty/standards-dataspace-protocol':
         specifier: next
-        version: 0.20.0-next.1
+        version: 0.20.0-next.2
       '@3sixty/standards-w3c-dcat':
         specifier: next
-        version: 0.20.0-next.1
+        version: 0.20.0-next.2
       '@3sixty/trust-models':
         specifier: next
-        version: 0.20.0-next.0
+        version: 0.20.0-next.1
       '@3sixty/web':
         specifier: next
         version: 0.20.0-next.2
     devDependencies:
       '@3sixty/entity-storage-connector-memory':
         specifier: next
-        version: 0.20.0-next.0
+        version: 0.20.0-next.1
       '@3sixty/modules':
         specifier: next
         version: 0.20.0-next.2
@@ -295,10 +295,10 @@ importers:
         version: 0.20.0-next.2(@types/node@26.6.5)(@vitest/coverage-v8@5.0.5)(vite@8.3.4(@types/node@26.6.5)(jiti@2.7.0))
       '@3sixty/standards-dublin-core':
         specifier: next
-        version: 0.20.0-next.1
+        version: 0.20.0-next.2
       '@3sixty/standards-ld-contexts':
         specifier: next
-        version: 0.20.0-next.1
+        version: 0.20.0-next.2
       '@3sixty/validate-locales':
         specifier: next
         version: 0.20.0-next.2
@@ -340,10 +340,10 @@ importers:
         version: 0.20.0-next.2
       '@3sixty/data-core':
         specifier: next
-        version: 0.20.0-next.2
+        version: 0.20.0-next.3
       '@3sixty/data-json-ld':
         specifier: next
-        version: 0.20.0-next.2
+        version: 0.20.0-next.3
       '@3sixty/entity':
         specifier: next
         version: 0.20.0-next.2
@@ -352,16 +352,16 @@ importers:
         version: 0.20.0-next.2
       '@3sixty/standards-dataspace-protocol':
         specifier: next
-        version: 0.20.0-next.1
+        version: 0.20.0-next.2
       '@3sixty/standards-w3c-dcat':
         specifier: next
-        version: 0.20.0-next.1
+        version: 0.20.0-next.2
       '@3sixty/telemetry-models':
         specifier: next
-        version: 0.20.0-next.0
+        version: 0.20.0-next.1
       '@3sixty/trust-models':
         specifier: next
-        version: 0.20.0-next.0
+        version: 0.20.0-next.1
       '@3sixty/web':
         specifier: next
         version: 0.20.0-next.2
@@ -407,10 +407,10 @@ importers:
     dependencies:
       '@3sixty/api-core':
         specifier: next
-        version: 0.20.0-next.0(supports-color@10.2.2)
+        version: 0.20.0-next.1(supports-color@10.2.2)
       '@3sixty/api-models':
         specifier: next
-        version: 0.20.0-next.0
+        version: 0.20.0-next.1
       '@3sixty/context':
         specifier: next
         version: 0.20.0-next.2
@@ -419,7 +419,7 @@ importers:
         version: 0.20.0-next.2
       '@3sixty/data-json-ld':
         specifier: next
-        version: 0.20.0-next.2
+        version: 0.20.0-next.3
       '@3sixty/federated-catalogue-models':
         specifier: 0.20.0-next.0
         version: link:../federated-catalogue-models
@@ -428,13 +428,13 @@ importers:
         version: 0.20.0-next.2
       '@3sixty/standards-dataspace-protocol':
         specifier: next
-        version: 0.20.0-next.1
+        version: 0.20.0-next.2
       '@3sixty/standards-w3c-dcat':
         specifier: next
-        version: 0.20.0-next.1
+        version: 0.20.0-next.2
       '@3sixty/trust-models':
         specifier: next
-        version: 0.20.0-next.0
+        version: 0.20.0-next.1
       '@3sixty/web':
         specifier: next
         version: 0.20.0-next.2
@@ -447,7 +447,7 @@ importers:
         version: 0.20.0-next.2(@types/node@26.6.2)(@vitest/coverage-v8@5.0.5)(vite@8.3.4(@types/node@26.6.2)(jiti@2.7.0))
       '@3sixty/standards-dublin-core':
         specifier: next
-        version: 0.20.0-next.1
+        version: 0.20.0-next.2
       '@3sixty/validate-locales':
         specifier: next
         version: 0.20.0-next.2
@@ -483,7 +483,7 @@ importers:
     dependencies:
       '@3sixty/api-models':
         specifier: next
-        version: 0.20.0-next.0
+        version: 0.20.0-next.1
       '@3sixty/context':
         specifier: next
         version: 0.20.0-next.2
@@ -495,56 +495,56 @@ importers:
         version: 0.20.0-next.2
       '@3sixty/data-json-ld':
         specifier: next
-        version: 0.20.0-next.2
+        version: 0.20.0-next.3
       '@3sixty/entity':
         specifier: next
         version: 0.20.0-next.2
       '@3sixty/entity-storage-models':
         specifier: next
-        version: 0.20.0-next.0
+        version: 0.20.0-next.1
       '@3sixty/federated-catalogue-models':
         specifier: 0.20.0-next.0
         version: link:../federated-catalogue-models
       '@3sixty/logging-models':
         specifier: next
-        version: 0.20.0-next.0
+        version: 0.20.0-next.1
       '@3sixty/nameof':
         specifier: next
         version: 0.20.0-next.2
       '@3sixty/standards-dataspace-protocol':
         specifier: next
-        version: 0.20.0-next.1
+        version: 0.20.0-next.2
       '@3sixty/standards-dublin-core':
         specifier: next
-        version: 0.20.0-next.1
+        version: 0.20.0-next.2
       '@3sixty/standards-foaf':
         specifier: next
-        version: 0.20.0-next.1
+        version: 0.20.0-next.2
       '@3sixty/standards-w3c-dcat':
         specifier: next
-        version: 0.20.0-next.1
+        version: 0.20.0-next.2
       '@3sixty/standards-w3c-odrl':
         specifier: next
-        version: 0.20.0-next.1
+        version: 0.20.0-next.2
       '@3sixty/telemetry-models':
         specifier: next
-        version: 0.20.0-next.0
+        version: 0.20.0-next.1
       '@3sixty/trust-models':
         specifier: next
-        version: 0.20.0-next.0
+        version: 0.20.0-next.1
       '@3sixty/vault-models':
         specifier: next
-        version: 0.20.0-next.0
+        version: 0.20.0-next.1
       '@3sixty/web':
         specifier: next
         version: 0.20.0-next.2
     devDependencies:
       '@3sixty/entity-storage-connector-memory':
         specifier: next
-        version: 0.20.0-next.0
+        version: 0.20.0-next.1
       '@3sixty/entity-storage-service':
         specifier: next
-        version: 0.20.0-next.0
+        version: 0.20.0-next.1
       '@3sixty/modules':
         specifier: next
         version: 0.20.0-next.2
@@ -556,7 +556,7 @@ importers:
         version: 0.20.0-next.2(@types/node@26.6.5)(@vitest/coverage-v8@5.0.5)(vite@8.3.4(@types/node@26.6.5)(jiti@2.7.0))
       '@3sixty/standards-ld-contexts':
         specifier: next
-        version: 0.20.0-next.1
+        version: 0.20.0-next.2
       '@3sixty/ts-to-openapi':
         specifier: next
         version: 0.20.0-next.4
@@ -596,12 +596,12 @@ importers:
 
 packages:
 
-  '@3sixty/api-core@0.20.0-next.0':
-    resolution: {integrity: sha512-tPyKJpr7Odcaa99U1dfCvy0UUiV7sZH7rBsFBJ5obXdlSXd0/aC6Sh2iFJpMShkr0NLTB7v4PhKE75BDvz/Qyw==}
+  '@3sixty/api-core@0.20.0-next.1':
+    resolution: {integrity: sha512-gd6IJEufB6C7Sjv3G+BRPKP7UiZ1NTSUdJqD2nD5JSU9mJ41PwhkZ1PArV5PODUXUI8A/f93g463WxTlYf8Vgw==}
     engines: {node: '>=24.0.0'}
 
-  '@3sixty/api-models@0.20.0-next.0':
-    resolution: {integrity: sha512-AShxxmk3JR5dvLyC3zXYsBb4FZbtoNYsRlB2TUynLk4epOSZcZN+p8Ya+cMM+vsbLT8joA/Jk8TC9fPSEKSk3g==}
+  '@3sixty/api-models@0.20.0-next.1':
+    resolution: {integrity: sha512-1KmZs1JOKJKqo1UEpIgWblBcnefBQ/L027HPcck7gqYp/pDJT93/OOPPv0VwHccDY4C/UN0ZhC1oD4TPv+2k3Q==}
     engines: {node: '>=24.0.0'}
 
   '@3sixty/cli-core@0.20.0-next.2':
@@ -620,32 +620,32 @@ packages:
     resolution: {integrity: sha512-0tLDaAs5j3NDob9PcmTGP7SBBr2BUnmmgj7/EuvGZNXB1qDV9+ZlYbI2R6KSf8FtGs+S1VsOohgRoqIIBoGvgQ==}
     engines: {node: '>=24.0.0'}
 
-  '@3sixty/data-core@0.20.0-next.2':
-    resolution: {integrity: sha512-xn/powX6C5rDZs9jl3y4urvzyx07UcUwDFqKv+zoBMr4XKx599n4z3Adb+/gk0bkreEjXHomeo8zkel7HEatJw==}
+  '@3sixty/data-core@0.20.0-next.3':
+    resolution: {integrity: sha512-lqV/EM9n/O5U7Wuq1SNSJQPtpTiiKKL1QlmrekO78aLS6qLiolxQv5cRiN55eGdU/46hBxl7akvvzgtTa9HeJQ==}
     engines: {node: '>=24.0.0'}
 
-  '@3sixty/data-json-ld@0.20.0-next.2':
-    resolution: {integrity: sha512-1wjE0SrC71K7wk4hH4CLYwnPvLhXnTMpJNNm4/Y760htmf/2to6mE58O5RLsUEQPOPa0okvtwPSZTXj8RkVftw==}
+  '@3sixty/data-json-ld@0.20.0-next.3':
+    resolution: {integrity: sha512-YdmQ1h1DYVTCq+IZ2kG6p5M5ht0+Lc/Ij54tU3MkCgarA0jgRkCSaC6i37KVeMEMsslOJlhwaNhzxG4QoszPOQ==}
     engines: {node: '>=24.0.0'}
 
-  '@3sixty/entity-storage-connector-memory@0.20.0-next.0':
-    resolution: {integrity: sha512-jN76Ljx3Xmqx6sng1aBR6WE66mcxUxEwWON5CzBjBRq21PvJdS7jFmXz6JPJH387dRzy5ar76W9yenrES5ajrQ==}
+  '@3sixty/entity-storage-connector-memory@0.20.0-next.1':
+    resolution: {integrity: sha512-IEDnCJGk/DlH3jHajIG+s5SQ36ZhR0Mjo38ISXJKmXbQlcl4CtNfh3Ac/1isBt7cbL2FU4ZeJGOL1pVFAa4xlQ==}
     engines: {node: '>=24.0.0'}
 
-  '@3sixty/entity-storage-models@0.20.0-next.0':
-    resolution: {integrity: sha512-IG5JgBzpNScXF2+XExjFYLnSSbsFfYGCERXMx6JpB1NRzD7XvwmUWUkvBxGjcXhayEqnE0eEiEdXRp7Xevt3Iw==}
+  '@3sixty/entity-storage-models@0.20.0-next.1':
+    resolution: {integrity: sha512-Ruf3cG2VOipevsG1WnZjxya/MIu0M4XNaEwZ7O/inbje+vkdf0PHDyHqxcFXMXOTX+U8dvD+z7SPitfsBp/Tvg==}
     engines: {node: '>=24.0.0'}
 
-  '@3sixty/entity-storage-service@0.20.0-next.0':
-    resolution: {integrity: sha512-wOCoLXIUujtVCeROTwScf3kYp4BqNC1/R3BC5JZinp8i9NDVSRxHb9/ekU3EZaKTezVcsIUnBkJ1EPgN7rNElA==}
+  '@3sixty/entity-storage-service@0.20.0-next.1':
+    resolution: {integrity: sha512-H3LoZjV0jjFeh3nS3V5NHSWTsNo5/KCrr+TBOf9kr4Kh6+knS9Z4fJo3f6Gwg5u2kvlY8Lk4jqFof01nIjAsiA==}
     engines: {node: '>=24.0.0'}
 
   '@3sixty/entity@0.20.0-next.2':
     resolution: {integrity: sha512-iq8T0sVI+FGheo7SXmoEPtUAgSIvej7NSy06vD3od5a84WyHzTHsf4nlvV97VDegFyUxXjAhKS5WjLK8tbjFdA==}
     engines: {node: '>=24.0.0'}
 
-  '@3sixty/logging-models@0.20.0-next.0':
-    resolution: {integrity: sha512-I4EunSdIs/pHPAM0uGw9T8KDWluGFtWJ5n+jYCW9Vwgk/OF4Vszila/IdSt0NN2kVYzGj4sCD6CvPtJOcT+FXw==}
+  '@3sixty/logging-models@0.20.0-next.1':
+    resolution: {integrity: sha512-PvrnZSBuws7TML96voAcKN7jZqMSbMKyq3IXh3dZ1zpgU6U7iBsqT5ynfOln2P3vkVdD29ohFOrX1zr5NPsX8Q==}
     engines: {node: '>=24.0.0'}
 
   '@3sixty/modules@0.20.0-next.2':
@@ -665,32 +665,32 @@ packages:
     resolution: {integrity: sha512-isPi+GgUWa/B3+gtLbPm3HJ5yaMJrp2uMlzLIkC2aBGQGC2jFmDk5HSmbpJg7mhQf38YomwI6AzC2JaZcL1XWQ==}
     engines: {node: '>=24.0.0'}
 
-  '@3sixty/standards-dataspace-protocol@0.20.0-next.1':
-    resolution: {integrity: sha512-TjsF4seaUjqWLMf0gzdVWqi8IHTnIb5hpin95a3iVCwd0VOVUYhY0QGm4ZAbCiX7NXg9Vs3Ck1RpxPsy4Fogvw==}
+  '@3sixty/standards-dataspace-protocol@0.20.0-next.2':
+    resolution: {integrity: sha512-LUDiYQfjbFFKUsIWZVeoS7c9YNX0S/S1wPboZbpXBoPqfCFqFYmWyLigdwFS7fwKV6f2J07SXMHkW0g9TYte9Q==}
     engines: {node: '>=24.0.0'}
 
-  '@3sixty/standards-dublin-core@0.20.0-next.1':
-    resolution: {integrity: sha512-EgKsqGSnUytAF/uBrJqvfa2+EMDLlHQmGTEeS55eYPs/kdDIVlDWJRYmXd2js+A/aYUSaPAFb4Z6GVtzaG4Qlw==}
+  '@3sixty/standards-dublin-core@0.20.0-next.2':
+    resolution: {integrity: sha512-uyuOoeaqBI+lDv/yH0uyBb1o4dWyRIJ9YQhlPqqQoBWABIpiaK0XoGJqfbVgxzF4bZlLh2JD1oiJrkdYKuZZQg==}
     engines: {node: '>=24.0.0'}
 
-  '@3sixty/standards-foaf@0.20.0-next.1':
-    resolution: {integrity: sha512-/pVyDNDxd9cBcjnLjsKhj0b5rCaoA52WDtw78ySrM+vQT57Ong7kf9EVvtgFe7JYBiQr0dSxT8XroFHlS42blw==}
+  '@3sixty/standards-foaf@0.20.0-next.2':
+    resolution: {integrity: sha512-vasSgW2fqGlZFtiFgv2KzF0+I4EYqq1llsmtDRWgpbgGa/vmYJfcfD8zDXMrIxJGTE8r11DRCqG/ZACALFcZTA==}
     engines: {node: '>=24.0.0'}
 
-  '@3sixty/standards-ld-contexts@0.20.0-next.1':
-    resolution: {integrity: sha512-V3R/ugpJo5HMajyOEpJu3+PcXTDzSolY9/tYvoEIlNMf5zVpxSVdjnSfYakeV50FqCLzoyPlYxv5NYwucKb4ZQ==}
+  '@3sixty/standards-ld-contexts@0.20.0-next.2':
+    resolution: {integrity: sha512-84zbGsNJuQUh+SqzM/oy8jTrg6Og0KRfEcZkS3byodLJFE3VJ/evHb7Av2P1ZxwckRte4dm3DMe8+zmuwpu4cw==}
     engines: {node: '>=24.0.0'}
 
-  '@3sixty/standards-w3c-dcat@0.20.0-next.1':
-    resolution: {integrity: sha512-75+QAJybPWBWO7scW7J/cbsOPWnLlgyuTk7LLeUHdiDlGfOuYakQ0i8QdKf2tV73yfcrYLGmzGJN0hR5MEwE2A==}
+  '@3sixty/standards-w3c-dcat@0.20.0-next.2':
+    resolution: {integrity: sha512-ega9YpK5EMpXVm04nnR1sI6aPW5nq4RQShVRRLbBGlH3NDz6mbPwsk/ugDYpZLxOUJP8D1MLj72nov+aOVU/aA==}
     engines: {node: '>=24.0.0'}
 
-  '@3sixty/standards-w3c-odrl@0.20.0-next.1':
-    resolution: {integrity: sha512-e3Izjd632M+Ieu1LQrJj2DaYKKSeCIwbGrDj6VHt2vSvUXBXFhJKdh1+4shhcMa5ywP59y23Tq107muqGqGfzA==}
+  '@3sixty/standards-w3c-odrl@0.20.0-next.2':
+    resolution: {integrity: sha512-HUZEMqZ/5Mv2uQZ9ppVzOzzs6CBfJm5OalNF1deq2EeMUZawlVRyIKBgl/0/airCLmh5qKBGjvIdzphDkVgGQw==}
     engines: {node: '>=24.0.0'}
 
-  '@3sixty/telemetry-models@0.20.0-next.0':
-    resolution: {integrity: sha512-upL9ip2c2JZvtL3KrNwPgAQxugm7z8fEr8LJhlNxwcYc9gL8fGzxx1kC7TEDLSaBQrVmQq74aeSHWdLsZ0VOyg==}
+  '@3sixty/telemetry-models@0.20.0-next.1':
+    resolution: {integrity: sha512-yqK3nWrqe4GCmo+mmLXytI+FWVm0d8CPIV9tw5OAtOVe9y6d7qKU63CR00mZGI6V/E/VTJmCv+Rm3ABRMVvwHQ==}
     engines: {node: '>=24.0.0'}
 
   '@3sixty/tools-core@0.20.0-next.4':
@@ -701,8 +701,8 @@ packages:
     resolution: {integrity: sha512-/Ehlhy4Hy5IArm9WJEMs8P42jFBuOwu3YSDiqKl3iAZulgcGrX9AHmIEWgx9nUuWNAZ8646sQwcIQdMNTcwsxQ==}
     engines: {node: '>=24.0.0'}
 
-  '@3sixty/trust-models@0.20.0-next.0':
-    resolution: {integrity: sha512-PUG9+uIK+EyNMr67cX8XRgj0DVSkQoPwfVeCvdhAyYI8kalwB10vIGqthdJocCW3b0cNI+EYoX0edzA+O4tu9w==}
+  '@3sixty/trust-models@0.20.0-next.1':
+    resolution: {integrity: sha512-J6uaGvHXHw/ZNBk3P8k2XWKX7cocbEG6uZlqt+0o96BrY8GadOagPwR0vp8jBc2hbKdNrZ/nICSr7iZf4G0aOg==}
     engines: {node: '>=24.0.0'}
 
   '@3sixty/ts-to-openapi@0.20.0-next.4':
@@ -715,8 +715,8 @@ packages:
     engines: {node: '>=24.0.0'}
     hasBin: true
 
-  '@3sixty/vault-models@0.20.0-next.0':
-    resolution: {integrity: sha512-6XQPJ+IKkiue0xTLCD2VtZP+HjokVEklkZuMYiOTFmFDGX1H5Ai+Qx3F4jO9jXvfP5bNjce4b5byhuPKC49N0A==}
+  '@3sixty/vault-models@0.20.0-next.1':
+    resolution: {integrity: sha512-w3rNruwfhaiNpkIopMuD3Yn/5vTyfCWntJ2sJu/xT5nrUyqGm3GkgvbkTZeF7q9Q3nuvQRt3nWkdSjUM3cZoTw==}
     engines: {node: '>=24.0.0'}
 
   '@3sixty/web@0.20.0-next.2':
@@ -3468,8 +3468,8 @@ packages:
     resolution: {integrity: sha512-j7WyPdf0CJoutMzMoPLF/bVXHtKZIT9Rb4eGeEbWw8X2t5oirjPgpL+OpaENZrILYaXqYwnVH+qgUwVbl+pUJQ==}
     engines: {node: '>= 18'}
 
-  socket.io-client@4.8.3:
-    resolution: {integrity: sha512-uP0bpjWrjQmUt5DTHq9RuoCBdFJF10cdX9X+a368j/Ft0wmaVgxlrjvK3kjvgCODOMMOz9lcaRzxmso0bTWZ/g==}
+  socket.io-client@4.8.4:
+    resolution: {integrity: sha512-7wjKAvVXYOJsbmUgkWbnhPD4bFpkqrUR0++XOjpGFmqDqsqV1CI93VTraeExLxpjxEqrWgFoSRZu1ihjLWfkAA==}
     engines: {node: '>=10.0.0'}
 
   socket.io-parser@4.2.7:
@@ -3925,19 +3925,19 @@ packages:
 
 snapshots:
 
-  '@3sixty/api-core@0.20.0-next.0(supports-color@10.2.2)':
+  '@3sixty/api-core@0.20.0-next.1(supports-color@10.2.2)':
     dependencies:
-      '@3sixty/api-models': 0.20.0-next.0
+      '@3sixty/api-models': 0.20.0-next.1
       '@3sixty/core': 0.20.0-next.2
       '@3sixty/nameof': 0.20.0-next.2
       '@3sixty/web': 0.20.0-next.2
-      socket.io-client: 4.8.3(supports-color@10.2.2)
+      socket.io-client: 4.8.4(supports-color@10.2.2)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
       - utf-8-validate
 
-  '@3sixty/api-models@0.20.0-next.0':
+  '@3sixty/api-models@0.20.0-next.1':
     dependencies:
       '@3sixty/context': 0.20.0-next.2
       '@3sixty/core': 0.20.0-next.2
@@ -3976,7 +3976,7 @@ snapshots:
       '@scure/bip39': 2.4.0
       micro-key-producer: 0.10.2
 
-  '@3sixty/data-core@0.20.0-next.2':
+  '@3sixty/data-core@0.20.0-next.3':
     dependencies:
       '@3sixty/core': 0.20.0-next.2
       '@3sixty/crypto': 0.20.0-next.2
@@ -3986,43 +3986,43 @@ snapshots:
       ajv: 8.20.0
       ajv-formats: 3.0.1(ajv@8.20.0)
 
-  '@3sixty/data-json-ld@0.20.0-next.2':
+  '@3sixty/data-json-ld@0.20.0-next.3':
     dependencies:
       '@3sixty/core': 0.20.0-next.2
-      '@3sixty/data-core': 0.20.0-next.2
+      '@3sixty/data-core': 0.20.0-next.3
       '@3sixty/entity': 0.20.0-next.2
       '@3sixty/nameof': 0.20.0-next.2
       '@3sixty/web': 0.20.0-next.2
       '@types/jsonld': 1.5.15
       jsonld: 9.0.0
 
-  '@3sixty/entity-storage-connector-memory@0.20.0-next.0':
+  '@3sixty/entity-storage-connector-memory@0.20.0-next.1':
     dependencies:
-      '@3sixty/api-models': 0.20.0-next.0
+      '@3sixty/api-models': 0.20.0-next.1
       '@3sixty/context': 0.20.0-next.2
       '@3sixty/core': 0.20.0-next.2
       '@3sixty/entity': 0.20.0-next.2
-      '@3sixty/entity-storage-models': 0.20.0-next.0
-      '@3sixty/logging-models': 0.20.0-next.0
+      '@3sixty/entity-storage-models': 0.20.0-next.1
+      '@3sixty/logging-models': 0.20.0-next.1
       '@3sixty/nameof': 0.20.0-next.2
 
-  '@3sixty/entity-storage-models@0.20.0-next.0':
+  '@3sixty/entity-storage-models@0.20.0-next.1':
     dependencies:
       '@3sixty/context': 0.20.0-next.2
       '@3sixty/core': 0.20.0-next.2
       '@3sixty/crypto': 0.20.0-next.2
       '@3sixty/entity': 0.20.0-next.2
-      '@3sixty/logging-models': 0.20.0-next.0
+      '@3sixty/logging-models': 0.20.0-next.1
       '@3sixty/nameof': 0.20.0-next.2
 
-  '@3sixty/entity-storage-service@0.20.0-next.0':
+  '@3sixty/entity-storage-service@0.20.0-next.1':
     dependencies:
-      '@3sixty/api-models': 0.20.0-next.0
+      '@3sixty/api-models': 0.20.0-next.1
       '@3sixty/context': 0.20.0-next.2
       '@3sixty/core': 0.20.0-next.2
       '@3sixty/entity': 0.20.0-next.2
-      '@3sixty/entity-storage-models': 0.20.0-next.0
-      '@3sixty/logging-models': 0.20.0-next.0
+      '@3sixty/entity-storage-models': 0.20.0-next.1
+      '@3sixty/logging-models': 0.20.0-next.1
       '@3sixty/nameof': 0.20.0-next.2
       '@3sixty/web': 0.20.0-next.2
 
@@ -4033,7 +4033,7 @@ snapshots:
       reflect-metadata: 0.2.2
       tslib: 2.8.1
 
-  '@3sixty/logging-models@0.20.0-next.0':
+  '@3sixty/logging-models@0.20.0-next.1':
     dependencies:
       '@3sixty/core': 0.20.0-next.2
       '@3sixty/entity': 0.20.0-next.2
@@ -4091,53 +4091,53 @@ snapshots:
 
   '@3sixty/nameof@0.20.0-next.2': {}
 
-  '@3sixty/standards-dataspace-protocol@0.20.0-next.1':
+  '@3sixty/standards-dataspace-protocol@0.20.0-next.2':
     dependencies:
       '@3sixty/core': 0.20.0-next.2
-      '@3sixty/data-core': 0.20.0-next.2
-      '@3sixty/data-json-ld': 0.20.0-next.2
+      '@3sixty/data-core': 0.20.0-next.3
+      '@3sixty/data-json-ld': 0.20.0-next.3
       '@3sixty/nameof': 0.20.0-next.2
-      '@3sixty/standards-dublin-core': 0.20.0-next.1
-      '@3sixty/standards-foaf': 0.20.0-next.1
-      '@3sixty/standards-w3c-dcat': 0.20.0-next.1
-      '@3sixty/standards-w3c-odrl': 0.20.0-next.1
+      '@3sixty/standards-dublin-core': 0.20.0-next.2
+      '@3sixty/standards-foaf': 0.20.0-next.2
+      '@3sixty/standards-w3c-dcat': 0.20.0-next.2
+      '@3sixty/standards-w3c-odrl': 0.20.0-next.2
       '@3sixty/web': 0.20.0-next.2
 
-  '@3sixty/standards-dublin-core@0.20.0-next.1':
+  '@3sixty/standards-dublin-core@0.20.0-next.2':
     dependencies:
-      '@3sixty/data-core': 0.20.0-next.2
-      '@3sixty/data-json-ld': 0.20.0-next.2
+      '@3sixty/data-core': 0.20.0-next.3
+      '@3sixty/data-json-ld': 0.20.0-next.3
       '@3sixty/web': 0.20.0-next.2
 
-  '@3sixty/standards-foaf@0.20.0-next.1':
+  '@3sixty/standards-foaf@0.20.0-next.2':
     dependencies:
       '@3sixty/core': 0.20.0-next.2
-      '@3sixty/data-core': 0.20.0-next.2
-      '@3sixty/data-json-ld': 0.20.0-next.2
+      '@3sixty/data-core': 0.20.0-next.3
+      '@3sixty/data-json-ld': 0.20.0-next.3
 
-  '@3sixty/standards-ld-contexts@0.20.0-next.1':
+  '@3sixty/standards-ld-contexts@0.20.0-next.2':
     dependencies:
       '@3sixty/core': 0.20.0-next.2
-      '@3sixty/data-json-ld': 0.20.0-next.2
+      '@3sixty/data-json-ld': 0.20.0-next.3
 
-  '@3sixty/standards-w3c-dcat@0.20.0-next.1':
+  '@3sixty/standards-w3c-dcat@0.20.0-next.2':
     dependencies:
       '@3sixty/core': 0.20.0-next.2
-      '@3sixty/data-core': 0.20.0-next.2
-      '@3sixty/data-json-ld': 0.20.0-next.2
-      '@3sixty/standards-dublin-core': 0.20.0-next.1
-      '@3sixty/standards-foaf': 0.20.0-next.1
-      '@3sixty/standards-w3c-odrl': 0.20.0-next.1
+      '@3sixty/data-core': 0.20.0-next.3
+      '@3sixty/data-json-ld': 0.20.0-next.3
+      '@3sixty/standards-dublin-core': 0.20.0-next.2
+      '@3sixty/standards-foaf': 0.20.0-next.2
+      '@3sixty/standards-w3c-odrl': 0.20.0-next.2
       '@3sixty/web': 0.20.0-next.2
 
-  '@3sixty/standards-w3c-odrl@0.20.0-next.1':
+  '@3sixty/standards-w3c-odrl@0.20.0-next.2':
     dependencies:
       '@3sixty/core': 0.20.0-next.2
-      '@3sixty/data-core': 0.20.0-next.2
-      '@3sixty/data-json-ld': 0.20.0-next.2
+      '@3sixty/data-core': 0.20.0-next.3
+      '@3sixty/data-json-ld': 0.20.0-next.3
       '@3sixty/web': 0.20.0-next.2
 
-  '@3sixty/telemetry-models@0.20.0-next.0':
+  '@3sixty/telemetry-models@0.20.0-next.1':
     dependencies:
       '@3sixty/core': 0.20.0-next.2
       '@3sixty/entity': 0.20.0-next.2
@@ -4157,11 +4157,11 @@ snapshots:
       '@3sixty/core': 0.20.0-next.2
       '@3sixty/nameof': 0.20.0-next.2
 
-  '@3sixty/trust-models@0.20.0-next.0':
+  '@3sixty/trust-models@0.20.0-next.1':
     dependencies:
       '@3sixty/core': 0.20.0-next.2
       '@3sixty/crypto': 0.20.0-next.2
-      '@3sixty/data-json-ld': 0.20.0-next.2
+      '@3sixty/data-json-ld': 0.20.0-next.3
       '@3sixty/nameof': 0.20.0-next.2
 
   '@3sixty/ts-to-openapi@0.20.0-next.4':
@@ -4185,7 +4185,7 @@ snapshots:
       glob: 13.0.6
       typescript: 6.0.3
 
-  '@3sixty/vault-models@0.20.0-next.0':
+  '@3sixty/vault-models@0.20.0-next.1':
     dependencies:
       '@3sixty/core': 0.20.0-next.2
       '@3sixty/nameof': 0.20.0-next.2
@@ -7010,7 +7010,7 @@ snapshots:
 
   smol-toml@1.9.1: {}
 
-  socket.io-client@4.8.3(supports-color@10.2.2):
+  socket.io-client@4.8.4(supports-color@10.2.2):
     dependencies:
       '@socket.io/component-emitter': 3.1.2
       debug: 4.4.3(supports-color@10.2.2)
