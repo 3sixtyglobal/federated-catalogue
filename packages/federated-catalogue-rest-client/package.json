@@ -1,6 +1,6 @@
 {
 	"name": "@3sixty/federated-catalogue-rest-client",
-	"version": "0.20.0-next.1",
+	"version": "0.20.0-next.2",
 	"description": "Federated Catalogue contract implementation which can connect to REST endpoints",
 	"repository": {
 		"type": "git",
@@ -33,7 +33,7 @@
 		"@3sixty/api-core": "next",
 		"@3sixty/api-models": "next",
 		"@3sixty/core": "next",
-		"@3sixty/federated-catalogue-models": "0.20.0-next.1",
+		"@3sixty/federated-catalogue-models": "0.20.0-next.2",
 		"@3sixty/nameof": "next",
 		"@3sixty/standards-dataspace-protocol": "next",
 		"@3sixty/standards-w3c-dcat": "next",
