@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.0-next.2](https://github.com/3sixtyglobal/federated-catalogue/compare/federated-catalogue-models-v0.20.0-next.1...federated-catalogue-models-v0.20.0-next.2) (2026-10-26)
+
+
+### Features
+
+* release to next [skip ci] ([#31](https://github.com/3sixtyglobal/federated-catalogue/issues/31)) ([eaebaf5](https://github.com/3sixtyglobal/federated-catalogue/commit/eaebaf5abe17c28c46375b28a0b9bd003218cd23))
+
 ## [0.20.0-next.1](https://github.com/3sixtyglobal/federated-catalogue/compare/federated-catalogue-models-v0.20.0-next.0...federated-catalogue-models-v0.20.0-next.1) (2026-10-23)
 
 
