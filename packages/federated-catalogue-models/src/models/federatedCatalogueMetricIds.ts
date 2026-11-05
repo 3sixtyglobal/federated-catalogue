@@ -4,7 +4,6 @@
 /**
  * Metric IDs for the federated catalogue service.
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const FederatedCatalogueMetricIds = {
 	/**
 	 * Number of datasets retrieved.

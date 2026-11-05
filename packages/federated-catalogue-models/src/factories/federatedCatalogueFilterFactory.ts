@@ -6,7 +6,6 @@ import type { IFederatedCatalogueFilter } from "../models/IFederatedCatalogueFil
 /**
  * Factory for managing filter plugin registration and retrieval.
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const FederatedCatalogueFilterFactory = Factory.createFactory<IFederatedCatalogueFilter>(
 	"federated-catalogue-filter"
 );

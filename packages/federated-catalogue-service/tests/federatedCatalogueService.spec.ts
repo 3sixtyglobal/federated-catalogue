@@ -17,6 +17,7 @@ import { addAllContextsToDocumentCache } from "@3sixty/standards-ld-contexts";
 import { DcatClasses, DcatContexts, type IDcatDataset } from "@3sixty/standards-w3c-dcat";
 import { OdrlContexts, OdrlDataTypes, OdrlPolicyType } from "@3sixty/standards-w3c-odrl";
 import type { ITrustVerificationInfo } from "@3sixty/trust-models";
+import { MimeTypes } from "@3sixty/web";
 import { Dataset } from "../src/entities/dataset.js";
 import { initSchema } from "../src/schema.js";
 import { FederatedCatalogueService } from "../src/services/federatedCatalogueService.js";
@@ -41,7 +42,7 @@ function datasetWithId(datasetId: string): IDcatDataset {
 		"dcat:distribution": {
 			"@type": "dcat:Distribution",
 			"@id": "https://example.com/distributions/bound-dist",
-			"dcterms:format": "application/json",
+			"dcterms:format": MimeTypes.Json,
 			"dcat:accessService": "https://example.com/services/test-service"
 		},
 		"odrl:hasPolicy": {
@@ -237,7 +238,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": DcatClasses.Distribution,
 				"@id": "https://example.com/distributions/test-dist-1",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -308,7 +309,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/query-dist-1",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -333,7 +334,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/query-dist-2",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -407,7 +408,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/part-dist-1",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -470,7 +471,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/mp-dist-1",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -495,7 +496,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/mp-dist-2",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -571,7 +572,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/own-dist",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -596,7 +597,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/other-dist",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -669,7 +670,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/filter-dist",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -740,7 +741,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": DcatClasses.Distribution,
 				"@id": "https://example.com/distributions/consignment-dist",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -912,7 +913,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/cursor-dist-1",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -937,7 +938,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/cursor-dist-2",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -1010,7 +1011,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/no-cursor-dist",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -1100,7 +1101,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/dist-1",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -1136,7 +1137,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/minimal-dist",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -1181,7 +1182,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/ds-protocol-dist",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -1252,7 +1253,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/dist-1",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			}
 		} as unknown as IDcatDataset;
@@ -1306,7 +1307,7 @@ describe("FederatedCatalogueService", () => {
 			distribution: {
 				"@type": "Distribution",
 				"@id": "https://example.com/distributions/dist-2",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				accessService: "https://example.com/services/test-service"
 			}
 		} as unknown as IDcatDataset;
@@ -1333,7 +1334,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/dist-3",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -1375,7 +1376,7 @@ describe("FederatedCatalogueService", () => {
 			distribution: {
 				"@type": "Distribution",
 				"@id": "https://example.com/distributions/dist-4",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				accessService: "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -1453,7 +1454,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": [
 				{
 					"@type": "dcat:Distribution",
-					"dcterms:format": "application/json"
+					"dcterms:format": MimeTypes.Json
 				}
 			],
 			"odrl:hasPolicy": {
@@ -1516,7 +1517,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/unch-dist",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -1555,7 +1556,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/ch-dist",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -1603,7 +1604,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/owner-mismatch-dist",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -1644,7 +1645,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/same-owner-dist",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -1682,7 +1683,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/remove-mismatch-dist",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -1721,7 +1722,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/remove-success-dist",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -1758,7 +1759,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/ident-dist",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -1791,7 +1792,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/invalid-uri-dist",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -1856,7 +1857,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/tenant-dist",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": accessServiceUrl
 			},
 			"odrl:hasPolicy": {
@@ -1896,7 +1897,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/object-access-service-dist",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": {
 					"@id": "https://example.com/services/object-service",
 					"@type": "dcat:DataService",
@@ -1941,7 +1942,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/composite-dist",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -1983,7 +1984,7 @@ describe("FederatedCatalogueService", () => {
 				"dcat:distribution": {
 					"@type": "dcat:Distribution",
 					"@id": `${id}/dist`,
-					"dcterms:format": "application/json",
+					"dcterms:format": MimeTypes.Json,
 					"dcat:accessService": "https://example.com/services/test-service"
 				},
 				"odrl:hasPolicy": {
@@ -2069,7 +2070,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/id-pres-dist",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {
@@ -2111,7 +2112,7 @@ describe("FederatedCatalogueService", () => {
 			"dcat:distribution": {
 				"@type": "dcat:Distribution",
 				"@id": "https://example.com/distributions/restart-dist",
-				"dcterms:format": "application/json",
+				"dcterms:format": MimeTypes.Json,
 				"dcat:accessService": "https://example.com/services/test-service"
 			},
 			"odrl:hasPolicy": {

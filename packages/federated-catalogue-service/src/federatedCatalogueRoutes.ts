@@ -28,7 +28,13 @@ import {
 } from "@3sixty/standards-dataspace-protocol";
 import { DcatClasses, type DcatContextType } from "@3sixty/standards-w3c-dcat";
 import { OdrlPolicyType } from "@3sixty/standards-w3c-odrl";
-import { HeaderHelper, HeaderTypes, HttpStatusCode, type IHttpHeaders } from "@3sixty/web";
+import {
+	HeaderHelper,
+	HeaderTypes,
+	HttpStatusCode,
+	type IHttpHeaders,
+	MimeTypes
+} from "@3sixty/web";
 import { transformErrorToStatusCode, transformToCatalogError } from "./utils/catalogErrorUtils.js";
 
 /**
@@ -129,7 +135,7 @@ export function generateRestRoutesFederatedCatalogue(
 											{
 												"@id": "urn:uuid:distribution-789",
 												"@type": "Distribution",
-												format: "application/json",
+												format: MimeTypes.Json,
 												accessService: {
 													"@id": "urn:uuid:access-service-321",
 													"@type": "DataService",

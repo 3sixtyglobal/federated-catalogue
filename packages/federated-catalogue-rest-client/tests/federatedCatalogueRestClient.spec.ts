@@ -10,7 +10,7 @@ import {
 import { DublinCoreContexts } from "@3sixty/standards-dublin-core";
 import type { IDcatDataset } from "@3sixty/standards-w3c-dcat";
 import { DcatClasses, DcatContexts } from "@3sixty/standards-w3c-dcat";
-import { HttpMethod } from "@3sixty/web";
+import { HttpMethod, MimeTypes } from "@3sixty/web";
 import { FederatedCatalogueRestClient } from "../src/federatedCatalogueRestClient.js";
 import {
 	createdResponse,
@@ -284,7 +284,7 @@ describe("FederatedCatalogueRestClient", () => {
 				ok: true,
 				status: 200,
 				headers: new Headers({
-					"content-type": "application/json",
+					"content-type": MimeTypes.Json,
 					link: `<${ENDPOINT}/${PREFIX}/request?cursor=page2>; rel="next"`
 				}),
 				json: async () => TEST_CATALOG

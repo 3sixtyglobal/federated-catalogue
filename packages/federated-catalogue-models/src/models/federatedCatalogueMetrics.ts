@@ -6,7 +6,6 @@ import { FederatedCatalogueMetricIds } from "./federatedCatalogueMetricIds.js";
 /**
  * Metrics registered by the federated catalogue service.
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const FederatedCatalogueMetrics: ITelemetryMetric[] = [
 	{
 		id: FederatedCatalogueMetricIds.DatasetsRetrieved,

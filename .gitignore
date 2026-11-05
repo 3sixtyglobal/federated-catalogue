@@ -19,3 +19,4 @@ vitest.config.ts.timestamp*
 .local-data-docker
 
 .DS_Store
+.claude/settings.local.json

@@ -17,6 +17,7 @@ import {
 	type ITelemetryComponent,
 	type ITelemetryMetric
 } from "@3sixty/telemetry-models";
+import { MimeTypes } from "@3sixty/web";
 import type { Dataset } from "../src/entities/dataset.js";
 import { initSchema } from "../src/schema.js";
 import { FederatedCatalogueService } from "../src/services/federatedCatalogueService.js";
@@ -86,7 +87,7 @@ function makeDataset(id: string): IDcatDataset {
 		"dcat:distribution": {
 			"@type": DcatClasses.Distribution,
 			"@id": `${id}/dist-1`,
-			"dcterms:format": "application/json",
+			"dcterms:format": MimeTypes.Json,
 			"dcat:accessService": "https://example.com/services/test-service"
 		},
 		"odrl:hasPolicy": {

@@ -37,7 +37,7 @@ import {
 	type IDcatDataset
 } from "@3sixty/standards-w3c-dcat";
 import { OdrlContexts, OdrlDataTypes } from "@3sixty/standards-w3c-odrl";
-import { HeaderTypes } from "@3sixty/web";
+import { HeaderTypes, MimeTypes } from "@3sixty/web";
 import type { Dataset } from "../src/entities/dataset.js";
 import {
 	generateRestRoutesFederatedCatalogue,
@@ -205,7 +205,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 				"dcat:distribution": {
 					"@type": "dcat:Distribution",
 					"@id": "urn:uuid:auth-dist",
-					"dcterms:format": "application/json",
+					"dcterms:format": MimeTypes.Json,
 					"dcat:accessService": "https://example.com/services/auth-service"
 				},
 				"odrl:hasPolicy": {
@@ -263,7 +263,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 				"dcat:distribution": {
 					"@type": "dcat:Distribution",
 					"@id": "urn:uuid:dist-context-test",
-					"dcterms:format": "application/json",
+					"dcterms:format": MimeTypes.Json,
 					"dcat:accessService": "https://example.com/services/test-service"
 				},
 				"odrl:hasPolicy": {
@@ -338,7 +338,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 				"dcat:distribution": {
 					"@type": "dcat:Distribution",
 					"@id": "urn:uuid:dist",
-					"dcterms:format": "application/json",
+					"dcterms:format": MimeTypes.Json,
 					"dcat:accessService": "https://example.com/services/test-service"
 				},
 				"odrl:hasPolicy": {
@@ -450,7 +450,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 				"dcat:distribution": {
 					"@type": "dcat:Distribution",
 					"@id": "urn:uuid:dist-123",
-					"dcterms:format": "application/json",
+					"dcterms:format": MimeTypes.Json,
 					"dcat:accessService": "https://example.com/services/test-service"
 				},
 				"odrl:hasPolicy": {
@@ -635,7 +635,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 					"dcat:distribution": {
 						"@type": "dcat:Distribution",
 						"@id": `urn:uuid:dist-link-${i}`,
-						"dcterms:format": "application/json",
+						"dcterms:format": MimeTypes.Json,
 						"dcat:accessService": "https://example.com/services/test-service"
 					},
 					"odrl:hasPolicy": {
@@ -973,7 +973,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 					"dcat:distribution": {
 						"@type": "dcat:Distribution",
 						"@id": "https://example.com/distributions/bound-dist",
-						"dcterms:format": "application/json",
+						"dcterms:format": MimeTypes.Json,
 						"dcat:accessService": "https://example.com/services/test-service"
 					},
 					"odrl:hasPolicy": {
@@ -1070,7 +1070,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 				"dcat:distribution": {
 					"@type": "dcat:Distribution",
 					"@id": "urn:uuid:dist-success",
-					"dcterms:format": "application/json",
+					"dcterms:format": MimeTypes.Json,
 					"dcat:accessService": "https://example.com/services/test-service"
 				},
 				"odrl:hasPolicy": {
@@ -1358,7 +1358,7 @@ describe("Federated Catalogue REST Endpoints", () => {
 				"dcat:distribution": {
 					"@type": "dcat:Distribution",
 					"@id": "urn:uuid:dist-catalog-request",
-					"dcterms:format": "application/json",
+					"dcterms:format": MimeTypes.Json,
 					"dcat:accessService": "https://example.com/services/test-service"
 				},
 				"odrl:hasPolicy": {
